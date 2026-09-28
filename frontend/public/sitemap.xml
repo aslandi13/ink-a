@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- Home -->
+  <url>
+    <loc>https://ink-a.kz/ru</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://ink-a.kz/ru"/>
+    <xhtml:link rel="alternate" hreflang="kz" href="https://ink-a.kz/kz"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ink-a.kz/en"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Projects -->
+  <url>
+    <loc>https://ink-a.kz/ru/projects</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://ink-a.kz/ru/projects"/>
+    <xhtml:link rel="alternate" hreflang="kz" href="https://ink-a.kz/kz/projects"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ink-a.kz/en/projects"/>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- About -->
+  <url>
+    <loc>https://ink-a.kz/ru/about</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://ink-a.kz/ru/about"/>
+    <xhtml:link rel="alternate" hreflang="kz" href="https://ink-a.kz/kz/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ink-a.kz/en/about"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Approach -->
+  <url>
+    <loc>https://ink-a.kz/ru/approach</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://ink-a.kz/ru/approach"/>
+    <xhtml:link rel="alternate" hreflang="kz" href="https://ink-a.kz/kz/approach"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ink-a.kz/en/approach"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- News -->
+  <url>
+    <loc>https://ink-a.kz/ru/news</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://ink-a.kz/ru/news"/>
+    <xhtml:link rel="alternate" hreflang="kz" href="https://ink-a.kz/kz/news"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ink-a.kz/en/news"/>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Contacts -->
+  <url>
+    <loc>https://ink-a.kz/ru/contacts</loc>
+    <xhtml:link rel="alternate" hreflang="ru" href="https://ink-a.kz/ru/contacts"/>
+    <xhtml:link rel="alternate" hreflang="kz" href="https://ink-a.kz/kz/contacts"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://ink-a.kz/en/contacts"/>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>

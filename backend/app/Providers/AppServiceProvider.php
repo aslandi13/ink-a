@@ -2,7 +2,11 @@
 
 namespace App\Providers;
 
+use App\Support\ImageOptimizer;
+use Filament\Forms\Components\BaseFileUpload;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +23,23 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Allow up to 50MB uploads (e.g. high-res camera photos or videos).
+        // Raster images (JPEG, PNG, WebP) are automatically downscaled to max 2048px
+        // and converted to modern WebP format on the server to keep site fast.
+        // Videos, SVGs and other non-raster files are stored as-is without modification.
+        FileUpload::configureUsing(function (FileUpload $fileUpload): void {
+            $fileUpload
+                ->maxSize(51200)
+                ->hint('до 50 МБ · авто-сжатие WebP')
+                ->saveUploadedFileUsing(function (BaseFileUpload $component, TemporaryUploadedFile $file): ?string {
+                    $path = $component->saveUploadedFile($file);
+
+                    if (! $path) {
+                        return null;
+                    }
+
+                    return ImageOptimizer::optimizeStoredFile($component->getDisk(), $path);
+                });
+        });
     }
 }
