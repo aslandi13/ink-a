@@ -137,38 +137,35 @@ export default function About() {
             <div>
               {/* Mosaic gallery — 4 cols, explicit placement */}
               {!!history?.gallery?.length && (
-                <div
-                  style={{
-                    display: 'grid',
-                    gridTemplateColumns: '38% 20% 1fr 1fr',
-                    gridTemplateRows: '1fr 1fr',
-                    height: 'calc(100vw * 0.32)',
-                    gap: '6px',
-                  }}
-                >
+                <div className="grid grid-cols-12 gap-2.5 px-6 md:gap-1.5 md:px-0 md:[grid-template-columns:38%_20%_1fr_1fr] md:[grid-template-rows:1fr_1fr] md:h-[calc(100vw*0.32)]">
                   {([
-                    { col: '1',   row: '1 / 3' },
-                    { col: '2',   row: '1 / 3' },
-                    { col: '3 / 5', row: '1'  },
-                    { col: '3',   row: '2'     },
-                    { col: '4',   row: '2'     },
-                  ] as const).map(({ col, row }, i) => {
+                    'col-span-6 aspect-[5/6] md:aspect-auto md:[grid-column:1] md:[grid-row:1/3]',
+                    'col-span-6 aspect-[5/6] md:aspect-auto md:[grid-column:2] md:[grid-row:1/3]',
+                    'col-span-12 aspect-[1.85] md:aspect-auto md:[grid-column:3/5] md:[grid-row:1]',
+                    'col-span-7 md:[grid-column:3] md:[grid-row:2]',
+                    'col-span-5 aspect-[4/3] md:aspect-auto md:[grid-column:4] md:[grid-row:2]',
+                  ] as const).map((placement, i) => {
                     const cell = history.gallery![i]
                     if (!cell) return null
                     return (
                       <motion.div
                         key={i}
-                        className={`relative overflow-hidden ${i === 3 ? 'bg-ink-950' : 'bg-ink-800'}`}
-                        style={{ gridColumn: col, gridRow: row }}
+                        className={`relative overflow-hidden ${placement} ${i === 3 ? 'bg-ink-950' : 'bg-ink-800'}`}
                         initial={{ opacity: 0, scale: 1.04 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.55, delay: i * 0.07, ease: EASE }}
                       >
-                        {cell.image && i !== 3 && <img src={cell.image} alt="" className="h-full w-full object-cover" />}
+                        {cell.image && i !== 3 && (
+                          <img
+                            src={cell.image}
+                            alt=""
+                            className={`h-full w-full object-cover md:object-center ${i === 0 ? 'object-[28%_50%]' : i === 1 ? 'object-bottom' : ''}`}
+                          />
+                        )}
                         {i === 3 && cell.image && !cell.overlay_text && <img src={cell.image} alt="" className="h-full w-full object-cover" />}
                         {i === 3 && cell.overlay_text ? (
-                          <div className="flex h-full flex-col justify-end p-5">
-                            <p className="font-serif text-[3rem] leading-[1.05] text-white">{cell.overlay_text}</p>
+                          <div className="flex h-full flex-col justify-center md:justify-end md:p-5">
+                            <p className="font-serif text-[2.2rem] leading-[1.05] text-white md:text-[3rem]">{cell.overlay_text}</p>
                           </div>
                         ) : cell.overlay_text ? (
                           <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 font-sans text-[0.75rem] text-white/80">
@@ -186,7 +183,7 @@ export default function About() {
               {history?.intro && (
                 <Reveal delay={0.1}>
                   <p
-                    className="mx-auto max-w-[84rem] px-6 pt-10 text-[0.9rem] leading-relaxed text-white"
+                    className="mx-auto max-w-[84rem] px-6 pt-6 text-[0.8rem] leading-tight text-white sm:pt-10 sm:text-[0.9rem] sm:leading-relaxed"
                     style={{ letterSpacing: '0.5px' }}
                   >
                     {history.intro}
@@ -195,17 +192,17 @@ export default function About() {
               )}
 
               {/* Stats + highlights — stats 40%, highlights 56% (space-between) — из Framer CSS */}
-              <div className="mx-auto flex max-w-[84rem] flex-row items-start justify-between px-6 pt-10 pb-16">
+              <div className="mx-auto flex max-w-[84rem] flex-col gap-6 px-6 pt-8 pb-16 sm:flex-row sm:items-start sm:justify-between sm:gap-0 sm:pt-10">
                 {/* Stats 2×2 — width: 40%, gap: 40px — из Framer */}
                 {!!history?.stats?.length && (
-                  <Reveal className="w-[40%]">
-                    <dl className="grid grid-cols-2 gap-10 pt-3">
+                  <Reveal className="sm:w-[40%]">
+                    <dl className="grid grid-cols-2 gap-x-6 gap-y-5 sm:gap-10 sm:pt-3">
                       {history.stats.map((s, i) => (
                         <div key={i}>
                           <dt className="font-sans text-[2rem] font-semibold leading-none text-white">
                             {s.number}
                           </dt>
-                          <dd className="mt-2 text-[0.9rem] leading-snug text-white">{s.label}</dd>
+                          <dd className="mt-1 text-[0.8rem] leading-tight text-white sm:mt-2 sm:text-[0.9rem] sm:leading-snug">{s.label}</dd>
                         </div>
                       ))}
                     </dl>
@@ -213,14 +210,14 @@ export default function About() {
                 )}
 
                 {/* Highlights — width: 56% — из Framer */}
-                <div className="w-[56%] space-y-6">
+                <div className="space-y-8 sm:w-[56%] sm:space-y-6">
                   {history?.highlights?.map((h, i) => (
                     <Reveal key={i} delay={i * 0.1}>
                       <h3 className="font-sans text-[1.2rem] font-medium text-white">
                         {h.heading}
                       </h3>
                       <p
-                        className="mt-2 text-[0.9rem] leading-relaxed text-white"
+                        className="mt-2 text-[0.8rem] leading-tight text-white sm:text-[0.9rem] sm:leading-relaxed"
                         style={{ letterSpacing: '0.5px' }}
                       >
                         {h.text}
@@ -234,7 +231,7 @@ export default function About() {
 
           {/* ───── КОМАНДА ───── */}
           {tab === 'team' && (
-            <div className="mx-auto max-w-[84rem] px-6 pt-10 pb-24">
+            <div className="mx-auto max-w-[84rem] px-6 pt-2 pb-24 sm:pt-10">
               {/* Team grid: gap: 10px — из Framer CSS */}
               <div className="grid gap-[10px] grid-cols-2 md:grid-cols-4">
                 {team.map((m, i) => (
@@ -260,9 +257,9 @@ export default function About() {
 
           {/* ───── ОБ ОСНОВАТЕЛЕ ───── */}
           {tab === 'founder' && founder && (
-            <div className="mx-auto max-w-[84rem] px-6 pt-10 pb-24">
+            <div className="mx-auto max-w-[84rem] px-6 pt-2 pb-24 sm:pt-10">
               {/* 2-column: photo + content */}
-              <div className="grid gap-12 md:grid-cols-[30%_1fr]">
+              <div className="grid gap-4 md:grid-cols-[30%_1fr] md:gap-12">
                 <FadeIn>
                   <div className="overflow-hidden bg-ink-800" style={{ aspectRatio: '3/4' }}>
                     {founder.photo && (
@@ -276,7 +273,7 @@ export default function About() {
                 </FadeIn>
 
                 <FadeIn delay={0.15}>
-                  <h1 className="font-serif text-[3.5rem] leading-tight text-white">{founder.name}</h1>
+                  <h1 className="whitespace-nowrap font-serif text-[2.3rem] leading-tight text-white md:whitespace-normal md:text-[3.5rem]">{founder.name}</h1>
                   {founder.position && (
                     <p className="mt-3 text-[0.95rem] text-white/70">{founder.position}</p>
                   )}

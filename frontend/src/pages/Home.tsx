@@ -132,7 +132,7 @@ export default function Home() {
       </Helmet>
 
       <div className="-mt-24">
-        <section className="relative flex h-[calc(100vh+6rem)] flex-col justify-end overflow-hidden px-6 pb-20">
+        <section className="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pb-20">
 
           {/* Слайдер: видео + фото с Ken Burns */}
           <AnimatePresence mode="sync">
@@ -242,14 +242,14 @@ export default function Home() {
               )}
               {hero?.description && (
                 <FadeIn delay={0.25}>
-                  <p className="max-w-lg text-white/70">{hero.description}</p>
+                  <p className="hidden max-w-lg text-white/70 sm:block">{hero.description}</p>
                 </FadeIn>
               )}
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-[84rem] px-6 pt-24 pb-24">
+        <section className="mx-auto max-w-[84rem] px-6 pt-8 pb-4 sm:pt-24 sm:pb-24">
           <Reveal>
             <p className="text-xs uppercase tracking-widest text-white/40">{tr.home.about}</p>
           </Reveal>
@@ -301,20 +301,20 @@ export default function Home() {
                   </Reveal>
                 </div>
 
-                <div className="absolute inset-x-0 bottom-0 grid gap-4 px-6 pb-6 md:grid-cols-[32%_38%] md:gap-12 md:px-10 md:pb-12">
+                <div className="absolute inset-x-0 bottom-0 grid gap-4 px-6 pb-6 md:grid-cols-[45%_40%] md:gap-20 md:px-10 md:pb-12">
                   {about.intro && (
                     <Reveal delay={0.1}>
-                      <p className="whitespace-pre-line text-[10px] leading-snug text-white/70 md:text-sm">
+                      <p className="whitespace-pre-line text-[10px] leading-snug text-white/80 md:text-sm">
                         {about.intro}
                       </p>
                     </Reveal>
                   )}
                   {about.quote && (
                     <Reveal delay={0.15}>
-                      <blockquote className="text-[10px] italic leading-snug text-white/75 md:text-sm">
+                      <blockquote className="text-[10px] italic leading-snug text-white/80 md:text-sm">
                         «{about.quote}»
                         {about.quote_author && (
-                          <footer className="mt-1 text-[9px] text-white/40 not-italic md:mt-3 md:text-xs">
+                          <footer className="mt-1 text-[9px] text-white/60 not-italic md:mt-3 md:text-xs">
                             {about.quote_author}
                           </footer>
                         )}
@@ -351,7 +351,7 @@ export default function Home() {
             </>
           )}
           {!!about?.principles?.length && (
-            <div className="mt-12 border-t border-line pt-12">
+            <div className="mt-4 border-t border-line pt-4 sm:mt-12 sm:pt-12">
               <div className="grid gap-10 md:grid-cols-[38%_1fr] md:gap-20">
                 {about.principles_image && (
                   <Reveal>
@@ -374,7 +374,7 @@ export default function Home() {
         </section>
 
         {(offices?.heading || offices?.map_video) && (
-          <section className="mx-auto max-w-[84rem] px-6 pt-20 pb-16">
+            <section className="mx-auto max-w-[84rem] px-6 pt-2 pb-4 sm:pt-20 sm:pb-16">
             {/* 2-column: heading + label left, description right — matches original */}
             <div className="grid gap-8 md:grid-cols-2 md:gap-16">
               <div>
@@ -436,7 +436,7 @@ export default function Home() {
         )}
 
 
-        <section className="mx-auto max-w-[84rem] px-6 pt-20 pb-28">
+        <section className="mx-auto max-w-[84rem] px-6 pt-4 pb-28 sm:pt-20">
           {/* Section label */}
           <Reveal>
             <p className="text-sm text-white/60">{keyProjects?.heading || tr.home.keyProjects}</p>
@@ -445,7 +445,7 @@ export default function Home() {
           {/* Statement heading */}
           {keyProjects?.statement && (
             <Reveal delay={0.1}>
-              <h2 className="mt-3 max-w-4xl whitespace-pre-line font-serif text-[2.5rem] leading-[1.1] text-white">
+              <h2 className="mt-3 max-w-4xl whitespace-pre-line font-serif text-[1.9rem] leading-[1.1] text-white sm:text-[2.5rem]">
                 {keyProjects.statement}
               </h2>
             </Reveal>
@@ -460,15 +460,15 @@ export default function Home() {
             </Reveal>
           )}
 
-          {/* Grid: 4 cols, featured (col-span-2 row-span-2) every 13th, max 30 */}
+          {/* Grid: 2 cols on mobile (first item full-width), 4 cols on desktop, featured (col-span-2 row-span-2) every 13th, max 30 */}
           {projects.length > 0 && (
-            <StaggerList className="mt-10 grid grid-flow-dense grid-cols-4 gap-1">
+            <StaggerList className="mt-10 grid grid-flow-dense grid-cols-2 gap-1 md:grid-cols-4">
               {projects.slice(0, 30).map((project, i) => {
                 const isFeatured = i % 13 === 0
                 return (
                   <StaggerItem
                     key={project.id}
-                    className={isFeatured ? 'col-span-2 row-span-2' : undefined}
+                    className={`${i === 0 ? 'col-span-2' : ''} ${isFeatured ? 'md:col-span-2 md:row-span-2' : ''}`}
                     style={{ aspectRatio: '4/3' }}
                   >
                     <Link

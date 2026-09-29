@@ -161,7 +161,7 @@ export default function Header() {
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-30 flex flex-col bg-ink-950 px-8 pb-12 pt-28 md:hidden"
           >
-            <nav className="flex flex-1 flex-col justify-center">
+            <nav className="flex flex-1 flex-col justify-start">
               <ul className="space-y-2">
                 {links.map((link, i) => (
                   <motion.li

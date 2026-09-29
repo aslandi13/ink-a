@@ -93,7 +93,7 @@ export default function NewsDetail() {
         </ParallaxHero>
       )}
 
-      <div className="mx-auto max-w-5xl px-6 py-16">
+      <div className="mx-auto max-w-5xl px-6 pt-16 pb-4 sm:pb-16">
         {item.body && (
           <Reveal>
             <div

@@ -71,7 +71,7 @@ export default function Approach() {
   const caption = step?.image_caption ?? current?.default_image_caption
 
   return (
-    <section className="pt-24">
+    <section className="pt-20 sm:pt-24">
       <Helmet>
         <title>{current?.seo_title || `${tr.nav.approach} — INK Architects`}</title>
         {(current?.seo_description) && <meta name="description" content={current.seo_description} />}
@@ -100,7 +100,7 @@ export default function Approach() {
       </div>
 
       {/* Main 2-col layout */}
-      <div className="mx-auto grid max-w-[84rem] gap-16 px-6 pt-12 pb-24 md:grid-cols-[45%_1fr]">
+      <div className="mx-auto grid max-w-[84rem] gap-4 px-6 pt-2 pb-24 md:grid-cols-[45%_1fr] md:gap-16 md:pt-12">
 
         {/* Left: expertise + steps */}
         <AnimatePresence mode="wait">
@@ -132,7 +132,7 @@ export default function Approach() {
             )}
 
             {/* Steps list */}
-            <div className="mt-10">
+            <div className="mt-4 sm:mt-10">
               {current?.steps?.map((s, i) => (
                 <motion.div
                   key={i}
@@ -179,8 +179,8 @@ export default function Approach() {
           </motion.div>
         </AnimatePresence>
 
-        {/* Right: sticky image */}
-        <div className="relative overflow-hidden bg-ink-800 md:sticky md:top-24 md:h-fit">
+        {/* Right: sticky image (shown first on mobile, before the expertise text) */}
+        <div className="relative order-first overflow-hidden bg-ink-800 md:order-none md:sticky md:top-24 md:h-fit">
           <AnimatePresence mode="wait">
             <motion.div
               key={image}

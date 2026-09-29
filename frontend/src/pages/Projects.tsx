@@ -65,7 +65,7 @@ export default function Projects() {
       </Helmet>
 
 
-      <div className="flex flex-wrap gap-x-8 gap-y-3 pb-6 text-sm">
+      <div className="flex flex-wrap gap-x-8 gap-y-3 pb-1 text-sm sm:pb-6">
         {CATEGORIES.map((c) => (
           <button
             key={c.value}
@@ -89,13 +89,13 @@ export default function Projects() {
         <p className="mt-16 text-white/40">{tr.projects.empty}</p>
       ) : (
         <>
-        <StaggerList className="mt-6 grid grid-flow-dense grid-cols-4 gap-2">
+        <StaggerList className="mt-2 sm:mt-6 grid grid-flow-dense grid-cols-2 gap-2 md:grid-cols-4">
             {projects.map((project, i) => {
               const isFeatured = i % 13 === 0
               return (
                 <StaggerItem
                   key={project.id}
-                  className={isFeatured ? 'col-span-2 row-span-2' : undefined}
+                  className={`${i === 0 ? 'col-span-2' : ''} ${isFeatured ? 'md:col-span-2 md:row-span-2' : ''}`}
                   style={{ aspectRatio: '16/9' }}
                 >
                   <Link

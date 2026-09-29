@@ -92,7 +92,7 @@ export default function Contacts() {
       )}
       <div className="absolute inset-0 bg-ink-950/50" />
 
-      <div className="relative mx-auto flex w-full max-w-[84rem] flex-1 flex-col justify-center px-6 pt-32 pb-12">
+      <div className="relative mx-auto flex w-full max-w-[84rem] flex-1 flex-col justify-center px-6 pt-42 pb-12">
         <FadeIn>
           <p className="text-xs uppercase tracking-[0.2em] text-white/40">Социальные сети</p>
         </FadeIn>
@@ -113,7 +113,7 @@ export default function Contacts() {
         </div>
 
         {data?.career_heading && (
-          <div className="mt-10 max-w-xl border-t border-line pt-8">
+          <div className="mt-5 max-w-xl border-t border-line pt-5 sm:mt-5 sm:pt-8">
             {data.career_label && (
               <FadeIn delay={0.1}>
                 <p className="text-xs uppercase tracking-[0.2em] text-white/40">{data.career_label}</p>
@@ -126,7 +126,7 @@ export default function Contacts() {
             </FadeIn>
             {data.career_text && (
               <FadeIn delay={0.26}>
-                <p className="mt-5 text-white/60">{data.career_text}</p>
+                <p className="mt-1 text-white/60">{data.career_text}</p>
               </FadeIn>
             )}
             {data.career_cta_label && (
@@ -135,7 +135,7 @@ export default function Contacts() {
                   href={data.career_cta_url ?? `mailto:${data.email}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="mt-8 inline-flex items-center gap-2 border border-white/30 px-6 py-3 text-sm text-white transition-colors hover:border-white hover:bg-white hover:text-ink-950"
+                  className="mt-5 inline-flex items-center gap-2 border border-white/30 px-6 py-3 text-sm text-white transition-colors hover:border-white hover:bg-white hover:text-ink-950"
                 >
                   {data.career_cta_label} <span aria-hidden>→</span>
                 </a>

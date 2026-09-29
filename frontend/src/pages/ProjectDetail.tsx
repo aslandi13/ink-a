@@ -277,7 +277,7 @@ export default function ProjectDetail() {
                   : 'Other projects'}
             </h2>
           </Reveal>
-          <div className="mt-8 grid grid-cols-2 gap-2.5 md:grid-cols-4">
+          <div className="mt-8 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5 md:grid-cols-4">
             {otherProjects.map((item, i) => (
               <Reveal key={item.id} delay={(i % 4) * 0.05}>
                 <Link
@@ -292,8 +292,8 @@ export default function ProjectDetail() {
                     />
                   )}
                   <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-3 md:p-4">
-                    <p className="font-serif text-base text-white md:text-lg">
+                  <div className="absolute inset-x-0 bottom-0 p-2 sm:p-3 md:p-4">
+                    <p className="font-serif text-[1.4rem] leading-tight text-white sm:text-base md:text-lg">
                       {item.title}
                     </p>
                   </div>
