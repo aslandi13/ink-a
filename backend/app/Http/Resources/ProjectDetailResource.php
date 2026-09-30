@@ -23,6 +23,7 @@ class ProjectDetailResource extends JsonResource
             'status' => $this->status,
             'year' => $this->year,
             'cover_image' => FileUrlResolver::resolve($this->cover_image),
+            'cover_focus' => $this->cover_focus ?? 'center',
             'gallery' => FileUrlResolver::resolve($this->gallery ?? []),
         ];
     }

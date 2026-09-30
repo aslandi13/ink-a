@@ -16,6 +16,7 @@ class Project extends Model
         'slug',
         'category',
         'cover_image',
+        'cover_focus',
         'gallery',
         'excerpt',
         'body',

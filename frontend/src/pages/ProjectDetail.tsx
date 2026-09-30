@@ -10,13 +10,23 @@ import { sanitise } from '../lib/sanitise'
 import { useLocale } from '../lib/useLocale'
 
 /** Полноэкранный слайдер: обложка + галерея */
+const FOCUS_CLASS = {
+  center: 'object-center',
+  left: 'object-left',
+  right: 'object-right',
+  top: 'object-top',
+  bottom: 'object-bottom',
+} as const
+
 function HeroSlider({
   cover,
+  focus = 'center',
   gallery,
   title,
   contentRef,
 }: {
   cover: string
+  focus?: keyof typeof FOCUS_CLASS
   gallery: string[]
   title: string
   contentRef: React.RefObject<HTMLDivElement>
@@ -65,7 +75,7 @@ function HeroSlider({
   }
 
   return (
-    <div className="relative -mt-24 h-[calc(100vh+6rem)] overflow-hidden">
+    <div className="relative -mt-24 h-[calc(65vh_+_6rem)] overflow-hidden sm:h-[calc(100vh_+_6rem)]">
       {/* Слайды */}
       <AnimatePresence custom={direction} mode="sync">
         <motion.img
@@ -78,7 +88,7 @@ function HeroSlider({
           animate="center"
           exit="exit"
           transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-          className="absolute inset-0 h-full w-full object-cover"
+          className={`absolute inset-0 h-full w-full object-cover sm:object-center ${index === 0 ? FOCUS_CLASS[focus] : 'object-center'}`}
         />
       </AnimatePresence>
 
@@ -211,6 +221,7 @@ export default function ProjectDetail() {
       {project.cover_image ? (
         <HeroSlider
           cover={project.cover_image}
+          focus={project.cover_focus}
           gallery={gallery}
           title={project.title}
           contentRef={contentRef as React.RefObject<HTMLDivElement>}
@@ -251,7 +262,7 @@ export default function ProjectDetail() {
       {/* Галерея */}
       {!!gallery.length && (
         <div className="mx-auto max-w-[84rem] px-6 pb-16">
-          <div className="mt-12 grid grid-cols-2 gap-1.5 md:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-1.5 sm:mt-12 md:grid-cols-4">
             {gallery.map((src, i) => (
               <Reveal key={i} delay={(i % 4) * 0.06}>
                 <img

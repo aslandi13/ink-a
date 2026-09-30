@@ -64,6 +64,19 @@ class ProjectForm
                     ->imageEditor()
                     ->helperText('Перетащите изображение или выберите файл. Рекомендуемое соотношение — 16:9.'),
 
+                Select::make('cover_focus')
+                    ->label('Фокус обложки на мобильном')
+                    ->helperText('Какую часть фото сохранять при обрезке на телефоне.')
+                    ->options([
+                        'center' => 'По центру',
+                        'left' => 'Левее',
+                        'right' => 'Правее',
+                        'top' => 'Верх',
+                        'bottom' => 'Низ',
+                    ])
+                    ->default('center')
+                    ->native(false),
+
                 FileUpload::make('gallery')
                     ->label('Фотогалерея')
                     ->image()

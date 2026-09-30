@@ -45,6 +45,7 @@ export interface ProjectListItem {
 
 export interface ProjectDetail extends ProjectListItem {
   body: string | null
+  cover_focus?: 'center' | 'left' | 'right' | 'top' | 'bottom'
   site_area: string | null
   total_area: string | null
   status: string | null
