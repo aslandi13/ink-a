@@ -235,8 +235,8 @@ export default function ProjectDetail() {
       )}
 
       {/* Контент */}
-      <div ref={contentRef} className="mx-auto max-w-[84rem] px-6 py-16">
-        <div className="mt-10 grid gap-12 md:grid-cols-[260px_1fr]">
+      <div ref={contentRef} className="mx-auto max-w-[84rem] px-6 pt-2 pb-16 sm:pt-16">
+        <div className="mt-0 grid gap-12 sm:mt-10 md:grid-cols-[260px_1fr]">
           <Reveal delay={0.1}>
             <dl className="space-y-4 text-sm">
               {meta.map(([label, value]) => (
