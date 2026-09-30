@@ -29,6 +29,17 @@ class FileUrlResolver
         return Storage::disk('public')->url($data);
     }
 
+    public static function html(?string $html): ?string
+    {
+        if (blank($html)) {
+            return $html;
+        }
+
+        $base = rtrim(Storage::disk('public')->url(''), '/');
+
+        return preg_replace('#https?://[^"\'\s>]+?/storage/#i', $base.'/', $html);
+    }
+
     private static function looksLikeStoredPath(mixed $value): bool
     {
         if (! is_string($value) || $value === '') {

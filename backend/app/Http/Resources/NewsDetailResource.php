@@ -15,7 +15,7 @@ class NewsDetailResource extends JsonResource
             'title' => $this->title,
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
-            'body' => $this->body,
+            'body' => FileUrlResolver::html($this->body),
             'cover_image' => FileUrlResolver::resolve($this->cover_image),
             'published_at' => $this->published_at?->toIso8601String(),
         ];

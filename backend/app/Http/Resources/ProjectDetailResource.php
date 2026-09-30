@@ -16,7 +16,7 @@ class ProjectDetailResource extends JsonResource
             'slug' => $this->slug,
             'category' => $this->category,
             'excerpt' => $this->excerpt,
-            'body' => $this->body,
+            'body' => FileUrlResolver::html($this->body),
             'location' => $this->location,
             'site_area' => $this->site_area,
             'total_area' => $this->total_area,
