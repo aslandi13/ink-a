@@ -84,7 +84,7 @@ export default function Header() {
           </NavLink>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex">
+          <nav className="hidden lg:flex">
             <ul className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/70 md:text-base">
               {links.map((link) => (
                 <li key={link.to}>
@@ -118,7 +118,7 @@ export default function Header() {
           {/* Hamburger button */}
           <button
             onClick={() => setOpen((v) => !v)}
-            className="relative z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5 md:hidden"
+            className="relative z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5 lg:hidden"
             aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
           >
             <motion.span
@@ -159,7 +159,7 @@ export default function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-30 flex flex-col bg-ink-950 px-8 pb-12 pt-28 md:hidden"
+            className="fixed inset-0 z-30 flex flex-col bg-ink-950 px-8 pb-12 pt-28 lg:hidden"
           >
             <nav className="flex flex-1 flex-col justify-start">
               <ul className="space-y-2">

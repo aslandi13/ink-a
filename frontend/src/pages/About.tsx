@@ -137,13 +137,13 @@ export default function About() {
             <div>
               {/* Mosaic gallery — 4 cols, explicit placement */}
               {!!history?.gallery?.length && (
-                <div className="grid grid-cols-12 gap-2.5 px-6 md:gap-1.5 md:px-0 md:[grid-template-columns:38%_20%_1fr_1fr] md:[grid-template-rows:1fr_1fr] md:h-[calc(100vw*0.32)]">
+                <div className="grid grid-cols-12 gap-2.5 px-6 lg:gap-1.5 lg:px-0 lg:[grid-template-columns:38%_20%_1fr_1fr] lg:[grid-template-rows:1fr_1fr] lg:h-[calc(100vw*0.32)]">
                   {([
-                    'col-span-6 aspect-[5/6] md:aspect-auto md:[grid-column:1] md:[grid-row:1/3]',
-                    'col-span-6 aspect-[5/6] md:aspect-auto md:[grid-column:2] md:[grid-row:1/3]',
-                    'col-span-12 aspect-[1.85] md:aspect-auto md:[grid-column:3/5] md:[grid-row:1]',
-                    'col-span-7 md:[grid-column:3] md:[grid-row:2]',
-                    'col-span-5 aspect-[4/3] md:aspect-auto md:[grid-column:4] md:[grid-row:2]',
+                    'col-span-6 aspect-[5/6] lg:aspect-auto lg:[grid-column:1] lg:[grid-row:1/3]',
+                    'col-span-6 aspect-[5/6] lg:aspect-auto lg:[grid-column:2] lg:[grid-row:1/3]',
+                    'col-span-12 aspect-[1.85] lg:aspect-auto lg:[grid-column:3/5] lg:[grid-row:1]',
+                    'col-span-7 lg:[grid-column:3] lg:[grid-row:2]',
+                    'col-span-5 aspect-[4/3] lg:aspect-auto lg:[grid-column:4] lg:[grid-row:2]',
                   ] as const).map((placement, i) => {
                     const cell = history.gallery![i]
                     if (!cell) return null
@@ -159,13 +159,13 @@ export default function About() {
                           <img
                             src={cell.image}
                             alt=""
-                            className={`h-full w-full object-cover md:object-center ${i === 0 ? 'object-[28%_50%]' : i === 1 ? 'object-bottom' : ''}`}
+                            className={`h-full w-full object-cover lg:object-center ${i === 0 ? 'object-[28%_50%]' : i === 1 ? 'object-bottom' : ''}`}
                           />
                         )}
                         {i === 3 && cell.image && !cell.overlay_text && <img src={cell.image} alt="" className="h-full w-full object-cover" />}
                         {i === 3 && cell.overlay_text ? (
-                          <div className="flex h-full flex-col justify-center md:justify-end md:p-5">
-                            <p className="font-serif text-[2.2rem] leading-[1.05] text-white md:text-[3rem]">{cell.overlay_text}</p>
+                          <div className="flex h-full flex-col justify-center lg:justify-end lg:p-5">
+                            <p className="font-serif text-[2.2rem] leading-[1.05] text-white lg:text-[3rem]">{cell.overlay_text}</p>
                           </div>
                         ) : cell.overlay_text ? (
                           <p className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 font-sans text-[0.75rem] text-white/80">

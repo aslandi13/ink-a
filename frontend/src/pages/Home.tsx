@@ -257,7 +257,7 @@ export default function Home() {
           {about?.image ? (
             <>
               {/* Mobile: safe stacked layout, no overlay (avoids collision on narrow screens) */}
-              <div className="sm:hidden">
+              <div className="lg:hidden">
                 <Reveal delay={0.05}>
                   <h2 className="mt-4 max-w-2xl whitespace-pre-line font-serif text-2xl leading-tight text-white">
                     {about.heading}
@@ -288,7 +288,7 @@ export default function Home() {
               </div>
 
               {/* Tablet/desktop: overlay on photo, exact site aspect-ratio 3.06 */}
-              <div className="relative mt-3 hidden aspect-[3.06] w-full overflow-hidden bg-ink-800 sm:block">
+              <div className="relative mt-3 hidden aspect-[3.06] w-full overflow-hidden bg-ink-800 lg:block">
                 <img src={about.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-ink-950/80 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950 to-transparent" />
