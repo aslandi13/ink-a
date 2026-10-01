@@ -34,3 +34,7 @@
   color: #050a12;
   border-radius: 3px;
 }
+
+.ink-editor-open elevenlabs-convai {
+  display: none !important;
+}

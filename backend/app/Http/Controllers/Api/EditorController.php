@@ -5,11 +5,15 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Page;
 use App\Models\User;
+use App\Support\EditableContent;
 use App\Support\FileUrlResolver;
+use App\Support\Locales;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use InvalidArgumentException;
 
 class EditorController extends Controller
 {
@@ -32,15 +36,17 @@ class EditorController extends Controller
         ]);
     }
 
-    public function show(string $slug): JsonResponse
+    public function show(Request $request, string $slug): JsonResponse
     {
+        $locale = $this->locale($request);
         $page = Page::where('slug', $slug)->first();
 
         if ($page === null && $slug !== Page::HOME) {
             return response()->json(['message' => 'Страница не найдена. Создайте её в админке.'], 404);
         }
 
-        $draft = $page?->draft;
+        $layouts = Page::normalizeLayouts($page?->draft);
+        $draft = $layouts[$locale] ?? $layouts['ru'] ?? null;
 
         if (is_array($draft)) {
             $draft['html'] = FileUrlResolver::html($draft['html'] ?? '');
@@ -49,6 +55,7 @@ class EditorController extends Controller
 
         return response()->json(['data' => [
             'draft' => $draft,
+            'inherited' => $draft !== null && ! isset($layouts[$locale]),
             'title' => $page?->localized('title', 'ru') ?? $slug,
             'published_at' => $page?->published_at,
         ]]);
@@ -56,6 +63,7 @@ class EditorController extends Controller
 
     public function update(Request $request, string $slug): JsonResponse
     {
+        $locale = $this->locale($request);
         $data = $request->validate([
             'project' => ['required', 'array'],
             'html' => ['present', 'nullable', 'string'],
@@ -66,9 +74,32 @@ class EditorController extends Controller
             return response()->json(['message' => 'Страница не найдена.'], 404);
         }
 
-        $page = Page::updateOrCreate(['slug' => $slug], ['draft' => $data]);
+        $page = Page::firstOrNew(['slug' => $slug]);
+        $layouts = Page::normalizeLayouts($page->draft);
+        $layouts[$locale] = $data;
+        $page->draft = $layouts;
+        $page->save();
 
         return response()->json(['data' => ['updated_at' => $page->updated_at]]);
+    }
+
+    public function content(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'locale' => ['required', Rule::in(array_keys(Locales::SUPPORTED))],
+            'changes' => ['required', 'array', 'max:200'],
+            'changes.*.key' => ['required', 'string'],
+            'changes.*.field' => ['required', 'string', 'max:100'],
+            'changes.*.value' => ['present', 'nullable', 'string', 'max:20000'],
+        ]);
+
+        try {
+            EditableContent::apply($data['locale'], $data['changes']);
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json(['data' => ['saved' => count($data['changes'])]]);
     }
 
     public function publish(string $slug): JsonResponse
@@ -79,7 +110,7 @@ class EditorController extends Controller
             return response()->json(['message' => 'Сначала сохраните черновик.'], 422);
         }
 
-        $page->update(['published' => $page->draft, 'published_at' => now()]);
+        $page->update(['published' => Page::normalizeLayouts($page->draft), 'published_at' => now()]);
 
         return response()->json(['data' => ['published_at' => $page->published_at]]);
     }
@@ -89,6 +120,13 @@ class EditorController extends Controller
         Page::where('slug', $slug)->update(['published' => null, 'published_at' => null]);
 
         return response()->json(['data' => ['published_at' => null]]);
+    }
+
+    private function locale(Request $request): string
+    {
+        $locale = (string) $request->query('locale', 'ru');
+
+        return array_key_exists($locale, Locales::SUPPORTED) ? $locale : 'ru';
     }
 
     public function upload(Request $request): JsonResponse

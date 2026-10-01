@@ -1,0 +1,205 @@
+import type { Component, Editor } from 'grapesjs'
+import { Fragment, useSyncExternalStore } from 'react'
+import { createRoot, type Root } from 'react-dom/client'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import type { Locale } from '../lib/locale'
+import { HOME_BLOCKS } from '../sections/home'
+import { BASIC_BLOCKS } from './basicBlocks'
+import type { ContentStore } from './contentStore'
+
+const CANVAS_CSS = `
+  body { background-color: #050a12 !important; color: rgb(255 255 255 / 0.92); }
+  [data-block] > * { pointer-events: none; }
+  [data-block] [style*="opacity: 0"] { opacity: 1 !important; transform: none !important; }
+  [data-block]:empty { min-height: 120px; }
+  [data-block] [data-edit], [data-block] [data-edit-image] { pointer-events: auto; }
+  [data-block] [data-edit]:hover { outline: 1px dashed rgba(158, 158, 255, 0.8); outline-offset: 4px; cursor: text; }
+  [data-block] [data-edit-image]:hover { outline: 2px dashed rgba(158, 158, 255, 0.9); outline-offset: -2px; cursor: pointer; }
+  [data-block] [contenteditable] { outline: 2px solid #9e9eff !important; outline-offset: 4px; cursor: text; }
+`
+
+function BlockPreview({ id, store, locale }: { id: string; store: ContentStore; locale: Locale }) {
+  const { data, version } = useSyncExternalStore(store.subscribe, store.getSnapshot)
+  const block = HOME_BLOCKS.find((b) => b.id === id)
+  if (!block) return <div style={{ padding: 24, color: '#fff' }}>Неизвестный блок: {id}</div>
+  return <Fragment key={version}>{block.render({ data, locale })}</Fragment>
+}
+
+function parseTarget(value: string): [string, string] {
+  const index = value.indexOf(':')
+  return [value.slice(0, index), value.slice(index + 1)]
+}
+
+interface Options {
+  store: ContentStore
+  locale: Locale
+  onContentChange: () => void
+}
+
+export function inkPlugin({ store, locale, onContentChange }: Options) {
+  return (editor: Editor) => {
+    const roots = new WeakMap<HTMLElement, Root>()
+
+    const mount = (el: HTMLElement, id: string) => {
+      let root = roots.get(el)
+      if (!root) {
+        root = createRoot(el)
+        roots.set(el, root)
+      }
+      root.render(
+        <MemoryRouter initialEntries={[`/${locale}`]}>
+          <Routes>
+            <Route path=":locale/*" element={<BlockPreview id={id} store={store} locale={locale} />} />
+          </Routes>
+        </MemoryRouter>,
+      )
+    }
+
+    editor.DomComponents.addType('ink-block', {
+      isComponent: (el) =>
+        el instanceof HTMLElement && el.tagName === 'SECTION' && el.dataset.block ? { type: 'ink-block' } : undefined,
+      model: {
+        defaults: {
+          tagName: 'section',
+          droppable: false,
+          editable: false,
+          components: [],
+          traits: [],
+        },
+        init(this: Component) {
+          const id = this.getAttributes()['data-block']
+          const label = HOME_BLOCKS.find((b) => b.id === id)?.label ?? id
+          this.set('name', `Секция: ${label}`)
+        },
+      },
+      view: {
+        onRender({ el, model }) {
+          mount(el as HTMLElement, model.getAttributes()['data-block'])
+        },
+      },
+    })
+
+    editor.on('component:remove', (component: Component) => {
+      const el = component.getEl()
+      const root = el ? roots.get(el) : undefined
+      if (root) setTimeout(() => root.unmount())
+    })
+
+    HOME_BLOCKS.forEach((block) => {
+      editor.Blocks.add(`section-${block.id}`, {
+        label: block.label,
+        category: 'Секции сайта',
+        content: { type: 'ink-block', attributes: { 'data-block': block.id } },
+      })
+    })
+
+    BASIC_BLOCKS.forEach((block) => {
+      editor.Blocks.add(block.id, { label: block.label, category: 'Элементы', content: block.content })
+    })
+
+    let commitActiveEdit: (() => void) | null = null
+    editor.Commands.add('ink-commit-edit', { run: () => commitActiveEdit?.() })
+
+    const startTextEdit = (el: HTMLElement) => {
+      if (el.isContentEditable) return
+      commitActiveEdit?.()
+      const doc = el.ownerDocument
+      const [key, field] = parseTarget(el.dataset.edit ?? '')
+      const original = el.innerText
+      let done = false
+      el.setAttribute('contenteditable', 'plaintext-only')
+      el.focus()
+      const selection = doc.getSelection()
+      selection?.selectAllChildren(el)
+      selection?.collapseToEnd()
+
+      const stop = (e: Event) => e.stopPropagation()
+      const onKeyDown = (e: KeyboardEvent) => {
+        e.stopPropagation()
+        if (e.key === 'Escape') {
+          el.innerText = original
+          finish()
+        }
+      }
+      const onOutside = (e: MouseEvent) => {
+        if (!el.contains(e.target as Node)) finish()
+      }
+      const finish = () => {
+        if (done) return
+        done = true
+        commitActiveEdit = null
+        el.removeEventListener('keydown', onKeyDown)
+        el.removeEventListener('keyup', stop)
+        el.removeEventListener('keypress', stop)
+        el.removeEventListener('paste', stop)
+        el.removeEventListener('blur', finish)
+        doc.removeEventListener('mousedown', onOutside, true)
+        el.removeAttribute('contenteditable')
+        const value = el.innerText.replace(/\u00a0/g, ' ').replace(/\s+$/, '')
+        if (value !== original.replace(/\s+$/, '')) {
+          store.edit(key, field, value)
+          onContentChange()
+        }
+      }
+
+      commitActiveEdit = finish
+      el.addEventListener('keydown', onKeyDown)
+      el.addEventListener('keyup', stop)
+      el.addEventListener('keypress', stop)
+      el.addEventListener('paste', stop)
+      el.addEventListener('blur', finish)
+      doc.addEventListener('mousedown', onOutside, true)
+    }
+
+    const startImageEdit = (el: HTMLElement) => {
+      const [key, field] = parseTarget(el.dataset.editImage ?? '')
+      editor.AssetManager.open({
+        types: ['image'],
+        select(asset, complete) {
+          store.edit(key, field, asset.getSrc())
+          onContentChange()
+          if (complete !== false) editor.AssetManager.close()
+        },
+      })
+    }
+
+    const bindInlineEditing = (doc: Document) => {
+      if (doc.body.dataset.inkInline) return
+      doc.body.dataset.inkInline = '1'
+      doc.addEventListener(
+        'dblclick',
+        (e) => {
+          const target = (e.target as HTMLElement | null)?.closest?.<HTMLElement>('[data-edit], [data-edit-image]')
+          if (!target || !target.closest('[data-block]')) return
+          e.preventDefault()
+          e.stopPropagation()
+          if (target.dataset.editImage) startImageEdit(target)
+          else startTextEdit(target)
+        },
+        true,
+      )
+    }
+
+    const injectStyles = (doc: Document) => {
+      if (doc.head.querySelector('[data-ink-styles]')) return
+      document.querySelectorAll('style, link[rel="stylesheet"]').forEach((node) => {
+        const source = node instanceof HTMLLinkElement ? node.href : node.getAttribute('data-vite-dev-id') ?? ''
+        if (/grapes|EditorPage|editor\.css/i.test(source)) return
+        doc.head.appendChild(node.cloneNode(true))
+      })
+      const style = doc.createElement('style')
+      style.setAttribute('data-ink-styles', '')
+      style.textContent = CANVAS_CSS
+      doc.head.appendChild(style)
+    }
+
+    const prepareCanvas = (doc: Document | null | undefined) => {
+      if (!doc) return
+      injectStyles(doc)
+      bindInlineEditing(doc)
+    }
+
+    editor.on('load', () => prepareCanvas(editor.Canvas.getDocument()))
+    editor.on('canvas:frame:load', ({ window: frameWindow }: { window: Window }) => prepareCanvas(frameWindow.document))
+  }
+}

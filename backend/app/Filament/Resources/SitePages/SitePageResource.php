@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SitePages;
 
+use App\Filament\Pages\VisualEditor;
 use App\Filament\Resources\SitePages\Pages\CreateSitePage;
 use App\Filament\Resources\SitePages\Pages\EditSitePage;
 use App\Filament\Resources\SitePages\Pages\ListSitePages;
@@ -39,9 +40,7 @@ class SitePageResource extends Resource
 
     public static function editorUrl(Page $page): string
     {
-        $frontend = rtrim((string) (config('cors.allowed_origins')[0] ?? 'http://localhost:5173'), '/');
-
-        return "{$frontend}/editor/{$page->slug}";
+        return VisualEditor::urlFor($page->slug);
     }
 
     public static function form(Schema $schema): Schema
@@ -120,7 +119,7 @@ class SitePageResource extends Resource
                 Action::make('editor')
                     ->label('Открыть в редакторе')
                     ->icon(Heroicon::OutlinedPaintBrush)
-                    ->url(fn (Page $record) => static::editorUrl($record), shouldOpenInNewTab: true),
+                    ->url(fn (Page $record) => static::editorUrl($record)),
                 Action::make('unpublish')
                     ->label('Снять с публикации')
                     ->icon(Heroicon::OutlinedEyeSlash)

@@ -46,16 +46,6 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
-export function getPublishedPage(slug: string): Promise<PageLayout | null> {
-  return api
-    .get(`/api/pages/${slug}`)
-    .then((res) => res.data.data as PageLayout)
-    .catch((err) => {
-      if (axios.isAxiosError(err) && err.response?.status === 404) return null
-      throw err
-    })
-}
-
 export function getLocalizedPage(locale: string, slug: string): Promise<LocalizedPage | null> {
   return api
     .get(`/api/${locale}/pages/${slug}`)
@@ -80,12 +70,23 @@ export function editorLogin(email: string, password: string): Promise<string> {
   })
 }
 
-export function getDraftPage(slug: string): Promise<{ draft: PageDraft | null; title: string; published_at: string | null }> {
-  return api.get(`/api/editor/pages/${slug}`, { headers: authHeaders() }).then((res) => res.data.data)
+export interface DraftResponse {
+  draft: PageDraft | null
+  inherited: boolean
+  title: string
+  published_at: string | null
 }
 
-export function saveDraftPage(slug: string, draft: PageDraft): Promise<void> {
-  return api.put(`/api/editor/pages/${slug}`, draft, { headers: authHeaders() }).then(() => undefined)
+export function getDraftPage(slug: string, locale = 'ru'): Promise<DraftResponse> {
+  return api.get(`/api/editor/pages/${slug}`, { params: { locale }, headers: authHeaders() }).then((res) => res.data.data)
+}
+
+export function saveDraftPage(slug: string, locale: string, draft: PageDraft): Promise<void> {
+  return api.put(`/api/editor/pages/${slug}`, draft, { params: { locale }, headers: authHeaders() }).then(() => undefined)
+}
+
+export function saveSectionContent(locale: string, changes: { key: string; field: string; value: string | null }[]): Promise<void> {
+  return api.patch('/api/editor/content', { locale, changes }, { headers: authHeaders() }).then(() => undefined)
 }
 
 export function publishPage(slug: string): Promise<string> {

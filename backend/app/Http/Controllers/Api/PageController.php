@@ -17,7 +17,7 @@ class PageController extends Controller
             return response()->json(['message' => 'Page not published.'], 404);
         }
 
-        return response()->json(['data' => $this->layout($page)]);
+        return response()->json(['data' => $this->layout($page, 'ru')]);
     }
 
     public function localized(string $locale, string $slug): JsonResponse
@@ -31,7 +31,7 @@ class PageController extends Controller
         $locale = app()->getLocale();
 
         return response()->json(['data' => [
-            ...$this->layout($page),
+            ...$this->layout($page, $locale),
             'title' => $page->localized('title', $locale),
             'seo_title' => $page->localized('seo_title', $locale),
             'seo_description' => $page->localized('seo_description', $locale),
@@ -56,11 +56,13 @@ class PageController extends Controller
         return response()->json(['data' => $pages]);
     }
 
-    private function layout(Page $page): array
+    private function layout(Page $page, string $locale): array
     {
+        $layout = Page::layoutFor($page->published, $locale) ?? [];
+
         return [
-            'html' => FileUrlResolver::html($page->published['html'] ?? ''),
-            'css' => FileUrlResolver::html($page->published['css'] ?? ''),
+            'html' => FileUrlResolver::html($layout['html'] ?? ''),
+            'css' => FileUrlResolver::html($layout['css'] ?? ''),
         ];
     }
 }

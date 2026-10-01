@@ -156,7 +156,7 @@ export function HeroSection({ data, locale }: SectionProps) {
       <div className="relative mx-auto grid w-full max-w-[84rem] gap-8 md:grid-cols-2 md:gap-12">
         <div>
           <FadeIn>
-            <h1 className="whitespace-pre-line text-5xl leading-[0.9] text-white sm:text-6xl md:text-7xl lg:text-8xl">
+            <h1 data-edit="home.hero:title" className="whitespace-pre-line text-5xl leading-[0.9] text-white sm:text-6xl md:text-7xl lg:text-8xl">
               {hero?.title}
             </h1>
           </FadeIn>
@@ -166,8 +166,8 @@ export function HeroSection({ data, locale }: SectionProps) {
               <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
                 {hero.stats.map((stat, i) => (
                   <div key={i}>
-                    <dt className="font-serif text-xl text-white md:text-2xl lg:text-3xl">{stat.number}</dt>
-                    <dd className="mt-0.5 max-w-[22ch] text-xs leading-snug text-white/50 md:text-sm">{stat.label}</dd>
+                    <dt data-edit={`home.hero:stats.${i}.number`} className="font-serif text-xl text-white md:text-2xl lg:text-3xl">{stat.number}</dt>
+                    <dd data-edit={`home.hero:stats.${i}.label`} className="mt-0.5 max-w-[22ch] text-xs leading-snug text-white/50 md:text-sm">{stat.label}</dd>
                   </div>
                 ))}
               </dl>
@@ -198,14 +198,14 @@ export function HeroSection({ data, locale }: SectionProps) {
         <div className="flex flex-col justify-end gap-5">
           {hero?.subtitle && (
             <FadeIn delay={0.15}>
-              <p className="whitespace-pre-line font-serif text-2xl leading-tight text-white md:text-3xl lg:text-4xl">
+              <p data-edit="home.hero:subtitle" className="whitespace-pre-line font-serif text-2xl leading-tight text-white md:text-3xl lg:text-4xl">
                 {hero.subtitle}
               </p>
             </FadeIn>
           )}
           {hero?.description && (
             <FadeIn delay={0.25}>
-              <p className="hidden max-w-lg text-white/70 sm:block">{hero.description}</p>
+              <p data-edit="home.hero:description" className="hidden max-w-lg text-white/70 sm:block">{hero.description}</p>
             </FadeIn>
           )}
         </div>
@@ -228,27 +228,27 @@ export function AboutSection({ data, locale }: SectionProps) {
         <>
           <div className="lg:hidden">
             <Reveal delay={0.05}>
-              <h2 className="mt-4 max-w-2xl whitespace-pre-line font-serif text-2xl leading-tight text-white">
+              <h2 data-edit="home.about:heading" className="mt-4 max-w-2xl whitespace-pre-line font-serif text-2xl leading-tight text-white">
                 {about.heading}
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
               <div className="relative mt-6 aspect-[4/3] w-full overflow-hidden bg-ink-800">
-                <img src={about.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <img data-edit-image="home.about:image" src={about.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
               </div>
             </Reveal>
             <div className="mt-6 flex flex-col gap-6">
               {about.intro && (
                 <Reveal delay={0.15}>
-                  <p className="whitespace-pre-line text-sm text-white/70">{about.intro}</p>
+                  <p data-edit="home.about:intro" className="whitespace-pre-line text-sm text-white/70">{about.intro}</p>
                 </Reveal>
               )}
               {about.quote && (
                 <Reveal delay={0.2}>
                   <blockquote className="border-l border-accent/60 pl-4 text-sm italic text-white/80">
-                    «{about.quote}»
+                    «<span data-edit="home.about:quote">{about.quote}</span>»
                     {about.quote_author && (
-                      <footer className="mt-2 text-xs text-white/40 not-italic">{about.quote_author}</footer>
+                      <footer className="mt-2 text-xs text-white/40 not-italic"><span data-edit="home.about:quote_author">{about.quote_author}</span></footer>
                     )}
                   </blockquote>
                 </Reveal>
@@ -257,13 +257,13 @@ export function AboutSection({ data, locale }: SectionProps) {
           </div>
 
           <div className="@container relative mt-3 hidden aspect-[3.06] w-full overflow-hidden bg-ink-800 lg:block">
-            <img src={about.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <img data-edit-image="home.about:image" src={about.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-ink-950/80 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950 to-transparent" />
 
             <div className="absolute inset-x-0 top-0 px-[3cqw] pt-[3cqw]">
               <Reveal delay={0.05}>
-                <h2 className="max-w-[55cqw] whitespace-pre-line font-serif text-[3.6cqw] leading-tight text-white">
+                <h2 data-edit="home.about:heading" className="max-w-[55cqw] whitespace-pre-line font-serif text-[3.6cqw] leading-tight text-white">
                   {about.heading}
                 </h2>
               </Reveal>
@@ -272,7 +272,7 @@ export function AboutSection({ data, locale }: SectionProps) {
             <div className="absolute inset-x-0 bottom-0 grid grid-cols-[45%_40%] gap-[6cqw] px-[3cqw] pb-[3.5cqw]">
               {about.intro && (
                 <Reveal delay={0.1}>
-                  <p className="whitespace-pre-line text-[1.08cqw] leading-snug text-white/80">
+                  <p data-edit="home.about:intro" className="whitespace-pre-line text-[1.08cqw] leading-snug text-white/80">
                     {about.intro}
                   </p>
                 </Reveal>
@@ -280,10 +280,10 @@ export function AboutSection({ data, locale }: SectionProps) {
               {about.quote && (
                 <Reveal delay={0.15}>
                   <blockquote className="text-[1.08cqw] italic leading-snug text-white/80">
-                    «{about.quote}»
+                    «<span data-edit="home.about:quote">{about.quote}</span>»
                     {about.quote_author && (
                       <footer className="mt-[0.9cqw] text-[0.93cqw] text-white/60 not-italic">
-                        {about.quote_author}
+                        <span data-edit="home.about:quote_author">{about.quote_author}</span>
                       </footer>
                     )}
                   </blockquote>
@@ -295,22 +295,22 @@ export function AboutSection({ data, locale }: SectionProps) {
       ) : (
         <>
           <Reveal delay={0.05}>
-            <h2 className="mt-4 max-w-2xl whitespace-pre-line font-serif text-3xl leading-tight text-white md:text-5xl">
+            <h2 data-edit="home.about:heading" className="mt-4 max-w-2xl whitespace-pre-line font-serif text-3xl leading-tight text-white md:text-5xl">
               {about?.heading}
             </h2>
           </Reveal>
           <div className="mt-10 grid gap-10 md:grid-cols-[30%_37%]">
             {about?.intro && (
               <Reveal delay={0.15}>
-                <p className="whitespace-pre-line text-white/70">{about.intro}</p>
+                <p data-edit="home.about:intro" className="whitespace-pre-line text-white/70">{about.intro}</p>
               </Reveal>
             )}
             {about?.quote && (
               <Reveal delay={0.2}>
                 <blockquote className="border-l border-accent/60 pl-6 italic text-white/80">
-                  «{about.quote}»
+                  «<span data-edit="home.about:quote">{about.quote}</span>»
                   {about.quote_author && (
-                    <footer className="mt-3 text-sm text-white/40 not-italic">{about.quote_author}</footer>
+                    <footer className="mt-3 text-sm text-white/40 not-italic"><span data-edit="home.about:quote_author">{about.quote_author}</span></footer>
                   )}
                 </blockquote>
               </Reveal>
@@ -324,15 +324,15 @@ export function AboutSection({ data, locale }: SectionProps) {
             {about.principles_image && (
               <Reveal>
                 <div className="aspect-[185/100] w-full overflow-hidden bg-ink-800">
-                  <img src={about.principles_image} alt="" className="h-full w-full object-cover" />
+                  <img data-edit-image="home.about:principles_image" src={about.principles_image} alt="" className="h-full w-full object-cover" />
                 </div>
               </Reveal>
             )}
             <div className="flex flex-col justify-center gap-8">
               {about.principles.map((p, i) => (
                 <Reveal key={i} delay={i * 0.1}>
-                  <h3 className="font-sans text-sm font-semibold text-white">{p.heading}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/60">{p.text}</p>
+                  <h3 data-edit={`home.about:principles.${i}.heading`} className="font-sans text-sm font-semibold text-white">{p.heading}</h3>
+                  <p data-edit={`home.about:principles.${i}.text`} className="mt-2 text-sm leading-relaxed text-white/60">{p.text}</p>
                 </Reveal>
               ))}
             </div>
@@ -352,20 +352,20 @@ export function OfficesSection({ data }: SectionProps) {
       <div className="grid gap-8 md:grid-cols-2 md:gap-16">
         <div>
           <Reveal>
-            <h2 className="font-serif text-[2.5rem] leading-[1.1] text-white">{offices.heading}</h2>
+            <h2 data-edit="home.offices:heading" className="font-serif text-[2.5rem] leading-[1.1] text-white">{offices.heading}</h2>
           </Reveal>
           {offices.video_label && (
             <Reveal delay={0.15}>
               <div className="mt-6 flex items-center gap-2 text-sm text-white/70">
                 <span className="h-[10px] w-[10px] rounded-full bg-gold" />
-                {offices.video_label}
+                <span data-edit="home.offices:video_label">{offices.video_label}</span>
               </div>
             </Reveal>
           )}
         </div>
         {offices.description && (
           <Reveal delay={0.1}>
-            <p className="whitespace-pre-line text-sm leading-relaxed text-white/60 md:pt-2">
+            <p data-edit="home.offices:description" className="whitespace-pre-line text-sm leading-relaxed text-white/60 md:pt-2">
               {offices.description}
             </p>
           </Reveal>
@@ -385,7 +385,7 @@ export function OfficesSection({ data }: SectionProps) {
                 playsInline
               />
             ) : (
-              <img src={offices.map_poster} alt="Geography map" className="h-full w-full object-cover" />
+              <img data-edit-image="home.offices:map_poster" src={offices.map_poster} alt="Geography map" className="h-full w-full object-cover" />
             )}
           </div>
         </Reveal>
@@ -416,12 +416,12 @@ export function KeyProjectsSection({ data, locale }: SectionProps) {
   return (
     <section className="mx-auto max-w-[84rem] px-6 pt-4 pb-28 sm:pt-20">
       <Reveal>
-        <p className="text-sm text-white/60">{keyProjects?.heading || tr.home.keyProjects}</p>
+        <p data-edit="home.key_projects:heading" className="text-sm text-white/60">{keyProjects?.heading || tr.home.keyProjects}</p>
       </Reveal>
 
       {keyProjects?.statement && (
         <Reveal delay={0.1}>
-          <h2 className="mt-3 max-w-4xl whitespace-pre-line font-serif text-[1.9rem] leading-[1.1] text-white sm:text-[2.5rem]">
+          <h2 data-edit="home.key_projects:statement" className="mt-3 max-w-4xl whitespace-pre-line font-serif text-[1.9rem] leading-[1.1] text-white sm:text-[2.5rem]">
             {keyProjects.statement}
           </h2>
         </Reveal>
@@ -429,7 +429,7 @@ export function KeyProjectsSection({ data, locale }: SectionProps) {
 
       {keyProjects?.description && (
         <Reveal delay={0.15}>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/60">{keyProjects.description}</p>
+          <p data-edit="home.key_projects:description" className="mt-4 max-w-2xl text-sm leading-relaxed text-white/60">{keyProjects.description}</p>
         </Reveal>
       )}
 

@@ -31,7 +31,7 @@ export default function CustomPage() {
     setState({ status: 'loading' })
 
     const pageRequest: Promise<LocalizedPage | null> = preview
-      ? Promise.all([getDraftPage(slug), getLocalizedPage(locale, slug)]).then(([res, published]) =>
+      ? Promise.all([getDraftPage(slug, locale), getLocalizedPage(locale, slug)]).then(([res, published]) =>
           res.draft
             ? {
                 html: res.draft.html,

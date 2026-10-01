@@ -24,6 +24,7 @@ Route::prefix('editor')->group(function () {
         Route::post('pages/{slug}/publish', [EditorController::class, 'publish']);
         Route::post('pages/{slug}/unpublish', [EditorController::class, 'unpublish']);
         Route::post('assets', [EditorController::class, 'upload']);
+        Route::patch('content', [EditorController::class, 'content']);
     });
 });
 

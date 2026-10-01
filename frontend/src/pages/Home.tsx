@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
-import { getDraftPage, getEditorToken, getPublishedPage, type PageLayout } from '../api/pages'
+import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
@@ -22,8 +22,8 @@ export default function Home() {
     setLoading(true)
     setError(false)
     const layoutRequest = preview
-      ? getDraftPage('home').then((res) => res.draft)
-      : getPublishedPage('home')
+      ? getDraftPage('home', locale).then((res) => res.draft)
+      : getLocalizedPage(locale, 'home')
     Promise.all([loadHomeData(locale), layoutRequest.catch(() => null)])
       .then(([homeData, pageLayout]) => {
         setData(homeData)
