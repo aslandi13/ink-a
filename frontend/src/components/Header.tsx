@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { getPageContent } from '../api/content'
+import { getMenuPages, type MenuPage } from '../api/pages'
 import { t } from '../lib/i18n'
 import { LOCALES } from '../lib/locale'
 import { useLocale } from '../lib/useLocale'
@@ -24,6 +25,7 @@ export default function Header() {
   const [settings, setSettings] = useState<SettingsData>({})
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
+  const [menuPages, setMenuPages] = useState<MenuPage[]>([])
 
   const isNewsDetail = /\/news\/[^/]+/.test(location.pathname)
 
@@ -43,6 +45,7 @@ export default function Header() {
     { to: 'about', label: nav.about },
     { to: 'news', label: nav.news },
     { to: 'contacts', label: nav.contacts },
+    ...menuPages.map((page) => ({ to: page.slug, label: page.title })),
   ]
 
   // Close menu on route change
@@ -53,6 +56,10 @@ export default function Header() {
     document.body.style.overflow = open ? 'hidden' : ''
     return () => { document.body.style.overflow = '' }
   }, [open])
+
+  useEffect(() => {
+    getMenuPages(locale).then(setMenuPages)
+  }, [locale])
 
   useEffect(() => {
     getPageContent<SettingsData>(locale, 'settings')

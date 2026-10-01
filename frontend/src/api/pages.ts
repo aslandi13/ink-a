@@ -7,6 +7,17 @@ export interface PageLayout {
   css: string
 }
 
+export interface LocalizedPage extends PageLayout {
+  title: string | null
+  seo_title: string | null
+  seo_description: string | null
+}
+
+export interface MenuPage {
+  slug: string
+  title: string
+}
+
 export interface PageDraft extends PageLayout {
   project: ProjectData
 }
@@ -45,6 +56,23 @@ export function getPublishedPage(slug: string): Promise<PageLayout | null> {
     })
 }
 
+export function getLocalizedPage(locale: string, slug: string): Promise<LocalizedPage | null> {
+  return api
+    .get(`/api/${locale}/pages/${slug}`)
+    .then((res) => res.data.data as LocalizedPage)
+    .catch((err) => {
+      if (axios.isAxiosError(err) && err.response?.status === 404) return null
+      throw err
+    })
+}
+
+export function getMenuPages(locale: string): Promise<MenuPage[]> {
+  return api
+    .get(`/api/${locale}/menu-pages`)
+    .then((res) => res.data.data as MenuPage[])
+    .catch(() => [])
+}
+
 export function editorLogin(email: string, password: string): Promise<string> {
   return api.post('/api/editor/login', { email, password }).then((res) => {
     setEditorToken(res.data.token)
@@ -52,7 +80,7 @@ export function editorLogin(email: string, password: string): Promise<string> {
   })
 }
 
-export function getDraftPage(slug: string): Promise<{ draft: PageDraft | null; published_at: string | null }> {
+export function getDraftPage(slug: string): Promise<{ draft: PageDraft | null; title: string; published_at: string | null }> {
   return api.get(`/api/editor/pages/${slug}`, { headers: authHeaders() }).then((res) => res.data.data)
 }
 

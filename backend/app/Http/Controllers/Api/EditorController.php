@@ -35,6 +35,11 @@ class EditorController extends Controller
     public function show(string $slug): JsonResponse
     {
         $page = Page::where('slug', $slug)->first();
+
+        if ($page === null && $slug !== Page::HOME) {
+            return response()->json(['message' => 'Страница не найдена. Создайте её в админке.'], 404);
+        }
+
         $draft = $page?->draft;
 
         if (is_array($draft)) {
@@ -44,6 +49,7 @@ class EditorController extends Controller
 
         return response()->json(['data' => [
             'draft' => $draft,
+            'title' => $page?->localized('title', 'ru') ?? $slug,
             'published_at' => $page?->published_at,
         ]]);
     }
@@ -55,6 +61,10 @@ class EditorController extends Controller
             'html' => ['present', 'nullable', 'string'],
             'css' => ['present', 'nullable', 'string'],
         ]);
+
+        if ($slug !== Page::HOME && ! Page::where('slug', $slug)->exists()) {
+            return response()->json(['message' => 'Страница не найдена.'], 404);
+        }
 
         $page = Page::updateOrCreate(['slug' => $slug], ['draft' => $data]);
 

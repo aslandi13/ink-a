@@ -219,23 +219,24 @@ function LoginForm({ onLogin }: { onLogin: () => void }) {
   )
 }
 
-const SUPPORTED_PAGES = ['home']
-
 export default function EditorPage() {
   const { slug = 'home' } = useParams()
   const [authed, setAuthed] = useState(() => !!getEditorToken())
   const [status, setStatus] = useState('')
+  const [title, setTitle] = useState('')
+  const [missing, setMissing] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<Editor | null>(null)
 
   useEffect(() => {
-    if (!authed || !SUPPORTED_PAGES.includes(slug) || !containerRef.current) return
+    if (!authed || !containerRef.current) return
     let cancelled = false
     setStatus('Загрузка…')
 
     Promise.all([loadHomeData('ru'), getDraftPage(slug)])
       .then(([data, page]) => {
         if (cancelled || !containerRef.current) return
+        setTitle(page.title)
 
         const editor = grapesjs.init({
           container: containerRef.current,
@@ -244,7 +245,9 @@ export default function EditorPage() {
           storageManager: false,
           fromElement: false,
           plugins: [inkPlugin(data)],
-          ...(page.draft?.project ? { projectData: page.draft.project } : { components: DEFAULT_HOME_LAYOUT }),
+          ...((page.draft?.project?.pages?.length ?? 0) > 0
+            ? { projectData: page.draft!.project }
+            : { components: page.draft?.html || (slug === 'home' ? DEFAULT_HOME_LAYOUT : ''), style: page.draft?.css ?? '' }),
           deviceManager: {
             devices: [
               { id: 'desktop', name: 'Десктоп', width: '' },
@@ -303,7 +306,7 @@ export default function EditorPage() {
         })
         editor.Commands.add('ink-preview', {
           run: () => {
-            void save().then((ok) => ok && window.open('/ru?preview=1', '_blank'))
+            void save().then((ok) => ok && window.open(slug === 'home' ? '/ru?preview=1' : `/ru/${slug}?preview=1`, '_blank'))
           },
         })
         for (const device of ['desktop', 'tablet', 'mobile']) {
@@ -333,12 +336,16 @@ export default function EditorPage() {
           if (editor.getDirtyCount() > 0) setStatus('Есть несохранённые изменения')
         })
 
-        editor.on('load', () => setStatus(page.draft ? 'Черновик загружен' : 'Новая раскладка из текущей главной'))
+        editor.onReady(() => setStatus(page.draft ? 'Черновик загружен' : slug === 'home' ? 'Новая раскладка из текущей главной' : 'Пустая страница — перетащите блоки справа'))
       })
       .catch((err) => {
         if (axios.isAxiosError(err) && err.response?.status === 401) {
           setEditorToken(null)
           setAuthed(false)
+          return
+        }
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          setMissing(true)
           return
         }
         setStatus('Не удалось загрузить редактор')
@@ -359,14 +366,18 @@ export default function EditorPage() {
 
   if (!authed) return <LoginForm onLogin={() => setAuthed(true)} />
 
-  if (!SUPPORTED_PAGES.includes(slug)) {
-    return <div className="p-10 text-white">Эта страница пока не подключена к редактору.</div>
+  if (missing) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-ink-950 p-10 text-center text-white/70">
+        Страница «{slug}» не найдена. Создайте её в админке в разделе «Страницы».
+      </div>
+    )
   }
 
   return (
     <div className="ink-editor fixed inset-0 flex flex-col bg-ink-950">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-2 text-xs text-white/60">
-        <span>Редактор · Главная</span>
+        <span>Редактор · {title || slug}</span>
         <span>{status}</span>
         <button
           onClick={() => {

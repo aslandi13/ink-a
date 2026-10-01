@@ -10,7 +10,7 @@ import Home from './pages/Home'
 import Legal from './pages/Legal'
 import NewsDetail from './pages/NewsDetail'
 import NewsList from './pages/NewsList'
-import NotFound from './pages/NotFound'
+import CustomPage from './pages/CustomPage'
 import ProjectDetail from './pages/ProjectDetail'
 import Projects from './pages/Projects'
 
@@ -35,7 +35,7 @@ function LocaleGate() {
         <Route path="news/:slug" element={<NewsDetail />} />
         <Route path="contacts" element={<Contacts />} />
         <Route path="legal" element={<Legal />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<CustomPage />} />
       </Routes>
     </Layout>
   )

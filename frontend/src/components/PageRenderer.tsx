@@ -41,14 +41,19 @@ interface Props<T> {
   locale: Locale
   blocks: { id: string; render: (props: { data: T; locale: Locale }) => ReactNode }[]
   bleedBlock?: string
+  offsetClass?: string
 }
 
-export default function PageRenderer<T>({ html, css, data, locale, blocks, bleedBlock }: Props<T>) {
+export function usesBlocks(html: string): boolean {
+  return /data-block=/.test(html)
+}
+
+export default function PageRenderer<T>({ html, css, data, locale, blocks, bleedBlock, offsetClass }: Props<T>) {
   const segments = useMemo(() => parseSegments(html), [html])
-  const first = segments[0]
+  const bleeds = !!bleedBlock && segments[0]?.block === bleedBlock
 
   return (
-    <div className={bleedBlock && first?.block === bleedBlock ? '-mt-24' : undefined}>
+    <div className={bleeds ? '-mt-24' : offsetClass}>
       {css && <style>{css}</style>}
       {segments.map((segment) => {
         if (segment.block) {
