@@ -139,7 +139,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
       commitActiveEdit?.()
       const doc = el.ownerDocument
       const [key, field] = parseTarget(el.dataset.edit ?? '')
-      const original = el.innerText
+      const original = el.textContent ?? ''
       let done = false
       el.setAttribute('contenteditable', 'plaintext-only')
       el.focus()
@@ -151,8 +151,20 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
       const onKeyDown = (e: KeyboardEvent) => {
         e.stopPropagation()
         if (e.key === 'Escape') {
-          el.innerText = original
+          el.textContent = original
           finish()
+        } else if (e.key === 'Enter') {
+          e.preventDefault()
+          const range = doc.getSelection()?.getRangeAt(0)
+          if (!range) return
+          range.deleteContents()
+          const br = doc.createTextNode('\n')
+          range.insertNode(br)
+          range.setStartAfter(br)
+          range.collapse(true)
+          const sel = doc.getSelection()
+          sel?.removeAllRanges()
+          sel?.addRange(range)
         }
       }
       const onOutside = (e: MouseEvent) => {
@@ -169,7 +181,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
         el.removeEventListener('blur', finish)
         doc.removeEventListener('mousedown', onOutside, true)
         el.removeAttribute('contenteditable')
-        const value = el.innerText.replace(/\u00a0/g, ' ').replace(/\s+$/, '')
+        const value = (el.textContent ?? '').replace(/\u00a0/g, ' ').replace(/\s+$/, '')
         if (value !== original.replace(/\s+$/, '')) {
           store.edit(key, field, value)
           onContentChange()
