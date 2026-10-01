@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\EditorController;
 use App\Http\Controllers\Api\NewsController;
+use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PageContentController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Middleware\SetLocaleFromRoute;
@@ -10,6 +12,20 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::get('pages/{slug}', [PageController::class, 'show']);
+
+Route::prefix('editor')->group(function () {
+    Route::post('login', [EditorController::class, 'login'])->middleware('throttle:10,1');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('pages/{slug}', [EditorController::class, 'show']);
+        Route::put('pages/{slug}', [EditorController::class, 'update']);
+        Route::post('pages/{slug}/publish', [EditorController::class, 'publish']);
+        Route::post('pages/{slug}/unpublish', [EditorController::class, 'unpublish']);
+        Route::post('assets', [EditorController::class, 'upload']);
+    });
+});
 
 Route::prefix('{locale}')->middleware(SetLocaleFromRoute::class)->group(function () {
     Route::get('home/hero', PageContentController::class)->defaults('key', 'home.hero');

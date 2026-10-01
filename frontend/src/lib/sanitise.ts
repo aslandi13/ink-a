@@ -33,3 +33,13 @@ export function sanitise(html: string | null | undefined): string {
     RETURN_DOM: false,
   })
 }
+
+export function sanitiseLayout(html: string | null | undefined): string {
+  if (!html) return ''
+  return DOMPurify.sanitize(html, {
+    ADD_TAGS: ['video', 'source'],
+    ADD_ATTR: ['autoplay', 'muted', 'loop', 'playsinline', 'controls', 'poster', 'target', 'data-block'],
+    FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input', 'style'],
+    FORCE_BODY: true,
+  })
+}

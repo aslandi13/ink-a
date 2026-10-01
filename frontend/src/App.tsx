@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import Layout from './components/Layout'
 import SiteSettingsProvider from './components/SiteSettingsProvider'
@@ -12,6 +13,8 @@ import NewsList from './pages/NewsList'
 import NotFound from './pages/NotFound'
 import ProjectDetail from './pages/ProjectDetail'
 import Projects from './pages/Projects'
+
+const EditorPage = lazy(() => import('./editor/EditorPage'))
 
 function LocaleGate() {
   const { locale } = useParams()
@@ -44,6 +47,14 @@ function App() {
       <SiteSettingsProvider />
       <Routes>
         <Route path="/" element={<Navigate to={`/${DEFAULT_LOCALE}`} replace />} />
+        <Route
+          path="/editor/:slug"
+          element={
+            <Suspense fallback={null}>
+              <EditorPage />
+            </Suspense>
+          }
+        />
         <Route path="/:locale/*" element={<LocaleGate />} />
       </Routes>
     </>

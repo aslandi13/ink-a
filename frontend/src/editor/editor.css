@@ -1,0 +1,36 @@
+.ink-editor .gjs-pn-commands {
+  width: 100%;
+}
+
+.ink-editor .gjs-pn-ink-devices,
+.ink-editor .gjs-pn-ink-actions {
+  top: 0;
+  z-index: 4;
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+}
+
+.ink-editor .gjs-pn-ink-devices {
+  left: 0;
+}
+
+.ink-editor .gjs-pn-ink-actions {
+  left: 260px;
+}
+
+.ink-editor .gjs-pn-ink-devices .gjs-pn-btn,
+.ink-editor .gjs-pn-ink-actions .gjs-pn-btn {
+  width: auto;
+  min-width: 0;
+  padding: 4px 10px;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.ink-editor .gjs-pn-ink-actions #ink-publish-btn,
+.ink-editor .gjs-pn-ink-actions .gjs-pn-btn:last-child {
+  background: #9e9eff;
+  color: #050a12;
+  border-radius: 3px;
+}

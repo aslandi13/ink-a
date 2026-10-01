@@ -17,6 +17,7 @@ use App\Filament\Pages\Content\VideoBanner;
 use App\Filament\Resources\NewsItems\NewsItemResource;
 use App\Filament\Resources\Projects\ProjectResource;
 use Filament\Http\Middleware\Authenticate;
+use Filament\Navigation\NavigationItem;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -58,7 +59,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder
-                    ->items(Dashboard::getNavigationItems())
+                    ->items([
+                        ...Dashboard::getNavigationItems(),
+                        NavigationItem::make('Визуальный редактор')
+                            ->icon('heroicon-o-paint-brush')
+                            ->url(rtrim((string) (config('cors.allowed_origins')[0] ?? 'http://localhost:5173'), '/').'/editor/home', shouldOpenInNewTab: true),
+                    ])
                     ->groups([
                         NavigationGroup::make('Главная')->items([
                             ...Hero::getNavigationItems(),

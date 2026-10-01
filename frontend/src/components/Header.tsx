@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { getPageContent } from '../api/content'
 import { t } from '../lib/i18n'
 import { LOCALES } from '../lib/locale'
@@ -20,6 +20,7 @@ export default function Header() {
   const locale = useLocale()
   const tr = t(locale)
   const location = useLocation()
+  const navigate = useNavigate()
   const [settings, setSettings] = useState<SettingsData>({})
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
@@ -115,39 +116,39 @@ export default function Header() {
             </ul>
           </nav>
 
-          {/* Hamburger button */}
-          <button
-            onClick={() => setOpen((v) => !v)}
-            className="relative z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5 lg:hidden"
-            aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
-          >
-            <motion.span
-              animate={open ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="block h-px w-6 bg-white origin-center"
-            />
-            <motion.span
-              animate={open ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
-              transition={{ duration: 0.2 }}
-              className="block h-px w-6 bg-white origin-center"
-            />
-            <motion.span
-              animate={open ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="block h-px w-6 bg-white origin-center"
-            />
-          </button>
-
-          {/* Desktop locale — also visible on tablet */}
-          <ul className="hidden gap-3 border-l border-line pl-6 text-xs text-white/50 md:hidden">
-            {LOCALES.map((code) => (
-              <li key={code}>
-                <NavLink to={`/${code}`} className={({ isActive }) =>
-                  `uppercase transition-colors ${isActive || code === locale ? 'text-white' : 'hover:text-white'}`
-                }>{code}</NavLink>
-              </li>
-            ))}
-          </ul>
+          <div className="flex items-center gap-5 lg:hidden">
+            <button
+              onClick={() => {
+                const next = LOCALES[(LOCALES.indexOf(locale) + 1) % LOCALES.length]
+                navigate(location.pathname.replace(new RegExp(`^/${locale}(?=/|$)`), `/${next}`) + location.search)
+              }}
+              className="relative z-50 text-base text-white transition-opacity hover:opacity-70"
+              aria-label="Сменить язык"
+            >
+              {locale.charAt(0).toUpperCase() + locale.slice(1)}
+            </button>
+            <button
+              onClick={() => setOpen((v) => !v)}
+              className="relative z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5"
+              aria-label={open ? 'Закрыть меню' : 'Открыть меню'}
+            >
+              <motion.span
+                animate={open ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="block h-px w-6 bg-white origin-center"
+              />
+              <motion.span
+                animate={open ? { opacity: 0, scaleX: 0 } : { opacity: 1, scaleX: 1 }}
+                transition={{ duration: 0.2 }}
+                className="block h-px w-6 bg-white origin-center"
+              />
+              <motion.span
+                animate={open ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="block h-px w-6 bg-white origin-center"
+              />
+            </button>
+          </div>
         </div>
       </header>
 
