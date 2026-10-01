@@ -1,4 +1,4 @@
-import type { Component, Editor } from 'grapesjs'
+import type { Component, Editor, ToolbarButtonProps } from 'grapesjs'
 import { Fragment, useSyncExternalStore } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -6,6 +6,7 @@ import type { Locale } from '../lib/locale'
 import { HOME_BLOCKS } from '../sections/home'
 import { BASIC_BLOCKS } from './basicBlocks'
 import type { ContentStore } from './contentStore'
+import { EXPLODERS } from './explode'
 
 const CANVAS_CSS = `
   body { background-color: #050a12 !important; color: rgb(255 255 255 / 0.92); }
@@ -83,6 +84,39 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
       const el = component.getEl()
       const root = el ? roots.get(el) : undefined
       if (root) setTimeout(() => root.unmount())
+    })
+
+    const EXPLODE_ICON =
+      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>'
+
+    editor.Commands.add('ink-explode', {
+      run(ed: Editor) {
+        const component = ed.getSelected()
+        if (!component || component.get('type') !== 'ink-block') return
+        const id = component.getAttributes()['data-block']
+        const exploder = EXPLODERS[id]
+        if (!exploder) return
+        if (
+          !window.confirm(
+            'Разобрать секцию на отдельные элементы?\n\nЕё тексты и фото на этом языке будут редактироваться только здесь, в редакторе, без связи с формой в админке. Слайдер фона заменится одним видео или фото.',
+          )
+        )
+          return
+        const result = component.replaceWith(exploder(store.getSnapshot().data, locale))
+        const created = Array.isArray(result) ? result[0] : result
+        if (created) ed.select(created)
+        onContentChange()
+      },
+    })
+
+    editor.on('component:selected', (component: Component) => {
+      if (component.get('type') !== 'ink-block' || !EXPLODERS[component.getAttributes()['data-block']]) return
+      const toolbar = (component.get('toolbar') ?? []) as ToolbarButtonProps[]
+      if (toolbar.some((item) => item.command === 'ink-explode')) return
+      component.set('toolbar', [
+        { label: EXPLODE_ICON, command: 'ink-explode', attributes: { title: 'Разобрать секцию на элементы' } },
+        ...toolbar,
+      ])
     })
 
     HOME_BLOCKS.forEach((block) => {

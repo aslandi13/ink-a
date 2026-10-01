@@ -124,6 +124,7 @@ export default function EditorPage() {
           height: '100%',
           width: 'auto',
           storageManager: false,
+          selectorManager: { componentFirst: true },
           fromElement: false,
           i18n: {
             locale: 'ru',

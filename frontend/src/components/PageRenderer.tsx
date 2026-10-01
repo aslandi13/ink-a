@@ -7,16 +7,19 @@ interface Segment {
   block?: string
   id?: string
   html?: string
+  bleed?: boolean
 }
 
 function parseSegments(html: string): Segment[] {
   const doc = new DOMParser().parseFromString(html, 'text/html')
   const segments: Segment[] = []
   let buffer = ''
+  let bufferBleeds = false
 
   const flush = () => {
-    if (buffer.trim()) segments.push({ key: `html-${segments.length}`, html: buffer })
+    if (buffer.trim()) segments.push({ key: `html-${segments.length}`, html: buffer, bleed: bufferBleeds })
     buffer = ''
+    bufferBleeds = false
   }
 
   doc.body.childNodes.forEach((node) => {
@@ -24,6 +27,7 @@ function parseSegments(html: string): Segment[] {
       flush()
       segments.push({ key: `block-${segments.length}`, block: node.dataset.block, id: node.id || undefined })
     } else if (node instanceof HTMLElement) {
+      if (!buffer.trim()) bufferBleeds = node.hasAttribute('data-bleed')
       buffer += node.outerHTML
     } else if (node.textContent?.trim()) {
       buffer += node.textContent
@@ -50,7 +54,7 @@ export function usesBlocks(html: string): boolean {
 
 export default function PageRenderer<T>({ html, css, data, locale, blocks, bleedBlock, offsetClass }: Props<T>) {
   const segments = useMemo(() => parseSegments(html), [html])
-  const bleeds = !!bleedBlock && segments[0]?.block === bleedBlock
+  const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
 
   return (
     <div className={bleeds ? '-mt-24' : offsetClass}>
