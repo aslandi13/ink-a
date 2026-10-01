@@ -256,33 +256,33 @@ export function AboutSection({ data, locale }: SectionProps) {
             </div>
           </div>
 
-          <div className="relative mt-3 hidden aspect-[3.06] w-full overflow-hidden bg-ink-800 lg:block">
+          <div className="@container relative mt-3 hidden aspect-[3.06] w-full overflow-hidden bg-ink-800 lg:block">
             <img src={about.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-ink-950/80 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950 to-transparent" />
 
-            <div className="absolute inset-x-0 top-0 px-6 pt-5 md:px-10 md:pt-10">
+            <div className="absolute inset-x-0 top-0 px-[3cqw] pt-[3cqw]">
               <Reveal delay={0.05}>
-                <h2 className="max-w-2xl whitespace-pre-line font-serif text-xl leading-tight text-white md:text-4xl lg:text-5xl">
+                <h2 className="max-w-[55cqw] whitespace-pre-line font-serif text-[3.6cqw] leading-tight text-white">
                   {about.heading}
                 </h2>
               </Reveal>
             </div>
 
-            <div className="absolute inset-x-0 bottom-0 grid gap-4 px-6 pb-6 md:grid-cols-[45%_40%] md:gap-20 md:px-10 md:pb-12">
+            <div className="absolute inset-x-0 bottom-0 grid grid-cols-[45%_40%] gap-[6cqw] px-[3cqw] pb-[3.5cqw]">
               {about.intro && (
                 <Reveal delay={0.1}>
-                  <p className="whitespace-pre-line text-[10px] leading-snug text-white/80 md:text-sm">
+                  <p className="whitespace-pre-line text-[1.08cqw] leading-snug text-white/80">
                     {about.intro}
                   </p>
                 </Reveal>
               )}
               {about.quote && (
                 <Reveal delay={0.15}>
-                  <blockquote className="text-[10px] italic leading-snug text-white/80 md:text-sm">
+                  <blockquote className="text-[1.08cqw] italic leading-snug text-white/80">
                     «{about.quote}»
                     {about.quote_author && (
-                      <footer className="mt-1 text-[9px] text-white/60 not-italic md:mt-3 md:text-xs">
+                      <footer className="mt-[0.9cqw] text-[0.93cqw] text-white/60 not-italic">
                         {about.quote_author}
                       </footer>
                     )}
