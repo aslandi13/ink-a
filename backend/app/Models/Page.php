@@ -23,7 +23,9 @@ class Page extends Model
 
     public const LEGAL = 'legal';
 
-    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT, self::CONTACTS, self::NEWS, self::LEGAL];
+    public const PROJECTS = 'projects';
+
+    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT, self::CONTACTS, self::NEWS, self::LEGAL, self::PROJECTS];
 
     public const PROJECT_TEMPLATE = 'project-template';
 
@@ -67,6 +69,7 @@ class Page extends Model
     {
         $titles = [
             self::APPROACH => 'Подход',
+            self::PROJECTS => 'Проекты',
             self::ABOUT => 'О нас',
             self::CONTACTS => 'Контакты',
             self::NEWS => 'Новости',
