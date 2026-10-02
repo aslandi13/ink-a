@@ -187,9 +187,78 @@ export function inkPlugin({ store, locale, blocks, exploders = {}, fields, onCon
           return
         const result = component.replaceWith(exploder(store.getSnapshot().data as never, locale))
         const created = Array.isArray(result) ? result[0] : result
+        if (created) {
+          created.addAttributes({ 'data-exploded': id })
+          ed.select(created)
+        }
+        onContentChange()
+      },
+    })
+
+    const RESTORE_ICON =
+      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><polyline points="3 3 3 9 9 9"/></svg>'
+    const VIDEO_ICON =
+      '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m17 10 5-3v10l-5-3z"/></svg>'
+
+    editor.Commands.add('ink-restore', {
+      run(ed: Editor) {
+        const component = ed.getSelected()
+        const id = component?.getAttributes()['data-exploded']
+        if (!component || !id) return
+        if (
+          !window.confirm(
+            'Вернуть секцию целиком?\n\nЭлементы, которые вы двигали и меняли в ней, пропадут. Тексты и фото снова будут браться из админки.',
+          )
+        )
+          return
+        const result = component.replaceWith({ type: 'ink-block', attributes: { 'data-block': id } })
+        const created = Array.isArray(result) ? result[0] : result
         if (created) ed.select(created)
         onContentChange()
       },
+    })
+
+    editor.AssetManager.addType('video', {
+      isType(value: unknown) {
+        const src = typeof value === 'string' ? value : (value as { src?: string } | undefined)?.src
+        return src && /\.(mp4|webm|mov)(\?|$)/i.test(src) ? { type: 'video', src } : undefined
+      },
+      view: {
+        getPreview(this: { model: { getSrc: () => string } }) {
+          return `<video src="${this.model.getSrc()}" muted preload="metadata" style="width:100%;height:100%;object-fit:cover"></video>`
+        },
+        getInfo(this: { model: { getSrc: () => string } }) {
+          return `<div class="gjs-am-name">${this.model.getSrc().split('/').pop() ?? ''}</div>`
+        },
+      },
+    })
+
+    editor.Commands.add('ink-pick-video', {
+      run(ed: Editor) {
+        const component = ed.getSelected()
+        if (!component || component.get('type') !== 'video') return
+        ed.AssetManager.open({
+          types: ['video'],
+          accept: 'video/*',
+          select(asset, complete) {
+            component.set('src', asset.getSrc())
+            onContentChange()
+            if (complete !== false) ed.AssetManager.close()
+          },
+        })
+        ed.Modal.setTitle('Выбрать или загрузить видео')
+      },
+    })
+
+    const addToolbarButton = (component: Component, command: string, label: string, title: string) => {
+      const toolbar = (component.get('toolbar') ?? []) as ToolbarButtonProps[]
+      if (toolbar.some((item) => item.command === command)) return
+      component.set('toolbar', [{ label, command, attributes: { title } }, ...toolbar])
+    }
+
+    editor.on('component:selected', (component: Component) => {
+      if (component.getAttributes()['data-exploded']) addToolbarButton(component, 'ink-restore', RESTORE_ICON, 'Вернуть секцию целиком')
+      if (component.get('type') === 'video') addToolbarButton(component, 'ink-pick-video', VIDEO_ICON, 'Выбрать или загрузить видео')
     })
 
     editor.on('component:selected', (component: Component) => {

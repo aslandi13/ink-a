@@ -294,7 +294,23 @@ export default function EditorPage() {
             localeFallback: 'ru',
             detectLocale: false,
             messages: { ru },
-            messagesAdd: { ru: { styleManager: { properties: STYLE_PROPERTIES_RU } } },
+            messagesAdd: {
+              ru: {
+                styleManager: { properties: STYLE_PROPERTIES_RU },
+                panels: {
+                  buttons: {
+                    titles: {
+                      'open-sm': 'Стиль',
+                      'open-tm': 'Настройки',
+                      'open-layers': 'Слои',
+                      'open-blocks': 'Блоки',
+                      'sw-visibility': 'Показать границы элементов',
+                      preview: 'Просмотр без панелей',
+                    },
+                  },
+                },
+              },
+            },
           },
           plugins: [inkPlugin({ store, locale, blocks: kind.blocks, exploders: kind.exploders, fields: kind.fields, onContentChange: markDirty })],
           ...((draft?.project?.pages?.length ?? 0) > 0
