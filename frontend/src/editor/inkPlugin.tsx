@@ -1,12 +1,10 @@
 import type { Component, Editor, ToolbarButtonProps } from 'grapesjs'
-import { Fragment, useSyncExternalStore } from 'react'
+import { Fragment, useSyncExternalStore, type ReactNode } from 'react'
 import { createRoot, type Root } from 'react-dom/client'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import type { Locale } from '../lib/locale'
-import { HOME_BLOCKS } from '../sections/home'
 import { BASIC_BLOCKS } from './basicBlocks'
 import type { ContentStore } from './contentStore'
-import { EXPLODERS } from './explode'
 
 const CANVAS_CSS = `
   body { background-color: #050a12 !important; color: rgb(255 255 255 / 0.92); }
@@ -19,11 +17,17 @@ const CANVAS_CSS = `
   [data-block] [contenteditable] { outline: 2px solid #9e9eff !important; outline-offset: 4px; cursor: text; }
 `
 
-function BlockPreview({ id, store, locale }: { id: string; store: ContentStore; locale: Locale }) {
+export interface InkBlock {
+  id: string
+  label: string
+  render: (props: { data: never; locale: Locale }) => ReactNode
+}
+
+function BlockPreview({ id, store, locale, blocks }: { id: string; store: ContentStore; locale: Locale; blocks: InkBlock[] }) {
   const { data, version } = useSyncExternalStore(store.subscribe, store.getSnapshot)
-  const block = HOME_BLOCKS.find((b) => b.id === id)
+  const block = blocks.find((b) => b.id === id)
   if (!block) return <div style={{ padding: 24, color: '#fff' }}>Неизвестный блок: {id}</div>
-  return <Fragment key={version}>{block.render({ data, locale })}</Fragment>
+  return <Fragment key={version}>{block.render({ data: data as never, locale })}</Fragment>
 }
 
 function parseTarget(value: string): [string, string] {
@@ -34,10 +38,12 @@ function parseTarget(value: string): [string, string] {
 interface Options {
   store: ContentStore
   locale: Locale
+  blocks: InkBlock[]
+  exploders?: Record<string, (data: never, locale: Locale) => string>
   onContentChange: () => void
 }
 
-export function inkPlugin({ store, locale, onContentChange }: Options) {
+export function inkPlugin({ store, locale, blocks, exploders = {}, onContentChange }: Options) {
   return (editor: Editor) => {
     const roots = new WeakMap<HTMLElement, Root>()
 
@@ -50,7 +56,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
       root.render(
         <MemoryRouter initialEntries={[`/${locale}`]}>
           <Routes>
-            <Route path=":locale/*" element={<BlockPreview id={id} store={store} locale={locale} />} />
+            <Route path=":locale/*" element={<BlockPreview id={id} store={store} locale={locale} blocks={blocks} />} />
           </Routes>
         </MemoryRouter>,
       )
@@ -69,7 +75,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
         },
         init(this: Component) {
           const id = this.getAttributes()['data-block']
-          const label = HOME_BLOCKS.find((b) => b.id === id)?.label ?? id
+          const label = blocks.find((b) => b.id === id)?.label ?? id
           this.set('name', `Секция: ${label}`)
         },
       },
@@ -94,7 +100,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
         const component = ed.getSelected()
         if (!component || component.get('type') !== 'ink-block') return
         const id = component.getAttributes()['data-block']
-        const exploder = EXPLODERS[id]
+        const exploder = exploders[id]
         if (!exploder) return
         if (
           !window.confirm(
@@ -102,7 +108,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
           )
         )
           return
-        const result = component.replaceWith(exploder(store.getSnapshot().data, locale))
+        const result = component.replaceWith(exploder(store.getSnapshot().data as never, locale))
         const created = Array.isArray(result) ? result[0] : result
         if (created) ed.select(created)
         onContentChange()
@@ -110,7 +116,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
     })
 
     editor.on('component:selected', (component: Component) => {
-      if (component.get('type') !== 'ink-block' || !EXPLODERS[component.getAttributes()['data-block']]) return
+      if (component.get('type') !== 'ink-block' || !exploders[component.getAttributes()['data-block']]) return
       const toolbar = (component.get('toolbar') ?? []) as ToolbarButtonProps[]
       if (toolbar.some((item) => item.command === 'ink-explode')) return
       component.set('toolbar', [
@@ -119,7 +125,7 @@ export function inkPlugin({ store, locale, onContentChange }: Options) {
       ])
     })
 
-    HOME_BLOCKS.forEach((block) => {
+    blocks.forEach((block) => {
       editor.Blocks.add(`section-${block.id}`, {
         label: block.label,
         category: 'Секции сайта',

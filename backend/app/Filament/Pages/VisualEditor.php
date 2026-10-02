@@ -32,7 +32,7 @@ class VisualEditor extends Page
     {
         $page = SitePage::where('slug', $this->pageSlug)->first();
 
-        if ($page === null && $this->pageSlug !== SitePage::HOME) {
+        if ($page === null && ! SitePage::isBuiltIn($this->pageSlug)) {
             $this->pageSlug = SitePage::HOME;
         }
 

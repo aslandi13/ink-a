@@ -41,7 +41,7 @@ class EditorController extends Controller
         $locale = $this->locale($request);
         $page = Page::where('slug', $slug)->first();
 
-        if ($page === null && $slug !== Page::HOME) {
+        if ($page === null && ! Page::isBuiltIn($slug)) {
             return response()->json(['message' => 'Страница не найдена. Создайте её в админке.'], 404);
         }
 
@@ -70,7 +70,7 @@ class EditorController extends Controller
             'css' => ['present', 'nullable', 'string'],
         ]);
 
-        if ($slug !== Page::HOME && ! Page::where('slug', $slug)->exists()) {
+        if (! Page::isBuiltIn($slug) && ! Page::where('slug', $slug)->exists()) {
             return response()->json(['message' => 'Страница не найдена.'], 404);
         }
 

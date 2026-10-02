@@ -100,3 +100,10 @@ export function editorUploadUrl(): string {
 export function editorAuthHeaders(): Record<string, string> {
   return authHeaders()
 }
+
+export function getProjectTemplate(locale: string, category: string): Promise<PageLayout | null> {
+  return api
+    .get(`/api/${locale}/project-template`, { params: { category } })
+    .then((res) => res.data.data as PageLayout)
+    .catch(() => null)
+}

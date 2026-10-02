@@ -13,10 +13,10 @@ const KEY_TO_PROP: Record<string, keyof HomeData> = {
   'home.key_projects': 'keyProjects',
 }
 
-function setPath(data: HomeData, key: string, field: string, value: string | null): HomeData {
+function setPath<T>(data: T, key: string, field: string, value: string | null): T {
   const prop = KEY_TO_PROP[key]
   if (!prop) return data
-  const next = structuredClone(data)
+  const next = structuredClone(data) as Record<string, unknown>
   const segments = field.split('.')
   let cursor = next[prop] as Record<string, unknown>
   for (const segment of segments.slice(0, -1)) {
@@ -24,16 +24,16 @@ function setPath(data: HomeData, key: string, field: string, value: string | nul
     cursor = cursor[segment] as Record<string, unknown>
   }
   cursor[segments[segments.length - 1]] = value
-  return next
+  return next as T
 }
 
-export interface ContentSnapshot {
-  data: HomeData
+export interface ContentSnapshot<T = unknown> {
+  data: T
   version: number
 }
 
-export function createContentStore(initial: HomeData) {
-  let snapshot: ContentSnapshot = { data: initial, version: 0 }
+export function createContentStore<T>(initial: T) {
+  let snapshot: ContentSnapshot<T> = { data: initial, version: 0 }
   const listeners = new Set<() => void>()
   const pending = new Map<string, ContentChange>()
 
@@ -65,4 +65,4 @@ export function createContentStore(initial: HomeData) {
   }
 }
 
-export type ContentStore = ReturnType<typeof createContentStore>
+export type ContentStore<T = unknown> = ReturnType<typeof createContentStore<T>>

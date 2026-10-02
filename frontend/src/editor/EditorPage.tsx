@@ -3,7 +3,7 @@ import grapesjs, { type Editor } from 'grapesjs'
 import 'grapesjs/dist/css/grapes.min.css'
 import ru from 'grapesjs/locale/ru.mjs'
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   editorAuthHeaders,
   editorUploadUrl,
@@ -15,9 +15,19 @@ import {
   setEditorToken,
 } from '../api/pages'
 import { LOCALES, type Locale } from '../lib/locale'
-import { DEFAULT_HOME_LAYOUT, loadHomeData } from '../sections/home'
+import { DEFAULT_HOME_LAYOUT, HOME_BLOCKS, loadHomeData } from '../sections/home'
+import {
+  DEFAULT_PROJECT_LAYOUT,
+  isProjectTemplate,
+  loadSampleProject,
+  PROJECT_BLOCKS,
+  PROJECT_CATEGORIES,
+  PROJECT_TEMPLATE,
+  templateCategory,
+} from '../sections/project'
 import { createContentStore, type ContentStore } from './contentStore'
-import { inkPlugin } from './inkPlugin'
+import { EXPLODERS } from './explode'
+import { inkPlugin, type InkBlock } from './inkPlugin'
 import LoginForm from './LoginForm'
 import './editor.css'
 
@@ -72,10 +82,44 @@ const STYLE_PROPERTIES_RU: Record<string, string> = {
   transform: 'Трансформация',
 }
 
+const PAGE_OPTIONS = [
+  { slug: 'home', label: 'Главная' },
+  { slug: PROJECT_TEMPLATE, label: 'Шаблон проекта: общий' },
+  ...PROJECT_CATEGORIES.map((c) => ({ slug: `${PROJECT_TEMPLATE}-${c.id}`, label: `Шаблон проекта: ${c.label}` })),
+]
+
+interface PageKind {
+  load: (locale: Locale) => Promise<unknown>
+  blocks: InkBlock[]
+  defaultLayout: string
+  exploders?: Record<string, (data: never, locale: Locale) => string>
+  previewPath: (locale: Locale, data: unknown) => string
+}
+
+function pageKind(slug: string): PageKind {
+  if (isProjectTemplate(slug)) {
+    return {
+      load: (locale) => loadSampleProject(locale, templateCategory(slug)),
+      blocks: PROJECT_BLOCKS as InkBlock[],
+      defaultLayout: DEFAULT_PROJECT_LAYOUT,
+      previewPath: (locale, data) =>
+        `/${locale}/projects/${(data as { project: { slug: string } }).project.slug}?preview=1&template=${slug}`,
+    }
+  }
+  return {
+    load: loadHomeData,
+    blocks: HOME_BLOCKS as InkBlock[],
+    defaultLayout: slug === 'home' ? DEFAULT_HOME_LAYOUT : '',
+    exploders: EXPLODERS as PageKind['exploders'],
+    previewPath: (locale) => `${slug === 'home' ? `/${locale}` : `/${locale}/${slug}`}?preview=1`,
+  }
+}
+
 export default function EditorPage() {
   const { slug = 'home' } = useParams()
   const [searchParams] = useSearchParams()
   const embed = searchParams.has('embed')
+  const navigate = useNavigate()
   const [authed, setAuthed] = useState(() => !!takeTokenFromHash())
   const [locale, setLocale] = useState<Locale>('ru')
   const [status, setStatus] = useState('')
@@ -106,7 +150,8 @@ export default function EditorPage() {
       setStatus('Ошибка — изменения не сохранены')
     }
 
-    Promise.all([loadHomeData(locale), getDraftPage(slug, locale)])
+    const kind = pageKind(slug)
+    Promise.all([kind.load(locale), getDraftPage(slug, locale)])
       .then(([data, page]) => {
         if (cancelled || !containerRef.current) return
         setTitle(page.title)
@@ -133,10 +178,10 @@ export default function EditorPage() {
             messages: { ru },
             messagesAdd: { ru: { styleManager: { properties: STYLE_PROPERTIES_RU } } },
           },
-          plugins: [inkPlugin({ store, locale, onContentChange: markDirty })],
+          plugins: [inkPlugin({ store, locale, blocks: kind.blocks, exploders: kind.exploders, onContentChange: markDirty })],
           ...((draft?.project?.pages?.length ?? 0) > 0
             ? { projectData: draft!.project }
-            : { components: draft?.html || (slug === 'home' ? DEFAULT_HOME_LAYOUT : ''), style: draft?.css ?? '' }),
+            : { components: draft?.html || kind.defaultLayout, style: draft?.css ?? '' }),
           deviceManager: {
             devices: [
               { id: 'desktop', name: 'Десктоп', width: '' },
@@ -190,8 +235,7 @@ export default function EditorPage() {
         })
         editor.Commands.add('ink-preview', {
           run: () => {
-            const path = slug === 'home' ? `/${locale}` : `/${locale}/${slug}`
-            void save().then((ok) => ok && window.open(`${path}?preview=1`, '_blank'))
+            void save().then((ok) => ok && window.open(kind.previewPath(locale, data), '_blank'))
           },
         })
         for (const device of ['desktop', 'tablet', 'mobile']) {
@@ -229,9 +273,11 @@ export default function EditorPage() {
               ? `Версия ${locale.toUpperCase()} создана из RU — измените тексты и сохраните`
               : page.draft
                 ? 'Дважды кликните по тексту или фото, чтобы изменить'
-                : slug === 'home'
-                  ? 'Раскладка из текущей главной. Дважды кликните по тексту или фото, чтобы изменить'
-                  : 'Пустая страница — перетащите блоки справа',
+                : isProjectTemplate(slug)
+                  ? 'Шаблон показан на примере проекта. Данные проектов меняются в админке'
+                  : slug === 'home'
+                    ? 'Раскладка из текущей главной. Дважды кликните по тексту или фото, чтобы изменить'
+                    : 'Пустая страница — перетащите блоки справа',
           )
         })
       })
@@ -262,6 +308,12 @@ export default function EditorPage() {
     }
   }, [authed, slug, locale])
 
+  const switchPage = (next: string) => {
+    if (next === slug) return
+    if (dirty && !window.confirm('Есть несохранённые изменения — они пропадут. Открыть другую страницу?')) return
+    navigate(`/editor/${next}${embed ? '?embed=1' : ''}`)
+  }
+
   const switchLocale = (next: Locale) => {
     if (next === locale) return
     if (dirty && !window.confirm('Есть несохранённые изменения — они пропадут. Переключить язык?')) return
@@ -281,7 +333,18 @@ export default function EditorPage() {
   return (
     <div className="ink-editor fixed inset-0 flex flex-col bg-ink-950">
       <div className="flex items-center gap-4 border-b border-white/10 px-4 py-2 text-xs text-white/60">
-        <span className="shrink-0 text-white/80">{title || slug}</span>
+        <select
+          value={slug}
+          onChange={(e) => switchPage(e.target.value)}
+          className="shrink-0 rounded bg-white/5 px-2 py-1 text-white/80 outline-none"
+        >
+          {!PAGE_OPTIONS.some((o) => o.slug === slug) && <option value={slug}>{title || slug}</option>}
+          {PAGE_OPTIONS.map((o) => (
+            <option key={o.slug} value={o.slug} className="bg-ink-950">
+              {o.label}
+            </option>
+          ))}
+        </select>
         <div className="flex shrink-0 gap-1">
           {LOCALES.map((code) => (
             <button

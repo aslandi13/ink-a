@@ -11,9 +11,15 @@ class Page extends Model
 
     public const HOME = 'home';
 
+    public const PROJECT_TEMPLATE = 'project-template';
+
+    public const PROJECT_CATEGORIES = ['architecture', 'engineering', 'urbanism', 'interior'];
+
     public const RESERVED_SLUGS = [
         'home', 'about', 'projects', 'approach', 'news', 'contacts', 'legal',
-        'editor', 'admin', 'api', 'storage', 'livewire', 'up',
+        'editor', 'admin', 'api', 'storage', 'livewire', 'up', 'project-template',
+        'project-template-architecture', 'project-template-engineering',
+        'project-template-urbanism', 'project-template-interior',
     ];
 
     public array $translatable = ['title', 'seo_title', 'seo_description'];
@@ -36,6 +42,21 @@ class Page extends Model
     public function isHome(): bool
     {
         return $this->slug === self::HOME;
+    }
+
+    public static function isTemplate(string $slug): bool
+    {
+        return in_array($slug, self::templateSlugs(), true);
+    }
+
+    public static function templateSlugs(): array
+    {
+        return [self::PROJECT_TEMPLATE, ...array_map(fn ($c) => self::PROJECT_TEMPLATE.'-'.$c, self::PROJECT_CATEGORIES)];
+    }
+
+    public static function isBuiltIn(string $slug): bool
+    {
+        return $slug === self::HOME || self::isTemplate($slug);
     }
 
     public static function layoutFor(?array $layouts, string $locale): ?array

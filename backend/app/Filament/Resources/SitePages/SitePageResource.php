@@ -23,6 +23,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -89,6 +90,11 @@ class SitePageResource extends Resource
                     ->hidden(fn (?Page $record) => (bool) $record?->isHome()),
             ]),
         ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->whereNotIn('slug', Page::templateSlugs());
     }
 
     public static function table(Table $table): Table
