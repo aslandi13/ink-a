@@ -191,7 +191,19 @@ export interface NewsPageData {
 interface SectionProps {
   data: NewsPageData
   locale: Locale
+  settings?: Settings
 }
+
+const N_HEIGHT: Record<string, string> = { '40': '40vh', '60': '60vh', '80': '80vh', '100': '100vh' }
+const N_TITLE: Record<string, string> = {
+  s: 'text-2xl md:text-3xl',
+  m: 'text-3xl md:text-4xl',
+  l: 'text-4xl md:text-5xl',
+  xl: 'text-4xl md:text-6xl',
+}
+const N_WIDTH: Record<string, string> = { narrow: 'max-w-3xl', normal: 'max-w-4xl', medium: 'max-w-5xl', wide: 'max-w-[84rem]' }
+const N_PROSE: Record<string, string> = { s: 'prose-sm', m: '', l: 'prose-lg' }
+const N_SHOW_HIDE = [['show', 'Показывать'], ['hide', 'Скрыть']]
 
 export function loadOtherNews(locale: Locale, slug: string): Promise<NewsListItem[]> {
   return getNews(locale, { per_page: 9 })
@@ -210,14 +222,26 @@ function formatDate(value: string, locale: Locale): string {
   return new Date(value).toLocaleDateString(locale)
 }
 
-function ParallaxHero({ src, alt, children }: { src: string; alt: string; children: ReactNode }) {
+function ParallaxHero({
+  src,
+  alt,
+  height,
+  parallax,
+  children,
+}: {
+  src: string
+  alt: string
+  height: string
+  parallax: boolean
+  children: ReactNode
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], ['0%', '30%'])
+  const y = useTransform(scrollYProgress, [0, 1], ['0%', parallax ? '30%' : '0%'])
 
   return (
-    <div ref={ref} className="relative h-[60vh] overflow-hidden">
-      <motion.div style={{ y }} className="absolute inset-0 scale-110 will-change-transform">
+    <div ref={ref} className="relative overflow-hidden" style={{ height }}>
+      <motion.div style={{ y }} className={`absolute inset-0 will-change-transform ${parallax ? 'scale-110' : ''}`}>
         <img src={src} alt={alt} className="h-full w-full object-cover" />
       </motion.div>
       {children}
@@ -225,52 +249,69 @@ function ParallaxHero({ src, alt, children }: { src: string; alt: string; childr
   )
 }
 
-export function NewsHeroSection({ data, locale }: SectionProps) {
+export function NewsHeroSection({ data, locale, settings = {} }: SectionProps) {
   const { item } = data
+  const titleClass = N_TITLE[settings.title ?? ''] ?? N_TITLE.m
+  const width = N_WIDTH[settings.width ?? ''] ?? N_WIDTH.normal
+  const showDate = settings.date !== 'hide' && !!item.published_at
   if (!item.cover_image) {
     return (
-      <div className="mx-auto max-w-4xl px-6 pt-32">
-        {item.published_at && <p className="text-sm text-white/50">{formatDate(item.published_at, locale)}</p>}
-        <h1 className="mt-2 font-serif text-3xl text-white md:text-4xl">{item.title}</h1>
+      <div className={`mx-auto px-6 pt-32 ${width}`}>
+        {showDate && <p className="text-sm text-white/50">{formatDate(item.published_at!, locale)}</p>}
+        <h1 className={`mt-2 font-serif text-white ${titleClass}`}>{item.title}</h1>
       </div>
     )
   }
   return (
-    <ParallaxHero src={item.cover_image} alt={item.title}>
+    <ParallaxHero
+      src={item.cover_image}
+      alt={item.title}
+      height={N_HEIGHT[settings.height ?? ''] ?? N_HEIGHT['60']}
+      parallax={settings.parallax !== 'off'}
+    >
       <div className="absolute inset-0 bg-gradient-to-t from-ink-950 via-ink-950/20 to-transparent" />
-      <div className="absolute inset-x-0 bottom-0 mx-auto max-w-4xl px-6 pb-10">
-        {item.published_at && <p className="text-sm text-white/50">{formatDate(item.published_at, locale)}</p>}
-        <h1 className="mt-2 font-serif text-3xl text-white md:text-4xl">{item.title}</h1>
+      <div className={`absolute inset-x-0 bottom-0 mx-auto px-6 pb-10 ${width}`}>
+        {showDate && <p className="text-sm text-white/50">{formatDate(item.published_at!, locale)}</p>}
+        <h1 className={`mt-2 font-serif text-white ${titleClass}`}>{item.title}</h1>
       </div>
     </ParallaxHero>
   )
 }
 
-export function NewsBodySection({ data }: SectionProps) {
+export function NewsBodySection({ data, settings = {} }: SectionProps) {
   if (!data.item.body) return null
+  const width = N_WIDTH[settings.width ?? ''] ?? N_WIDTH.medium
   return (
-    <div className="mx-auto max-w-5xl px-6 pt-16 pb-4 sm:pb-16">
+    <div className={`mx-auto px-6 pt-16 pb-4 sm:pb-16 ${width}`}>
       <Reveal>
-        <div className="prose prose-invert max-w-none text-white/70" dangerouslySetInnerHTML={{ __html: sanitise(data.item.body) }} />
+        <div
+          className={`prose prose-invert max-w-none text-white/70 ${N_PROSE[settings.text ?? ''] ?? ''}`}
+          dangerouslySetInnerHTML={{ __html: sanitise(data.item.body) }}
+        />
       </Reveal>
     </div>
   )
 }
 
-export function OtherNewsSection({ data, locale }: SectionProps) {
+export function OtherNewsSection({ data, locale, settings = {} }: SectionProps) {
   const tr = t(locale)
-  const { others } = data
+  const others = data.others.slice(0, settings.count === '3' ? 3 : settings.count === '4' ? 4 : 6)
+  const cols = NEWS_COLS[settings.cols ?? ''] ?? NEWS_COLS['3']
+  const ratio = NEWS_RATIO[settings.ratio ?? ''] ?? NEWS_RATIO.wide
+  const showDate = settings.date !== 'hide'
   if (!others.length) return null
   return (
     <section className="mx-auto w-[90%] min-[1194px]:w-[85%] pb-24 pt-4">
+      {settings.heading !== 'hide' && (
       <h2
         className="mb-8 font-serif text-3xl text-white md:text-4xl"
         style={{ fontFamily: '"Times New Roman", Times, serif' }}
       >
         {tr.news.otherNews}
       </h2>
+      )}
 
-      <div className="grid grid-cols-1 gap-[10px] min-[810px]:grid-cols-2 min-[1194px]:grid-cols-3">
+      <div className={`grid grid-cols-1 gap-[10px] min-[810px]:grid-cols-2 ${cols}`}>
         {others.map((other) => (
           <Link
             key={other.id}
@@ -280,7 +321,7 @@ export function OtherNewsSection({ data, locale }: SectionProps) {
           >
             <div
               className="relative w-full overflow-hidden bg-ink-900"
-              style={{ aspectRatio: '1.74793' }}
+              style={{ aspectRatio: ratio }}
             >
               {other.cover_image && (
                 <img
@@ -319,7 +360,7 @@ export function OtherNewsSection({ data, locale }: SectionProps) {
                   {other.title}
                 </p>
 
-                {other.published_at && (
+                {showDate && other.published_at && (
                   <p
                     style={{
                       fontFamily: '"SF Pro Display Regular", sans-serif',
@@ -347,9 +388,39 @@ export function OtherNewsSection({ data, locale }: SectionProps) {
 }
 
 export const NEWS_BLOCKS = [
-  { id: 'news-hero', label: 'Обложка, дата и заголовок', render: (p: SectionProps) => <NewsHeroSection {...p} /> },
-  { id: 'news-body', label: 'Текст новости', render: (p: SectionProps) => <NewsBodySection {...p} /> },
-  { id: 'news-others', label: 'Другие новости', render: (p: SectionProps) => <OtherNewsSection {...p} /> },
+  {
+    id: 'news-hero',
+    label: 'Обложка, дата и заголовок',
+    settings: [
+      { name: 'height', label: 'Высота', options: [['60', 'Средняя'], ['40', 'Маленькая'], ['80', 'Большая'], ['100', 'На весь экран']] },
+      { name: 'parallax', label: 'Параллакс', options: [['on', 'Включён'], ['off', 'Выключен']] },
+      { name: 'title', label: 'Размер заголовка', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой'], ['xl', 'Очень большой']] },
+      { name: 'date', label: 'Дата', options: N_SHOW_HIDE },
+      { name: 'width', label: 'Ширина текста', options: [['normal', 'Обычная'], ['narrow', 'Узкая'], ['medium', 'Шире'], ['wide', 'Во всю ширину']] },
+    ],
+    render: (p: SectionProps) => <NewsHeroSection {...p} />,
+  },
+  {
+    id: 'news-body',
+    label: 'Текст новости',
+    settings: [
+      { name: 'width', label: 'Ширина', options: [['medium', 'Обычная'], ['narrow', 'Узкая'], ['normal', 'Средняя'], ['wide', 'Во всю ширину']] },
+      { name: 'text', label: 'Размер текста', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой']] },
+    ],
+    render: (p: SectionProps) => <NewsBodySection {...p} />,
+  },
+  {
+    id: 'news-others',
+    label: 'Другие новости',
+    settings: [
+      { name: 'cols', label: 'Колонок', options: [['3', '3'], ['4', '4'], ['2', '2']] },
+      { name: 'count', label: 'Сколько показать', options: [['6', '6'], ['4', '4'], ['3', '3']] },
+      { name: 'ratio', label: 'Форма картинок', options: [['wide', 'Широкие'], ['cinema', 'Очень широкие 21:9'], ['square', 'Квадрат'], ['tall', 'Вертикальные 3:4']] },
+      { name: 'date', label: 'Дата', options: N_SHOW_HIDE },
+      { name: 'heading', label: 'Заголовок', options: N_SHOW_HIDE },
+    ],
+    render: (p: SectionProps) => <OtherNewsSection {...p} />,
+  },
 ]
 
 export const DEFAULT_NEWS_LAYOUT = NEWS_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')
