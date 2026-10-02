@@ -10,8 +10,32 @@ import type { Locale } from '../lib/locale'
 import { sanitise } from '../lib/sanitise'
 import { fillFields } from './fields'
 
-export function NewsListSection({ locale }: { data: unknown; locale: Locale }) {
+type Settings = Record<string, string>
+
+const NEWS_COLS: Record<string, string> = {
+  '2': 'min-[1194px]:grid-cols-2',
+  '3': 'min-[1194px]:grid-cols-3',
+  '4': 'min-[1194px]:grid-cols-4',
+}
+const NEWS_RATIO: Record<string, string> = { wide: '1.74793', cinema: '21/9', square: '1/1', tall: '3/4' }
+const NEWS_TITLE: Record<string, string> = { s: '0.85rem', m: '1rem', l: '1.4rem', xl: '1.9rem' }
+const NEWS_GAP: Record<string, string> = { none: '0', s: '10px', l: '1.25rem' }
+
+export const NEWS_LIST_SETTINGS = [
+  { name: 'cols', label: 'Колонок', options: [['3', '3'], ['4', '4'], ['2', '2']] },
+  { name: 'ratio', label: 'Форма картинок', options: [['wide', 'Широкие'], ['cinema', 'Очень широкие 21:9'], ['square', 'Квадрат'], ['tall', 'Вертикальные 3:4']] },
+  { name: 'gap', label: 'Отступ между', options: [['s', 'Обычный'], ['none', 'Без отступа'], ['l', 'Большой']] },
+  { name: 'title', label: 'Размер заголовка', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой'], ['xl', 'Очень большой']] },
+  { name: 'date', label: 'Дата', options: [['show', 'Показывать'], ['hide', 'Скрыть']] },
+]
+
+export function NewsListSection({ locale, settings = {} }: { data: unknown; locale: Locale; settings?: Settings }) {
   const tr = t(locale)
+  const cols = NEWS_COLS[settings.cols ?? ''] ?? NEWS_COLS['3']
+  const ratio = NEWS_RATIO[settings.ratio ?? ''] ?? NEWS_RATIO.wide
+  const titleSize = NEWS_TITLE[settings.title ?? ''] ?? NEWS_TITLE.m
+  const gap = NEWS_GAP[settings.gap ?? ''] ?? NEWS_GAP.s
+  const showDate = settings.date !== 'hide'
   const [news, setNews] = useState<NewsListItem[]>([])
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -55,7 +79,7 @@ export function NewsListSection({ locale }: { data: unknown; locale: Locale }) {
         <ErrorMessage>{tr.ui.error}</ErrorMessage>
       ) : (
         <>
-          <StaggerList className="w-[90%] grid grid-cols-1 gap-[10px] min-[810px]:grid-cols-2 min-[1194px]:w-[85%] min-[1194px]:grid-cols-3">
+          <StaggerList className={`w-[90%] grid grid-cols-1 min-[810px]:grid-cols-2 min-[1194px]:w-[85%] ${cols}`} style={{ gap }}>
             {news.map((item) => (
               <StaggerItem key={item.id}>
                 <Link
@@ -65,7 +89,7 @@ export function NewsListSection({ locale }: { data: unknown; locale: Locale }) {
                 >
                   <div
                     className="relative w-full overflow-hidden bg-ink-900"
-                    style={{ aspectRatio: '1.74793' }}
+                    style={{ aspectRatio: ratio }}
                   >
                     {item.cover_image && (
                       <img
@@ -95,7 +119,7 @@ export function NewsListSection({ locale }: { data: unknown; locale: Locale }) {
                         className="font-sans text-white"
                         style={{
                           fontFamily: '"Manrope", sans-serif',
-                          fontSize: '1rem',
+                          fontSize: titleSize,
                           lineHeight: '1em',
                           whiteSpace: 'pre-wrap',
                           wordBreak: 'break-word',
@@ -104,7 +128,7 @@ export function NewsListSection({ locale }: { data: unknown; locale: Locale }) {
                         {item.title}
                       </p>
 
-                      {item.published_at && (
+                      {showDate && item.published_at && (
                         <p
                           style={{
                             fontFamily: '"SF Pro Display Regular", sans-serif',
@@ -147,7 +171,12 @@ export function NewsListSection({ locale }: { data: unknown; locale: Locale }) {
 }
 
 export const NEWS_LIST_BLOCKS = [
-  { id: 'news-list', label: 'Список новостей', render: (p: { data: unknown; locale: Locale }) => <NewsListSection {...p} /> },
+  {
+    id: 'news-list',
+    label: 'Список новостей',
+    settings: NEWS_LIST_SETTINGS,
+    render: (p: { data: unknown; locale: Locale; settings?: Settings }) => <NewsListSection {...p} />,
+  },
 ]
 
 export const DEFAULT_NEWS_LIST_LAYOUT = NEWS_LIST_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')
