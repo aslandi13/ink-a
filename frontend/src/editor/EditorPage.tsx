@@ -399,10 +399,10 @@ export default function EditorPage() {
         })
 
         editor.onReady(() => {
-          editor.runCommand('open-blocks')
+          editor.Panels.getButton('views', 'open-blocks')?.set('active', true)
           editor.on('component:selected', (component) => {
             if (component.get('type') === 'ink-block' && (component.get('traits')?.length ?? 0) > 0) {
-              editor.runCommand('open-tm')
+              editor.Panels.getButton('views', 'open-tm')?.set('active', true)
             }
           })
           setStatus(
