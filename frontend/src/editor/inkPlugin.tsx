@@ -11,7 +11,7 @@ const CANVAS_CSS = `
   [data-block] > * { pointer-events: none; }
   [data-block] [style*="opacity: 0"] { opacity: 1 !important; transform: none !important; }
   [data-block]:empty { min-height: 120px; }
-  [data-block] [data-edit], [data-block] [data-edit-image] { pointer-events: auto; }
+  [data-block] [data-edit], [data-block] [data-edit-image], [data-block] [data-interactive] { pointer-events: auto; }
   [data-block] [data-edit]:hover { outline: 1px dashed rgba(158, 158, 255, 0.8); outline-offset: 4px; cursor: text; }
   [data-block] [data-edit-image]:hover { outline: 2px dashed rgba(158, 158, 255, 0.9); outline-offset: -2px; cursor: pointer; }
   [data-block] [contenteditable] { outline: 2px solid #9e9eff !important; outline-offset: 4px; cursor: text; }

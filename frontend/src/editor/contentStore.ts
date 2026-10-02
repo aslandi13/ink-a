@@ -6,19 +6,20 @@ export interface ContentChange {
   value: string | null
 }
 
-const KEY_TO_PROP: Record<string, keyof HomeData> = {
+const KEY_TO_PROP: Record<string, keyof HomeData | ''> = {
   'home.hero': 'hero',
   'home.about': 'about',
   'home.offices': 'offices',
   'home.key_projects': 'keyProjects',
+  approach: '',
 }
 
 function setPath<T>(data: T, key: string, field: string, value: string | null): T {
   const prop = KEY_TO_PROP[key]
-  if (!prop) return data
+  if (prop === undefined) return data
   const next = structuredClone(data) as Record<string, unknown>
   const segments = field.split('.')
-  let cursor = next[prop] as Record<string, unknown>
+  let cursor = (prop ? next[prop] : next) as Record<string, unknown>
   for (const segment of segments.slice(0, -1)) {
     if (cursor[segment] == null || typeof cursor[segment] !== 'object') cursor[segment] = {}
     cursor = cursor[segment] as Record<string, unknown>

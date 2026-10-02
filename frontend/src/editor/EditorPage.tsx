@@ -27,6 +27,7 @@ import {
 } from '../sections/project'
 import { createContentStore, type ContentStore } from './contentStore'
 import { EXPLODERS } from './explode'
+import { APPROACH_BLOCKS, DEFAULT_APPROACH_LAYOUT, loadApproachData } from '../sections/approach'
 import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sections/projectFields'
 import { inkPlugin, type InkBlock, type InkFields } from './inkPlugin'
 import LoginForm from './LoginForm'
@@ -85,6 +86,7 @@ const STYLE_PROPERTIES_RU: Record<string, string> = {
 
 const PAGE_OPTIONS = [
   { slug: 'home', label: 'Главная' },
+  { slug: 'approach', label: 'Подход' },
   { slug: PROJECT_TEMPLATE, label: 'Шаблон проекта: общий' },
   ...PROJECT_CATEGORIES.map((c) => ({ slug: `${PROJECT_TEMPLATE}-${c.id}`, label: `Шаблон проекта: ${c.label}` })),
 ]
@@ -99,6 +101,14 @@ interface PageKind {
 }
 
 function pageKind(slug: string): PageKind {
+  if (slug === 'approach') {
+    return {
+      load: loadApproachData,
+      blocks: APPROACH_BLOCKS as InkBlock[],
+      defaultLayout: DEFAULT_APPROACH_LAYOUT,
+      previewPath: (locale) => `/${locale}/approach?preview=1`,
+    }
+  }
   if (isProjectTemplate(slug)) {
     return {
       load: (locale) => loadSampleProject(locale, templateCategory(slug)),
@@ -281,7 +291,9 @@ export default function EditorPage() {
               ? `Версия ${locale.toUpperCase()} создана из RU — измените тексты и сохраните`
               : page.draft
                 ? 'Дважды кликните по тексту или фото, чтобы изменить'
-                : isProjectTemplate(slug)
+                : slug === 'approach'
+                  ? 'Раскладка из текущей страницы. Дважды кликните по тексту или фото, чтобы изменить'
+                  : isProjectTemplate(slug)
                   ? 'Шаблон показан на примере проекта. Данные проектов меняются в админке'
                   : slug === 'home'
                     ? 'Раскладка из текущей главной. Дважды кликните по тексту или фото, чтобы изменить'

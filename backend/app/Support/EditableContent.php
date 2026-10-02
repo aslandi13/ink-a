@@ -14,11 +14,25 @@ class EditableContent
         'home.about' => ['heading', 'intro', 'quote', 'quote_author', 'principles.*.heading', 'principles.*.text'],
         'home.offices' => ['heading', 'description', 'video_label'],
         'home.key_projects' => ['heading', 'statement', 'description'],
+        'approach' => ['expertise_intro', 'steps.*.title', 'steps.*.text', 'steps.*.image_caption'],
+    ];
+
+    private const LOCALE_IMAGE_FIELDS = [
+        'approach' => ['steps.*.image'],
+    ];
+
+    private const ROOT_TEXT_FIELDS = [
+        'approach' => ['default_image_caption'],
+    ];
+
+    private const GROUPED_KEYS = [
+        'approach' => ['architecture', 'engineering', 'urbanism', 'interior'],
     ];
 
     private const IMAGE_FIELDS = [
         'home.about' => ['image', 'principles_image'],
         'home.offices' => ['map_poster'],
+        'approach' => ['default_image'],
     ];
 
     /**
@@ -35,18 +49,38 @@ class EditableContent
             foreach ($items as $change) {
                 $field = $change['field'];
 
-                if (self::matches(self::IMAGE_FIELDS[$key] ?? [], $field)) {
-                    $data[$field] = self::toStoragePath($change['value']);
-                } elseif (self::matches(self::TEXT_FIELDS[$key] ?? [], $field)) {
-                    $data[$locale] = self::withListsSeeded($data[$locale] ?? [], $data['ru'] ?? [], $field);
-                    Arr::set($data[$locale], $field, (string) $change['value']);
+                if (isset(self::GROUPED_KEYS[$key])) {
+                    [$group, $rest] = array_pad(explode('.', $field, 2), 2, '');
+                    if (! in_array($group, self::GROUPED_KEYS[$key], true)) {
+                        throw new InvalidArgumentException("Поле {$key}:{$field} нельзя редактировать.");
+                    }
+                    $data[$group] = self::applyField($data[$group] ?? [], $key, $rest, $change['value'], $locale);
                 } else {
-                    throw new InvalidArgumentException("Поле {$key}:{$field} нельзя редактировать.");
+                    $data = self::applyField($data, $key, $field, $change['value'], $locale);
                 }
             }
 
             $record->update(['data' => $data]);
         }
+    }
+
+    private static function applyField(array $data, string $key, string $field, ?string $value, string $locale): array
+    {
+        if (self::matches(self::IMAGE_FIELDS[$key] ?? [], $field)) {
+            $data[$field] = self::toStoragePath($value);
+        } elseif (self::matches(self::ROOT_TEXT_FIELDS[$key] ?? [], $field)) {
+            $data[$field] = (string) $value;
+        } elseif (self::matches(self::TEXT_FIELDS[$key] ?? [], $field)) {
+            $data[$locale] = self::withListsSeeded($data[$locale] ?? [], $data['ru'] ?? [], $field);
+            Arr::set($data[$locale], $field, (string) $value);
+        } elseif (self::matches(self::LOCALE_IMAGE_FIELDS[$key] ?? [], $field)) {
+            $data[$locale] = self::withListsSeeded($data[$locale] ?? [], $data['ru'] ?? [], $field);
+            Arr::set($data[$locale], $field, self::toStoragePath($value));
+        } else {
+            throw new InvalidArgumentException("Поле {$key}:{$field} нельзя редактировать.");
+        }
+
+        return $data;
     }
 
     private static function matches(array $patterns, string $field): bool

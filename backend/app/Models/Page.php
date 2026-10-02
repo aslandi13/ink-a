@@ -11,6 +11,10 @@ class Page extends Model
 
     public const HOME = 'home';
 
+    public const APPROACH = 'approach';
+
+    public const BUILT_IN = [self::HOME, self::APPROACH];
+
     public const PROJECT_TEMPLATE = 'project-template';
 
     public const PROJECT_CATEGORIES = ['architecture', 'engineering', 'urbanism', 'interior'];
@@ -56,7 +60,7 @@ class Page extends Model
 
     public static function isBuiltIn(string $slug): bool
     {
-        return $slug === self::HOME || self::isTemplate($slug);
+        return in_array($slug, self::BUILT_IN, true) || self::isTemplate($slug);
     }
 
     public static function layoutFor(?array $layouts, string $locale): ?array

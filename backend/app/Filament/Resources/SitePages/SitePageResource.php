@@ -94,7 +94,7 @@ class SitePageResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->whereNotIn('slug', Page::templateSlugs());
+        return parent::getEloquentQuery()->whereNotIn('slug', [...Page::templateSlugs(), Page::APPROACH]);
     }
 
     public static function table(Table $table): Table
