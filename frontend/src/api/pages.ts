@@ -75,6 +75,7 @@ export interface DraftResponse {
   inherited: boolean
   title: string
   published_at: string | null
+  has_unpublished: boolean
 }
 
 export function getDraftPage(slug: string, locale = 'ru'): Promise<DraftResponse> {

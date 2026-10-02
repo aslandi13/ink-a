@@ -58,6 +58,7 @@ class EditorController extends Controller
             'inherited' => $draft !== null && ! isset($layouts[$locale]),
             'title' => $page?->localized('title', 'ru') ?? $slug,
             'published_at' => $page?->published_at,
+            'has_unpublished' => $page !== null && $page->draft !== null && Page::normalizeLayouts($page->draft) != ($page->published ?? []),
         ]]);
     }
 

@@ -210,6 +210,23 @@ function pageKind(slug: string): PageKind {
   }
 }
 
+type PublishState = 'none' | 'changed' | 'published'
+
+const PUBLISH_BADGE: Record<PublishState, { text: string; className: string }> = {
+  none: { text: 'Не опубликовано — на сайте не видно', className: 'bg-amber-400/15 text-amber-300' },
+  changed: { text: 'Есть изменения — на сайте ещё не видны', className: 'bg-amber-400/15 text-amber-300' },
+  published: { text: 'Опубликовано — так видно на сайте', className: 'bg-emerald-400/15 text-emerald-300' },
+}
+
+const HELP_STEPS = [
+  ['Выберите страницу и язык', 'Список слева вверху и кнопки RU / KZ / EN. У каждого языка своя раскладка.'],
+  ['Меняйте тексты и фото', 'Дважды кликните по тексту или фото на странице. Текст сразу появится и в админке.'],
+  ['Добавляйте и двигайте блоки', 'Кнопка «Блоки» справа — перетащите блок на страницу. Выделенный блок двигается стрелкой-крестиком на синей панели, удаляется корзиной.'],
+  ['Настраивайте вид', 'Выделите блок и откройте «Настройки» — колонки, размеры, что показывать. «Стиль» — отступы, шрифты, цвета.'],
+  ['Сохраните и опубликуйте', '«Сохранить» — черновик, на сайте его не видно. «Опубликовать» — изменения появятся на сайте. «Предпросмотр» — посмотреть до публикации.'],
+  ['Разобрать на элементы', 'Кнопка с квадратиками на синей панели. Секция становится отдельными элементами, которые можно двигать. Обратно не собирается: удалите её и перетащите блок заново.'],
+]
+
 export default function EditorPage() {
   const { slug = 'home' } = useParams()
   const [searchParams] = useSearchParams()
@@ -221,6 +238,8 @@ export default function EditorPage() {
   const [title, setTitle] = useState('')
   const [missing, setMissing] = useState(false)
   const [dirty, setDirty] = useState(false)
+  const [publishState, setPublishState] = useState<PublishState>('none')
+  const [helpOpen, setHelpOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const editorRef = useRef<Editor | null>(null)
   const storeRef = useRef<ContentStore | null>(null)
@@ -250,6 +269,8 @@ export default function EditorPage() {
       .then(([data, page]) => {
         if (cancelled || !containerRef.current) return
         setTitle(page.title)
+        const wasPublished = !!page.published_at
+        setPublishState(!wasPublished ? 'none' : page.has_unpublished ? 'changed' : 'published')
 
         const store = createContentStore(data)
         storeRef.current = store
@@ -307,6 +328,7 @@ export default function EditorPage() {
             })
             editor.clearDirtyCount()
             setDirty(false)
+            setPublishState((current) => (current === 'none' ? 'none' : 'changed'))
             setStatus(changes.length ? 'Сохранено. Тексты секций уже на сайте, раскладка — в черновике' : 'Черновик сохранён')
             return true
           } catch (err) {
@@ -323,7 +345,10 @@ export default function EditorPage() {
             void save().then((ok) => {
               if (!ok) return
               publishPage(slug)
-                .then(() => setStatus('Опубликовано на сайте'))
+                .then(() => {
+                  setStatus('Опубликовано на сайте')
+                  setPublishState('published')
+                })
                 .catch(handleError)
             })
           },
@@ -339,6 +364,18 @@ export default function EditorPage() {
 
         editor.Panels.removeButton('options', 'export-template')
         editor.Panels.removeButton('options', 'fullscreen')
+        const VIEW_LABELS: Record<string, string> = {
+          'open-sm': 'Стиль',
+          'open-tm': 'Настройки',
+          'open-layers': 'Слои',
+          'open-blocks': 'Блоки',
+        }
+        for (const [id, text] of Object.entries(VIEW_LABELS)) {
+          const button = editor.Panels.getButton('views', id)
+          if (!button) continue
+          button.set('attributes', { ...(button.get('attributes') ?? {}), title: text })
+          button.set('label', `${button.get('label') ?? ''}<span class="ink-view-label">${text}</span>`)
+        }
         editor.Panels.addPanel({
           id: 'ink-devices',
           buttons: [
@@ -462,7 +499,17 @@ export default function EditorPage() {
             </button>
           ))}
         </div>
+        <span className={`shrink-0 rounded px-2 py-1 ${dirty ? 'bg-white/10 text-white/80' : PUBLISH_BADGE[publishState].className}`}>
+          {dirty ? 'Не сохранено' : PUBLISH_BADGE[publishState].text}
+        </span>
         <span className="order-last min-w-0 basis-full truncate sm:order-none sm:basis-auto sm:flex-1 sm:text-center">{status}</span>
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/30 text-white/80 hover:border-white hover:text-white"
+          title="Как пользоваться"
+        >
+          ?
+        </button>
         {!embed && (
           <button
             onClick={() => {
@@ -476,6 +523,35 @@ export default function EditorPage() {
         )}
       </div>
       <div ref={containerRef} className="min-h-0 flex-1" />
+      {helpOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setHelpOpen(false)}>
+          <div
+            className="max-h-full w-full max-w-lg overflow-y-auto rounded-lg bg-ink-900 p-6 text-sm text-white/80"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-medium text-white">Как пользоваться редактором</h2>
+              <button onClick={() => setHelpOpen(false)} className="text-white/50 hover:text-white" aria-label="Закрыть">
+                ✕
+              </button>
+            </div>
+            <ol className="mt-5 space-y-4">
+              {HELP_STEPS.map(([heading, text], i) => (
+                <li key={heading} className="flex gap-3">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-medium text-ink-950">
+                    {i + 1}
+                  </span>
+                  <div>
+                    <p className="font-medium text-white">{heading}</p>
+                    <p className="mt-1 leading-relaxed text-white/60">{text}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-5 text-xs text-white/40">Проекты, новости, ссылки и видео заполняются в разделах админки слева.</p>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

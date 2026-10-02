@@ -35,6 +35,31 @@
   border-radius: 3px;
 }
 
+.ink-editor .gjs-clm-header,
+.ink-editor .gjs-clm-tags-field,
+.ink-editor #gjs-clm-tags-field,
+.ink-editor .gjs-clm-tags .gjs-clm-tag,
+.ink-editor #gjs-clm-add-tag {
+  display: none !important;
+}
+
+.ink-editor .gjs-pn-views .gjs-pn-btn {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  width: auto;
+  min-width: 48px;
+  height: auto;
+  padding: 4px 6px 2px;
+}
+
+.ink-editor .ink-view-label {
+  display: block;
+  margin-top: 1px;
+  font-size: 10px;
+  line-height: 12px;
+}
+
 .ink-editor-open elevenlabs-convai {
   display: none !important;
 }
@@ -63,7 +88,13 @@
   }
 
   .ink-editor .gjs-pn-views .gjs-pn-btn {
+    min-width: 0;
     margin: 0 1px;
+    padding: 4px 4px 2px;
+  }
+
+  .ink-editor .ink-view-label {
+    display: none;
   }
 
   .ink-editor .gjs-pn-options {
