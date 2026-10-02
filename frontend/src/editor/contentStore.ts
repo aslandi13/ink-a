@@ -1,4 +1,3 @@
-import type { HomeData } from '../sections/home'
 
 export interface ContentChange {
   key: string
@@ -6,12 +5,15 @@ export interface ContentChange {
   value: string | null
 }
 
-const KEY_TO_PROP: Record<string, keyof HomeData | ''> = {
+const KEY_TO_PROP: Record<string, string> = {
   'home.hero': 'hero',
   'home.about': 'about',
   'home.offices': 'offices',
   'home.key_projects': 'keyProjects',
   approach: '',
+  'about.history': 'history',
+  'about.team': 'team',
+  'about.founder': 'founder',
 }
 
 function setPath<T>(data: T, key: string, field: string, value: string | null): T {

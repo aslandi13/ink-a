@@ -15,14 +15,24 @@ class EditableContent
         'home.offices' => ['heading', 'description', 'video_label'],
         'home.key_projects' => ['heading', 'statement', 'description'],
         'approach' => ['expertise_intro', 'steps.*.title', 'steps.*.text', 'steps.*.image_caption'],
+        'about.history' => ['intro', 'stats.*.number', 'stats.*.label', 'highlights.*.heading', 'highlights.*.text'],
+        'about.founder' => ['bio', 'position', 'achievements.*', 'credential_highlights.*.text'],
     ];
 
     private const LOCALE_IMAGE_FIELDS = [
         'approach' => ['steps.*.image'],
+        'about.founder' => ['credential_highlights.*.icon'],
     ];
 
     private const ROOT_TEXT_FIELDS = [
         'approach' => ['default_image_caption'],
+        'about.history' => ['gallery.*.overlay_text'],
+        'about.team' => ['members.*.name'],
+        'about.founder' => ['name'],
+    ];
+
+    private const NESTED_LOCALE_TEXT_FIELDS = [
+        'about.team' => ['members.*.position', 'members.*.credentials'],
     ];
 
     private const GROUPED_KEYS = [
@@ -33,6 +43,9 @@ class EditableContent
         'home.about' => ['image', 'principles_image'],
         'home.offices' => ['map_poster'],
         'approach' => ['default_image'],
+        'about.history' => ['gallery.*.image'],
+        'about.team' => ['members.*.photo'],
+        'about.founder' => ['photo'],
     ];
 
     /**
@@ -67,9 +80,13 @@ class EditableContent
     private static function applyField(array $data, string $key, string $field, ?string $value, string $locale): array
     {
         if (self::matches(self::IMAGE_FIELDS[$key] ?? [], $field)) {
-            $data[$field] = self::toStoragePath($value);
+            Arr::set($data, $field, self::toStoragePath($value));
         } elseif (self::matches(self::ROOT_TEXT_FIELDS[$key] ?? [], $field)) {
-            $data[$field] = (string) $value;
+            Arr::set($data, $field, (string) $value);
+        } elseif (self::matches(self::NESTED_LOCALE_TEXT_FIELDS[$key] ?? [], $field)) {
+            $segments = explode('.', $field);
+            $last = array_pop($segments);
+            Arr::set($data, implode('.', [...$segments, $locale, $last]), (string) $value);
         } elseif (self::matches(self::TEXT_FIELDS[$key] ?? [], $field)) {
             $data[$locale] = self::withListsSeeded($data[$locale] ?? [], $data['ru'] ?? [], $field);
             Arr::set($data[$locale], $field, (string) $value);
@@ -101,7 +118,7 @@ class EditableContent
 
         if (count($segments) > 1 && ctype_digit($segments[1])) {
             $list = $target[$segments[0]] ?? null;
-            $hasContent = is_array($list) && collect($list)->filter(fn ($item) => is_array($item) && array_filter($item))->isNotEmpty();
+            $hasContent = is_array($list) && collect($list)->filter(fn ($item) => is_array($item) ? array_filter($item) : filled($item))->isNotEmpty();
 
             if (! $hasContent) {
                 $target[$segments[0]] = $ru[$segments[0]] ?? [];
