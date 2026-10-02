@@ -68,43 +68,30 @@ class Page extends Model
     public static function ensureBuiltIns(): void
     {
         $titles = [
-            self::APPROACH => 'Подход',
             self::PROJECTS => 'Проекты',
+            self::APPROACH => 'Подход',
             self::ABOUT => 'О нас',
-            self::CONTACTS => 'Контакты',
             self::NEWS => 'Новости',
-            self::NEWS_TEMPLATE => 'Шаблон новости',
+            self::CONTACTS => 'Контакты',
             self::LEGAL => 'Правовая информация',
             self::PROJECT_TEMPLATE => 'Шаблон проекта: общий',
             self::PROJECT_TEMPLATE.'-architecture' => 'Шаблон проекта: Архитектура',
             self::PROJECT_TEMPLATE.'-engineering' => 'Шаблон проекта: Рабочее проектирование',
             self::PROJECT_TEMPLATE.'-urbanism' => 'Шаблон проекта: Урбанистика и мастерпланирование',
             self::PROJECT_TEMPLATE.'-interior' => 'Шаблон проекта: Дизайн интерьера',
+            self::NEWS_TEMPLATE => 'Шаблон новости',
         ];
         $order = 100;
 
         foreach ($titles as $slug => $title) {
-            self::firstOrCreate(['slug' => $slug], ['title' => ['ru' => $title], 'menu_order' => $order++]);
+            $page = self::firstOrCreate(['slug' => $slug], ['title' => ['ru' => $title], 'menu_order' => $order]);
+
+            if ($page->menu_order === 0 || blank($page->getTranslation('title', 'ru', false))) {
+                $page->update(['title' => ['ru' => $title], 'menu_order' => $order]);
+            }
+
+            $order++;
         }
-    }
-
-    public static function isTemplate(string $slug): bool
-    {
-        return in_array($slug, self::templateSlugs(), true);
-    }
-
-    public static function templateSlugs(): array
-    {
-        return [
-            self::PROJECT_TEMPLATE,
-            ...array_map(fn ($c) => self::PROJECT_TEMPLATE.'-'.$c, self::PROJECT_CATEGORIES),
-            self::NEWS_TEMPLATE,
-        ];
-    }
-
-    public static function isBuiltIn(string $slug): bool
-    {
-        return in_array($slug, self::BUILT_IN, true) || self::isTemplate($slug);
     }
 
     public static function layoutFor(?array $layouts, string $locale): ?array
