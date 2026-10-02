@@ -41,4 +41,14 @@ class ListProjects extends ListRecords
 
         return $tabs;
     }
+
+    public function getDefaultActiveTab(): string | int | null
+    {
+        return 'all';
+    }
+
+    public function getTabsContentComponent(): \Filament\Schemas\Components\Component
+    {
+        return parent::getTabsContentComponent()->hidden();
+    }
 }

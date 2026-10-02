@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\Projects\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 class ProjectsTable
@@ -46,19 +46,14 @@ class ProjectsTable
                     ->boolean(),
             ])
             ->filters([
-                SelectFilter::make('category')
-                    ->label('Категория')
-                    ->options([
-                        'architecture' => 'Архитектура',
-                        'engineering' => 'Рабочее проектирование',
-                        'urbanism' => 'Урбанистика и мастерпланирование',
-                        'interior' => 'Дизайн интерьера',
-                    ]),
+                //
             ])
             ->recordActions([
                 EditAction::make(),
             ])
             ->toolbarActions([
+                Action::make('categories')
+                    ->view('filament.projects.tabs'),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
