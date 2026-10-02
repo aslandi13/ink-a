@@ -83,8 +83,8 @@ export function AboutTabsSection({ data, locale, settings = {} }: SectionProps) 
   const initialTab = (['history', 'team', 'founder'].includes(settings.tab ?? '') ? settings.tab : 'history') as AboutTab
   const [tab, setTab] = useState<AboutTab>(initialTab)
   useEffect(() => setTab(initialTab), [initialTab])
-  const teamCols = TEAM_COLS[settings.teamCols ?? ''] ?? TEAM_COLS['4']
-  const teamRatio = TEAM_RATIO[settings.teamRatio ?? ''] ?? TEAM_RATIO.square
+  const teamCols = TEAM_COLS[settings.teamcols ?? ''] ?? TEAM_COLS['4']
+  const teamRatio = TEAM_RATIO[settings.teamratio ?? ''] ?? TEAM_RATIO.square
   const { history, founder } = data
   const team = data.team.members ?? []
 
@@ -311,8 +311,8 @@ export const ABOUT_BLOCKS: AboutBlock[] = [
     label: 'О нас: вкладки',
     settings: [
       { name: 'tab', label: 'Открытая вкладка', options: [['history', 'История'], ['team', 'Команда'], ['founder', 'Об основателе']] },
-      { name: 'teamCols', label: 'Команда: колонок', options: [['4', '4'], ['3', '3'], ['5', '5'], ['2', '2']] },
-      { name: 'teamRatio', label: 'Команда: форма фото', options: [['square', 'Квадрат'], ['portrait', '3:4'], ['tall', '2:3']] },
+      { name: 'teamcols', label: 'Команда: колонок', options: [['4', '4'], ['3', '3'], ['5', '5'], ['2', '2']] },
+      { name: 'teamratio', label: 'Команда: форма фото', options: [['square', 'Квадрат'], ['portrait', '3:4'], ['tall', '2:3']] },
     ],
     render: (p) => <AboutTabsSection {...p} />,
   },

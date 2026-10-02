@@ -112,6 +112,7 @@ export function inkPlugin({ store, locale, blocks, exploders = {}, fields, onCon
                 type: 'select',
                 name: `data-s-${setting.name}`,
                 label: setting.label,
+                default: setting.options[0][0],
                 options: setting.options.map(([value, label]) => ({ id: value, label })),
               })),
             )
