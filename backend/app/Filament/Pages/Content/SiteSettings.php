@@ -34,17 +34,17 @@ class SiteSettings extends SingletonContentPage
             ->statePath('data')
             ->components([
                 Section::make('Языки сайта')
-                    ->description('Выключенный язык пропадает из переключателя на сайте, а его страницы открываются на русском.')
+                    ->description('Снимите галочку, чтобы выключить язык: он пропадёт из переключателя на сайте, а его страницы будут открываться на русском.')
                     ->schema([
                         CheckboxList::make('enabled_locales')
                             ->hiddenLabel()
-                            ->options(['ru' => 'Русский (RU)', 'kz' => 'Қазақша (KZ)', 'en' => 'English (EN)'])
+                            ->options(['kz' => 'Қазақша (KZ)', 'en' => 'English (EN)'])
+                            ->helperText('Русский включён всегда — это основной язык.')
                             ->afterStateHydrated(fn (CheckboxList $component, ?array $state) => $component->state(
-                                array_values(array_unique(['ru', ...($state ?: ['kz', 'en'])]))
+                                empty($state) ? ['kz', 'en'] : array_values(array_intersect($state, ['kz', 'en']))
                             ))
-                            ->disableOptionWhen(fn (string $value) => $value === 'ru')
-                            ->dehydrateStateUsing(fn (?array $state) => array_values(array_unique(['ru', ...($state ?? [])])))
-                            ->columns(3),
+                            ->dehydrateStateUsing(fn (?array $state) => ['ru', ...array_values(array_intersect($state ?? [], ['kz', 'en']))])
+                            ->columns(2),
                     ]),
 
                 Section::make('SEO')
