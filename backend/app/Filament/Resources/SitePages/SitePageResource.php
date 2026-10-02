@@ -67,7 +67,7 @@ class SitePageResource extends Resource
             Section::make('Адрес и меню')->columns(2)->schema([
                 TextInput::make('slug')
                     ->label('Адрес')
-                    ->prefix('/ru/')
+                    ->prefix('/')
                     ->required()
                     ->maxLength(80)
                     ->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')
@@ -100,9 +100,9 @@ class SitePageResource extends Resource
                 TextColumn::make('slug')
                     ->label('Адрес')
                     ->formatStateUsing(fn (string $state) => match (true) {
-                        $state === Page::HOME => '/ru',
+                        $state === Page::HOME => '/',
                         Page::isTemplate($state) => 'Все страницы проектов',
-                        default => "/ru/{$state}",
+                        default => "/{$state}",
                     }),
                 TextColumn::make('status')
                     ->label('Статус')
