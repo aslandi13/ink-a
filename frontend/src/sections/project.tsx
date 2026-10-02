@@ -11,10 +11,29 @@ export interface ProjectPageData {
   others: ProjectListItem[]
 }
 
+type Settings = Record<string, string>
+
 interface SectionProps {
   data: ProjectPageData
   locale: Locale
+  settings?: Settings
 }
+
+const HERO_HEIGHT: Record<string, string> = { large: 'calc(80vh + 6rem)', medium: 'calc(60vh + 6rem)', small: 'calc(45vh + 6rem)' }
+const HERO_TITLE: Record<string, string> = {
+  s: 'text-3xl md:text-4xl',
+  m: 'text-4xl md:text-5xl lg:text-6xl',
+  l: 'text-5xl md:text-6xl lg:text-7xl',
+  xl: 'text-5xl md:text-7xl lg:text-8xl',
+}
+const GRID_COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
+const RATIO: Record<string, string> = { '2/1': '2/1', '16/9': '16/9', '4/3': '4/3', '1/1': '1/1', '3/4': '3/4', '1.75/1': '1.75/1' }
+const GAP: Record<string, string> = { none: '0', s: '0.375rem', l: '1rem' }
+const PROSE: Record<string, string> = { s: 'prose-sm', m: '', l: 'prose-lg' }
+
+const SHOW_HIDE = [['show', 'Показывать'], ['hide', 'Скрыть']]
+const COLS_OPTIONS = (first: string) => [first, ...['4', '3', '2'].filter((c) => c !== first)].map((c) => [c, c])
+const GAP_OPTIONS = [['s', 'Обычный'], ['none', 'Без отступа'], ['l', 'Большой']]
 
 export const PROJECT_CATEGORIES: { id: string; label: string }[] = [
   { id: 'architecture', label: 'Архитектура' },
@@ -66,7 +85,22 @@ const ARROW_PROPS = {
   strokeLinejoin: 'round' as const,
 }
 
-function HeroSlider({ cover, focus = 'center', gallery, title }: { cover: string; focus?: keyof typeof FOCUS_CLASS; gallery: string[]; title: string }) {
+function HeroSlider({
+  cover,
+  focus = 'center',
+  gallery,
+  title,
+  settings,
+}: {
+  cover: string
+  focus?: keyof typeof FOCUS_CLASS
+  gallery: string[]
+  title: string
+  settings: Settings
+}) {
+  const autoplay = settings.autoplay !== 'off'
+  const height = HERO_HEIGHT[settings.height ?? '']
+  const titleClass = HERO_TITLE[settings.title ?? ''] ?? HERO_TITLE.m
   const slides = [cover, ...gallery]
   const [index, setIndex] = useState(0)
   const [direction, setDirection] = useState(1)
@@ -89,13 +123,13 @@ function HeroSlider({ cover, focus = 'center', gallery, title }: { cover: string
   }
 
   useEffect(() => {
-    if (slides.length <= 1) return
+    if (slides.length <= 1 || !autoplay) return
     const timer = setTimeout(() => {
       setDirection(1)
       setIndex((i) => (i + 1) % slides.length)
     }, 5000)
     return () => clearTimeout(timer)
-  }, [index, slides.length])
+  }, [index, slides.length, autoplay])
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -113,7 +147,7 @@ function HeroSlider({ cover, focus = 'center', gallery, title }: { cover: string
   }
 
   return (
-    <div ref={rootRef} className="relative h-[calc(65vh_+_6rem)] overflow-hidden sm:h-[calc(100vh_+_6rem)]">
+    <div ref={rootRef} className="relative h-[calc(65vh_+_6rem)] overflow-hidden sm:h-[calc(100vh_+_6rem)]" style={height ? { height } : undefined}>
       <AnimatePresence custom={direction} mode="sync">
         <motion.img
           key={slides[index]}
@@ -136,13 +170,13 @@ function HeroSlider({ cover, focus = 'center', gallery, title }: { cover: string
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-serif text-4xl text-white md:text-5xl lg:text-6xl"
+          className={`font-serif text-white ${titleClass}`}
         >
           {title}
         </motion.h1>
       </div>
 
-      {slides.length > 1 && (
+      {slides.length > 1 && settings.arrows !== 'hide' && (
         <>
           <button onClick={prev} aria-label="Предыдущее фото" className="absolute left-12 top-1/2 -translate-y-1/2 text-white/60 transition-colors hover:text-white">
             <svg {...ARROW_PROPS}>
@@ -157,6 +191,7 @@ function HeroSlider({ cover, focus = 'center', gallery, title }: { cover: string
         </>
       )}
 
+      {settings.scroll !== 'hide' && (
       <button
         onClick={scrollDown}
         aria-label="Прокрутить вниз"
@@ -171,11 +206,12 @@ function HeroSlider({ cover, focus = 'center', gallery, title }: { cover: string
           </svg>
         </motion.div>
       </button>
+      )}
     </div>
   )
 }
 
-export function ProjectHeroSection({ data }: SectionProps) {
+export function ProjectHeroSection({ data, settings = {} }: SectionProps) {
   const { project } = data
   if (!project.cover_image) {
     return (
@@ -186,10 +222,14 @@ export function ProjectHeroSection({ data }: SectionProps) {
       </div>
     )
   }
-  return <HeroSlider cover={project.cover_image} focus={project.cover_focus} gallery={project.gallery ?? []} title={project.title} />
+  return (
+    <HeroSlider cover={project.cover_image} focus={project.cover_focus} gallery={project.gallery ?? []} title={project.title} settings={settings} />
+  )
 }
 
-export function ProjectInfoSection({ data }: SectionProps) {
+export function ProjectInfoSection({ data, settings = {} }: SectionProps) {
+  const showFacts = settings.facts !== 'hide'
+  const stacked = settings.layout === 'stacked' || !showFacts
   const { project } = data
   const meta = [
     ['Местоположение', project.location],
@@ -201,7 +241,8 @@ export function ProjectInfoSection({ data }: SectionProps) {
 
   return (
     <div className="mx-auto max-w-[84rem] px-6 pt-2 pb-16 sm:pt-16">
-      <div className="mt-0 grid gap-12 sm:mt-10 md:grid-cols-[260px_1fr]">
+      <div className={`mt-0 grid gap-12 sm:mt-10 ${stacked ? '' : 'md:grid-cols-[260px_1fr]'}`}>
+        {showFacts && (
         <Reveal delay={0.1}>
           <dl className="space-y-4 text-sm">
             {meta.map(([label, value]) => (
@@ -212,10 +253,14 @@ export function ProjectInfoSection({ data }: SectionProps) {
             ))}
           </dl>
         </Reveal>
+        )}
 
         {project.body && (
           <Reveal delay={0.2}>
-            <div className="prose prose-invert max-w-none text-white/70" dangerouslySetInnerHTML={{ __html: sanitise(project.body) }} />
+            <div
+              className={`prose prose-invert max-w-none text-white/70 ${PROSE[settings.text ?? ''] ?? ''}`}
+              dangerouslySetInnerHTML={{ __html: sanitise(project.body) }}
+            />
           </Reveal>
         )}
       </div>
@@ -223,15 +268,18 @@ export function ProjectInfoSection({ data }: SectionProps) {
   )
 }
 
-export function ProjectGallerySection({ data }: SectionProps) {
+export function ProjectGallerySection({ data, settings = {} }: SectionProps) {
+  const cols = GRID_COLS[settings.cols ?? ''] ?? GRID_COLS['4']
+  const ratio = RATIO[settings.ratio ?? ''] ?? RATIO['2/1']
+  const gap = GAP[settings.gap ?? ''] ?? GAP.s
   const gallery = data.project.gallery ?? []
   if (!gallery.length) return null
   return (
     <div className="mx-auto max-w-[84rem] px-6 pb-16">
-      <div className="mt-4 grid grid-cols-2 gap-1.5 sm:mt-12 md:grid-cols-4">
+      <div className={`mt-4 grid grid-cols-2 sm:mt-12 ${cols}`} style={{ gap }}>
         {gallery.map((src, i) => (
           <Reveal key={i} delay={(i % 4) * 0.06}>
-            <img src={src} alt="" className="aspect-[2/1] w-full object-cover" />
+            <img src={src} alt="" className="w-full object-cover" style={{ aspectRatio: ratio }} />
           </Reveal>
         ))}
       </div>
@@ -239,20 +287,28 @@ export function ProjectGallerySection({ data }: SectionProps) {
   )
 }
 
-export function OtherProjectsSection({ data, locale }: SectionProps) {
-  const { others } = data
+export function OtherProjectsSection({ data, locale, settings = {} }: SectionProps) {
+  const others = data.others.slice(0, settings.count === '4' ? 4 : settings.count === '6' ? 6 : 8)
+  const cols = GRID_COLS[settings.cols ?? ''] ?? GRID_COLS['4']
+  const ratio = RATIO[settings.ratio ?? ''] ?? RATIO['1.75/1']
   if (!others.length) return null
   return (
     <div className="mx-auto max-w-[84rem] px-6 pb-24">
+      {settings.heading !== 'hide' && (
       <Reveal>
         <h2 className="font-serif text-3xl text-white md:text-4xl">
           {locale === 'ru' ? 'Другие проекты' : locale === 'kz' ? 'Басқа жобалар' : 'Other projects'}
         </h2>
       </Reveal>
-      <div className="mt-8 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5 md:grid-cols-4">
+      )}
+      <div className={`mt-8 grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-2.5 ${cols}`}>
         {others.map((item, i) => (
           <Reveal key={item.id} delay={(i % 4) * 0.05}>
-            <Link to={`/${locale}/projects/${item.slug}`} className="group relative block aspect-[1.75/1] overflow-hidden bg-ink-800">
+            <Link
+              to={`/${locale}/projects/${item.slug}`}
+              className="group relative block overflow-hidden bg-ink-800"
+              style={{ aspectRatio: ratio }}
+            >
               {item.cover_image && (
                 <img src={item.cover_image} alt={item.title} className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" />
               )}
@@ -271,14 +327,54 @@ export function OtherProjectsSection({ data, locale }: SectionProps) {
 export interface ProjectBlock {
   id: string
   label: string
+  settings?: { name: string; label: string; options: string[][] }[]
   render: (props: SectionProps) => ReactNode
 }
 
 export const PROJECT_BLOCKS: ProjectBlock[] = [
-  { id: 'project-hero', label: 'Обложка и название', render: (p) => <ProjectHeroSection {...p} /> },
-  { id: 'project-info', label: 'Характеристики и описание', render: (p) => <ProjectInfoSection {...p} /> },
-  { id: 'project-gallery', label: 'Галерея', render: (p) => <ProjectGallerySection {...p} /> },
-  { id: 'project-others', label: 'Другие проекты', render: (p) => <OtherProjectsSection {...p} /> },
+  {
+    id: 'project-hero',
+    label: 'Обложка и название',
+    settings: [
+      { name: 'height', label: 'Высота', options: [['', 'На весь экран'], ['large', 'Большая'], ['medium', 'Средняя'], ['small', 'Маленькая']] },
+      { name: 'title', label: 'Размер названия', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой'], ['xl', 'Очень большой']] },
+      { name: 'arrows', label: 'Стрелки', options: SHOW_HIDE },
+      { name: 'autoplay', label: 'Автопрокрутка', options: [['on', 'Включена'], ['off', 'Выключена']] },
+      { name: 'scroll', label: 'Стрелка вниз', options: SHOW_HIDE },
+    ],
+    render: (p) => <ProjectHeroSection {...p} />,
+  },
+  {
+    id: 'project-info',
+    label: 'Характеристики и описание',
+    settings: [
+      { name: 'layout', label: 'Расположение', options: [['side', 'Рядом'], ['stacked', 'Друг под другом']] },
+      { name: 'facts', label: 'Характеристики', options: SHOW_HIDE },
+      { name: 'text', label: 'Размер текста', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой']] },
+    ],
+    render: (p) => <ProjectInfoSection {...p} />,
+  },
+  {
+    id: 'project-gallery',
+    label: 'Галерея',
+    settings: [
+      { name: 'cols', label: 'Колонок', options: COLS_OPTIONS('4') },
+      { name: 'ratio', label: 'Форма фото', options: [['2/1', 'Широкие 2:1'], ['16/9', '16:9'], ['4/3', '4:3'], ['1/1', 'Квадрат'], ['3/4', 'Вертикальные 3:4']] },
+      { name: 'gap', label: 'Отступ между', options: GAP_OPTIONS },
+    ],
+    render: (p) => <ProjectGallerySection {...p} />,
+  },
+  {
+    id: 'project-others',
+    label: 'Другие проекты',
+    settings: [
+      { name: 'cols', label: 'Колонок', options: COLS_OPTIONS('4') },
+      { name: 'count', label: 'Сколько показать', options: [['8', '8'], ['6', '6'], ['4', '4']] },
+      { name: 'ratio', label: 'Форма картинок', options: [['1.75/1', 'Широкие'], ['16/9', '16:9'], ['1/1', 'Квадрат'], ['3/4', 'Вертикальные 3:4']] },
+      { name: 'heading', label: 'Заголовок', options: SHOW_HIDE },
+    ],
+    render: (p) => <OtherProjectsSection {...p} />,
+  },
 ]
 
 export const DEFAULT_PROJECT_LAYOUT = PROJECT_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')
