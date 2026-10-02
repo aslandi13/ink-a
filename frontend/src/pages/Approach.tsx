@@ -60,6 +60,7 @@ export default function Approach() {
       <PageRenderer
         html={layout?.html || DEFAULT_APPROACH_LAYOUT}
         css={layout?.css ?? ''}
+        translations={layout?.translations}
         data={data}
         locale={locale}
         blocks={APPROACH_BLOCKS}

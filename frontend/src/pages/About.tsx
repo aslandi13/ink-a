@@ -60,6 +60,7 @@ export default function About() {
       <PageRenderer
         html={layout?.html || DEFAULT_ABOUT_LAYOUT}
         css={layout?.css ?? ''}
+        translations={layout?.translations}
         data={data}
         locale={locale}
         blocks={ABOUT_BLOCKS}

@@ -45,17 +45,16 @@ class EditorController extends Controller
             return response()->json(['message' => 'Страница не найдена. Создайте её в админке.'], 404);
         }
 
-        $layouts = Page::normalizeLayouts($page?->draft);
-        $draft = $layouts[$locale] ?? $layouts['ru'] ?? null;
+        $draft = Page::layoutFor($page?->draft, $locale);
 
         if (is_array($draft)) {
             $draft['html'] = FileUrlResolver::html($draft['html'] ?? '');
             $draft['css'] = FileUrlResolver::html($draft['css'] ?? '');
+            $draft['translations'] = (object) Page::translationsFor($draft, $locale);
         }
 
         return response()->json(['data' => [
             'draft' => $draft,
-            'inherited' => $draft !== null && ! isset($layouts[$locale]),
             'title' => $page?->localized('title', 'ru') ?? $slug,
             'published_at' => $page?->published_at,
             'has_unpublished' => $page !== null && $page->draft !== null && Page::normalizeLayouts($page->draft) != ($page->published ?? []),
@@ -69,6 +68,8 @@ class EditorController extends Controller
             'project' => ['required', 'array'],
             'html' => ['present', 'nullable', 'string'],
             'css' => ['present', 'nullable', 'string'],
+            'translations' => ['nullable', 'array'],
+            'translations.*' => ['nullable', 'string', 'max:20000'],
         ]);
 
         if (! Page::isBuiltIn($slug) && ! Page::where('slug', $slug)->exists()) {
@@ -76,9 +77,19 @@ class EditorController extends Controller
         }
 
         $page = Page::firstOrNew(['slug' => $slug]);
-        $layouts = Page::normalizeLayouts($page->draft);
-        $layouts[$locale] = $data;
-        $page->draft = $layouts;
+        $current = Page::layoutFor($page->draft, 'ru') ?? [];
+        $translations = is_array($current['translations'] ?? null) ? $current['translations'] : [];
+
+        if ($locale !== 'ru') {
+            $translations[$locale] = array_filter($data['translations'] ?? [], fn ($value) => $value !== null);
+        }
+
+        $page->draft = ['ru' => [
+            'project' => $data['project'],
+            'html' => $data['html'],
+            'css' => $data['css'],
+            'translations' => $translations,
+        ]];
         $page->save();
 
         return response()->json(['data' => ['updated_at' => $page->updated_at]]);

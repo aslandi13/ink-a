@@ -77,6 +77,7 @@ export default function CustomPage() {
       <PageRenderer
         html={page.html}
         css={page.css}
+        translations={page.translations}
         data={data as HomeData}
         locale={locale}
         blocks={HOME_BLOCKS}

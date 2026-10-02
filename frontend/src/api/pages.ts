@@ -5,6 +5,7 @@ import { api } from './client'
 export interface PageLayout {
   html: string
   css: string
+  translations?: Record<string, string>
 }
 
 export interface LocalizedPage extends PageLayout {
@@ -72,7 +73,6 @@ export function editorLogin(email: string, password: string): Promise<string> {
 
 export interface DraftResponse {
   draft: PageDraft | null
-  inherited: boolean
   title: string
   published_at: string | null
   has_unpublished: boolean

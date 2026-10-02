@@ -46,6 +46,7 @@ import { APPROACH_BLOCKS, DEFAULT_APPROACH_LAYOUT, loadApproachData } from '../s
 import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sections/projectFields'
 import { inkPlugin, type InkBlock, type InkFields } from './inkPlugin'
 import LoginForm from './LoginForm'
+import { applyTranslations, ensureTextKeys, withBaseTexts } from './translations'
 import './editor.css'
 
 function takeTokenFromHash(): string | null {
@@ -280,6 +281,7 @@ export default function EditorPage() {
         }
 
         const draft = page.draft
+        let originals = new Map<string, string>()
         const editor = grapesjs.init({
           container: containerRef.current,
           height: '100%',
@@ -321,11 +323,19 @@ export default function EditorPage() {
           const changes = store.takePending()
           try {
             if (changes.length) await saveSectionContent(locale, changes)
-            await saveDraftPage(slug, locale, {
+            editor.selectRemove(editor.getSelectedAll())
+            ensureTextKeys(editor)
+            const read = () => ({
               project: editor.getProjectData(),
               html: editor.getHtml(),
               css: editor.getCss({ avoidProtected: true }) ?? '',
             })
+            if (locale === 'ru') {
+              await saveDraftPage(slug, locale, read())
+            } else {
+              const { result, translations } = withBaseTexts(editor, originals, read)
+              await saveDraftPage(slug, locale, { ...result, translations })
+            }
             editor.clearDirtyCount()
             setDirty(false)
             setPublishState((current) => (current === 'none' ? 'none' : 'changed'))
@@ -399,6 +409,12 @@ export default function EditorPage() {
         })
 
         editor.onReady(() => {
+          ensureTextKeys(editor)
+          if (locale !== 'ru') originals = applyTranslations(editor, draft?.translations ?? {})
+          setTimeout(() => {
+            editor.clearDirtyCount()
+            setDirty(false)
+          })
           editor.Panels.getButton('views', 'open-blocks')?.set('active', true)
           editor.on('component:selected', (component) => {
             if (component.get('type') === 'ink-block' && (component.get('traits')?.length ?? 0) > 0) {
@@ -406,8 +422,8 @@ export default function EditorPage() {
             }
           })
           setStatus(
-            page.inherited
-              ? `Версия ${locale.toUpperCase()} создана из RU — измените тексты и сохраните`
+            locale !== 'ru'
+              ? `Раскладка общая для всех языков. Здесь меняются только тексты на ${locale.toUpperCase()}`
               : page.draft
                 ? 'Дважды кликните по тексту или фото, чтобы изменить'
                 : slug === 'legal'

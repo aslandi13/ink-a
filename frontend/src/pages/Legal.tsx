@@ -64,6 +64,7 @@ export default function Legal() {
       <PageRenderer
         html={layout?.html || DEFAULT_LEGAL_LAYOUT}
         css={layout?.css ?? ''}
+        translations={layout?.translations}
         data={data}
         locale={locale}
         blocks={LEGAL_BLOCKS}

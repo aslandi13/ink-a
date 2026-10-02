@@ -38,7 +38,14 @@ export default function Projects() {
       )}
 
       {ready ? (
-        <PageRenderer html={layout?.html || DEFAULT_PROJECTS_LIST_LAYOUT} css={layout?.css ?? ''} data={null} locale={locale} blocks={PROJECTS_LIST_BLOCKS} />
+        <PageRenderer
+          html={layout?.html || DEFAULT_PROJECTS_LIST_LAYOUT}
+          css={layout?.css ?? ''}
+          translations={layout?.translations}
+          data={null}
+          locale={locale}
+          blocks={PROJECTS_LIST_BLOCKS}
+        />
       ) : (
         <section className="flex min-h-[60vh] items-center justify-center text-white/40">{tr.ui.loading}</section>
       )}

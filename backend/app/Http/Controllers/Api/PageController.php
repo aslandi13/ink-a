@@ -94,6 +94,7 @@ class PageController extends Controller
         return [
             'html' => FileUrlResolver::html($layout['html'] ?? ''),
             'css' => FileUrlResolver::html($layout['css'] ?? ''),
+            'translations' => (object) Page::translationsFor($layout, $locale),
         ];
     }
 }

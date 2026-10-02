@@ -60,6 +60,7 @@ export default function Contacts() {
       <PageRenderer
         html={layout?.html || DEFAULT_CONTACTS_LAYOUT}
         css={layout?.css ?? ''}
+        translations={layout?.translations}
         data={data}
         locale={locale}
         blocks={CONTACTS_BLOCKS}

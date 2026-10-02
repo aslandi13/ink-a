@@ -123,7 +123,14 @@ class Page extends Model
             return $layouts;
         }
 
-        return $layouts[$locale] ?? $layouts['ru'] ?? null;
+        return $layouts['ru'] ?? $layouts[$locale] ?? (reset($layouts) ?: null);
+    }
+
+    public static function translationsFor(?array $layout, string $locale): array
+    {
+        $translations = $layout['translations'][$locale] ?? [];
+
+        return is_array($translations) ? $translations : [];
     }
 
     public static function normalizeLayouts(?array $layouts): array

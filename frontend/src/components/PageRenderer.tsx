@@ -11,8 +11,14 @@ interface Segment {
   settings?: Record<string, string>
 }
 
-function parseSegments(html: string): Segment[] {
+function parseSegments(html: string, translations?: Record<string, string>): Segment[] {
   const doc = new DOMParser().parseFromString(html, 'text/html')
+  if (translations) {
+    doc.body.querySelectorAll<HTMLElement>('[data-t]').forEach((el) => {
+      const value = translations[el.dataset.t ?? '']
+      if (typeof value === 'string' && value.trim() !== '') el.innerHTML = value
+    })
+  }
   const segments: Segment[] = []
   let buffer = ''
   let bufferBleeds = false
@@ -52,14 +58,25 @@ interface Props<T> {
   bleedBlock?: string
   offsetClass?: string
   transformHtml?: (html: string) => string
+  translations?: Record<string, string>
 }
 
 export function usesBlocks(html: string): boolean {
   return /data-block=/.test(html)
 }
 
-export default function PageRenderer<T>({ html, css, data, locale, blocks, bleedBlock, offsetClass, transformHtml }: Props<T>) {
-  const segments = useMemo(() => parseSegments(html), [html])
+export default function PageRenderer<T>({
+  html,
+  css,
+  data,
+  locale,
+  blocks,
+  bleedBlock,
+  offsetClass,
+  transformHtml,
+  translations,
+}: Props<T>) {
+  const segments = useMemo(() => parseSegments(html, translations), [html, translations])
   const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
 
   return (

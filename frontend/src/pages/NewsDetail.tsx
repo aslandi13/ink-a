@@ -66,6 +66,7 @@ export default function NewsDetail() {
       <PageRenderer
         html={layout?.html || DEFAULT_NEWS_LAYOUT}
         css={layout?.css ?? ''}
+        translations={layout?.translations}
         data={data}
         locale={locale}
         blocks={NEWS_BLOCKS}

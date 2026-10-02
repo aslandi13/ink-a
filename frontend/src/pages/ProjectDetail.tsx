@@ -86,6 +86,7 @@ export default function ProjectDetail() {
       <PageRenderer
         html={layout?.html || DEFAULT_PROJECT_LAYOUT}
         css={layout?.css ?? ''}
+        translations={layout?.translations}
         data={data}
         locale={locale}
         blocks={PROJECT_BLOCKS}

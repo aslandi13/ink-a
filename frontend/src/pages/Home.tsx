@@ -61,6 +61,7 @@ export default function Home() {
       <PageRenderer
         html={layout?.html || DEFAULT_HOME_LAYOUT}
         css={layout?.css ?? ''}
+        translations={layout?.translations}
         data={data}
         locale={locale}
         blocks={HOME_BLOCKS}
