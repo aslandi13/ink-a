@@ -94,6 +94,25 @@ class Page extends Model
         }
     }
 
+    public static function isTemplate(string $slug): bool
+    {
+        return in_array($slug, self::templateSlugs(), true);
+    }
+
+    public static function templateSlugs(): array
+    {
+        return [
+            self::PROJECT_TEMPLATE,
+            ...array_map(fn ($c) => self::PROJECT_TEMPLATE.'-'.$c, self::PROJECT_CATEGORIES),
+            self::NEWS_TEMPLATE,
+        ];
+    }
+
+    public static function isBuiltIn(string $slug): bool
+    {
+        return in_array($slug, self::BUILT_IN, true) || self::isTemplate($slug);
+    }
+
     public static function layoutFor(?array $layouts, string $locale): ?array
     {
         if ($layouts === null) {
