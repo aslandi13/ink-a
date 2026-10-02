@@ -81,10 +81,18 @@ export function loadHomeData(locale: Locale): Promise<HomeData> {
 interface SectionProps {
   data: HomeData
   locale: Locale
+  settings?: Record<string, string>
 }
 
-export function HeroSection({ data, locale }: SectionProps) {
+const SHOW_HIDE = [['show', 'Показывать'], ['hide', 'Скрыть']]
+const HERO_MIN_HEIGHT: Record<string, string> = { large: 'calc(80vh + 6rem)', medium: 'calc(60vh + 6rem)' }
+const KP_COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
+const KP_RATIO: Record<string, string> = { '4/3': '4/3', '16/9': '16/9', '1/1': '1/1', '3/4': '3/4' }
+
+export function HeroSection({ data, locale, settings = {} }: SectionProps) {
   const { hero, projects } = data
+  const autoplay = settings.autoplay !== 'off'
+  const minHeight = HERO_MIN_HEIGHT[settings.height ?? '']
   const [slideIndex, setSlideIndex] = useState(0)
   const videoRef = useRef<HTMLVideoElement>(null)
 
@@ -95,14 +103,14 @@ export function HeroSection({ data, locale }: SectionProps) {
   const slidesLen = slides.length
 
   useEffect(() => {
-    if (slidesLen <= 1) return
+    if (slidesLen <= 1 || !autoplay) return
     const isVideo = slides[slideIndex]?.type === 'video'
     const timer = setTimeout(() => {
       setSlideIndex((i) => (i + 1) % slidesLen)
     }, isVideo ? 8000 : 5000)
     return () => clearTimeout(timer)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [slideIndex, slidesLen])
+  }, [slideIndex, slidesLen, autoplay])
 
   const featuredProject = projects.find((p) => p.id === hero?.featured_project_id)
   const currentSlide = slides[slideIndex]
@@ -110,7 +118,10 @@ export function HeroSection({ data, locale }: SectionProps) {
   const badgeTitle = currentSlide?.type === 'photo' && currentSlide.title ? currentSlide.title : featuredProject?.title
 
   return (
-    <section className="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pb-20">
+    <section
+      className="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pb-20"
+      style={minHeight ? { minHeight } : undefined}
+    >
       <AnimatePresence mode="sync">
         {slides.map((slide, i) =>
           i !== slideIndex ? null : slide.type === 'video' ? (
@@ -161,7 +172,7 @@ export function HeroSection({ data, locale }: SectionProps) {
             </h1>
           </FadeIn>
 
-          {!!hero?.stats?.length && (
+          {settings.stats !== 'hide' && !!hero?.stats?.length && (
             <FadeIn delay={0.2}>
               <dl className="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">
                 {hero.stats.map((stat, i) => (
@@ -174,7 +185,7 @@ export function HeroSection({ data, locale }: SectionProps) {
             </FadeIn>
           )}
 
-          {badgeSlug && badgeTitle && (
+          {settings.badge !== 'hide' && badgeSlug && badgeTitle && (
             <AnimatePresence mode="wait">
               <motion.div
                 key={badgeSlug}
@@ -203,7 +214,7 @@ export function HeroSection({ data, locale }: SectionProps) {
               </p>
             </FadeIn>
           )}
-          {hero?.description && (
+          {settings.description !== 'hide' && hero?.description && (
             <FadeIn delay={0.25}>
               <p data-edit="home.hero:description" className="hidden max-w-lg text-white/70 sm:block">{hero.description}</p>
             </FadeIn>
@@ -214,15 +225,17 @@ export function HeroSection({ data, locale }: SectionProps) {
   )
 }
 
-export function AboutSection({ data, locale }: SectionProps) {
+export function AboutSection({ data, locale, settings = {} }: SectionProps) {
   const { about } = data
   const tr = t(locale)
 
   return (
     <section className="mx-auto max-w-[84rem] px-6 pt-8 pb-4 sm:pt-24 sm:pb-24">
-      <Reveal>
-        <p className="text-xs uppercase tracking-widest text-white/40">{tr.home.about}</p>
-      </Reveal>
+      {settings.label !== 'hide' && (
+        <Reveal>
+          <p className="text-xs uppercase tracking-widest text-white/40">{tr.home.about}</p>
+        </Reveal>
+      )}
 
       {about?.image ? (
         <>
@@ -243,7 +256,7 @@ export function AboutSection({ data, locale }: SectionProps) {
                   <p data-edit="home.about:intro" className="whitespace-pre-line text-sm text-white/70">{about.intro}</p>
                 </Reveal>
               )}
-              {about.quote && (
+              {settings.quote !== 'hide' && about.quote && (
                 <Reveal delay={0.2}>
                   <blockquote className="border-l border-accent/60 pl-4 text-sm italic text-white/80">
                     «<span data-edit="home.about:quote">{about.quote}</span>»
@@ -277,7 +290,7 @@ export function AboutSection({ data, locale }: SectionProps) {
                   </p>
                 </Reveal>
               )}
-              {about.quote && (
+              {settings.quote !== 'hide' && about.quote && (
                 <Reveal delay={0.15}>
                   <blockquote className="text-[1.08cqw] italic leading-snug text-white/80">
                     «<span data-edit="home.about:quote">{about.quote}</span>»
@@ -305,7 +318,7 @@ export function AboutSection({ data, locale }: SectionProps) {
                 <p data-edit="home.about:intro" className="whitespace-pre-line text-white/70">{about.intro}</p>
               </Reveal>
             )}
-            {about?.quote && (
+            {settings.quote !== 'hide' && about?.quote && (
               <Reveal delay={0.2}>
                 <blockquote className="border-l border-accent/60 pl-6 italic text-white/80">
                   «<span data-edit="home.about:quote">{about.quote}</span>»
@@ -318,7 +331,7 @@ export function AboutSection({ data, locale }: SectionProps) {
           </div>
         </>
       )}
-      {!!about?.principles?.length && (
+      {settings.principles !== 'hide' && !!about?.principles?.length && (
         <div className="mt-4 border-t border-line pt-4 sm:mt-12 sm:pt-12">
           <div className="grid gap-10 md:grid-cols-[38%_1fr] md:gap-20">
             {about.principles_image && (
@@ -343,7 +356,7 @@ export function AboutSection({ data, locale }: SectionProps) {
   )
 }
 
-export function OfficesSection({ data }: SectionProps) {
+export function OfficesSection({ data, settings = {} }: SectionProps) {
   const { offices } = data
   if (!offices?.heading && !offices?.map_video) return null
 
@@ -363,7 +376,7 @@ export function OfficesSection({ data }: SectionProps) {
             </Reveal>
           )}
         </div>
-        {offices.description && (
+        {settings.description !== 'hide' && offices.description && (
           <Reveal delay={0.1}>
             <p data-edit="home.offices:description" className="whitespace-pre-line text-sm leading-relaxed text-white/60 md:pt-2">
               {offices.description}
@@ -371,7 +384,7 @@ export function OfficesSection({ data }: SectionProps) {
           </Reveal>
         )}
       </div>
-      {(offices.map_video || offices.map_poster) && (
+      {settings.map !== 'hide' && (offices.map_video || offices.map_poster) && (
         <Reveal delay={0.2}>
           <div className="mt-10 aspect-[2.3107] w-full overflow-hidden bg-ink-950">
             {offices.map_video ? (
@@ -394,12 +407,12 @@ export function OfficesSection({ data }: SectionProps) {
   )
 }
 
-export function VideoBannerSection({ data }: SectionProps) {
+export function VideoBannerSection({ data, settings = {} }: SectionProps) {
   const { videoBanner } = data
   if (!videoBanner?.video && !videoBanner?.video_url && !(videoBanner?.featured_projects?.length ?? 0)) return null
 
   return (
-    <div className="mx-auto max-w-[84rem] px-6">
+    <div className={settings.width === 'full' ? '' : 'mx-auto max-w-[84rem] px-6'}>
       <HeroBannerSlider
         videoSrc={videoBanner?.video || videoBanner?.video_url}
         videoPoster={videoBanner?.poster}
@@ -409,9 +422,13 @@ export function VideoBannerSection({ data }: SectionProps) {
   )
 }
 
-export function KeyProjectsSection({ data, locale }: SectionProps) {
+export function KeyProjectsSection({ data, locale, settings = {} }: SectionProps) {
   const { keyProjects, projects } = data
   const tr = t(locale)
+  const count = Number(settings.count) || 30
+  const cols = KP_COLS[settings.cols ?? ''] ?? KP_COLS['4']
+  const ratio = KP_RATIO[settings.ratio ?? ''] ?? KP_RATIO['4/3']
+  const featured = settings.featured !== 'off'
 
   return (
     <section className="mx-auto max-w-[84rem] px-6 pt-4 pb-28 sm:pt-20">
@@ -434,14 +451,14 @@ export function KeyProjectsSection({ data, locale }: SectionProps) {
       )}
 
       {projects.length > 0 && (
-        <StaggerList className="mt-10 grid grid-flow-dense grid-cols-2 gap-1 md:grid-cols-4">
-          {projects.slice(0, 30).map((project, i) => {
-            const isFeatured = i % 13 === 0
+        <StaggerList className={`mt-10 grid grid-flow-dense grid-cols-2 gap-1 ${cols}`}>
+          {projects.slice(0, count).map((project, i) => {
+            const isFeatured = featured && i % 13 === 0
             return (
               <StaggerItem
                 key={project.id}
-                className={`${i === 0 ? 'col-span-2' : ''} ${isFeatured ? 'md:col-span-2 md:row-span-2' : ''}`}
-                style={{ aspectRatio: '4/3' }}
+                className={`${featured && i === 0 ? 'col-span-2' : ''} ${isFeatured ? 'md:col-span-2 md:row-span-2' : ''}`}
+                style={{ aspectRatio: ratio }}
               >
                 <Link
                   to={`/${locale}/projects/${project.slug}`}
@@ -466,6 +483,7 @@ export function KeyProjectsSection({ data, locale }: SectionProps) {
         </StaggerList>
       )}
 
+      {settings.button !== 'hide' && (
       <div className="mt-10 flex justify-center">
         <Link
           to={`/${locale}/projects`}
@@ -475,6 +493,7 @@ export function KeyProjectsSection({ data, locale }: SectionProps) {
           {tr.ui.more}
         </Link>
       </div>
+      )}
     </section>
   )
 }
@@ -482,15 +501,60 @@ export function KeyProjectsSection({ data, locale }: SectionProps) {
 export interface HomeBlock {
   id: string
   label: string
+  settings?: { name: string; label: string; options: string[][] }[]
   render: (props: SectionProps) => ReactNode
 }
 
 export const HOME_BLOCKS: HomeBlock[] = [
-  { id: 'hero', label: 'Герой', render: (p) => <HeroSection {...p} /> },
-  { id: 'about', label: 'О нас', render: (p) => <AboutSection {...p} /> },
-  { id: 'offices', label: 'География', render: (p) => <OfficesSection {...p} /> },
-  { id: 'video', label: 'Видео-баннер', render: (p) => <VideoBannerSection {...p} /> },
-  { id: 'projects', label: 'Ключевые проекты', render: (p) => <KeyProjectsSection {...p} /> },
+  {
+    id: 'hero',
+    label: 'Герой',
+    settings: [
+      { name: 'height', label: 'Высота', options: [['', 'На весь экран'], ['large', 'Большая'], ['medium', 'Средняя']] },
+      { name: 'autoplay', label: 'Автопрокрутка фона', options: [['on', 'Включена'], ['off', 'Выключена']] },
+      { name: 'stats', label: 'Цифры', options: SHOW_HIDE },
+      { name: 'badge', label: 'Ссылка на проект', options: SHOW_HIDE },
+      { name: 'description', label: 'Описание', options: SHOW_HIDE },
+    ],
+    render: (p) => <HeroSection {...p} />,
+  },
+  {
+    id: 'about',
+    label: 'О нас',
+    settings: [
+      { name: 'label', label: 'Подпись «О нас»', options: SHOW_HIDE },
+      { name: 'quote', label: 'Цитата', options: SHOW_HIDE },
+      { name: 'principles', label: 'Принципы', options: SHOW_HIDE },
+    ],
+    render: (p) => <AboutSection {...p} />,
+  },
+  {
+    id: 'offices',
+    label: 'География',
+    settings: [
+      { name: 'description', label: 'Описание', options: SHOW_HIDE },
+      { name: 'map', label: 'Карта', options: SHOW_HIDE },
+    ],
+    render: (p) => <OfficesSection {...p} />,
+  },
+  {
+    id: 'video',
+    label: 'Видео-баннер',
+    settings: [{ name: 'width', label: 'Ширина', options: [['container', 'По сетке сайта'], ['full', 'Во всю ширину экрана']] }],
+    render: (p) => <VideoBannerSection {...p} />,
+  },
+  {
+    id: 'projects',
+    label: 'Ключевые проекты',
+    settings: [
+      { name: 'count', label: 'Сколько показать', options: [['30', '30'], ['16', '16'], ['12', '12'], ['8', '8'], ['4', '4']] },
+      { name: 'cols', label: 'Колонок', options: [['4', '4'], ['3', '3'], ['2', '2']] },
+      { name: 'ratio', label: 'Форма картинок', options: [['4/3', '4:3'], ['16/9', '16:9'], ['1/1', 'Квадрат'], ['3/4', 'Вертикальные 3:4']] },
+      { name: 'featured', label: 'Большие карточки', options: [['on', 'Показывать'], ['off', 'Все одинаковые']] },
+      { name: 'button', label: 'Кнопка «Далее»', options: SHOW_HIDE },
+    ],
+    render: (p) => <KeyProjectsSection {...p} />,
+  },
 ]
 
 export const DEFAULT_HOME_LAYOUT = HOME_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')

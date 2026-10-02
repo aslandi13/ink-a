@@ -30,13 +30,17 @@ export interface ContactsData {
 interface SectionProps {
   data: ContactsData
   locale: Locale
+  settings?: Record<string, string>
 }
+
+const OVERLAY: Record<string, string> = { light: 'rgb(5 10 18 / 0.2)', normal: 'rgb(5 10 18 / 0.5)', dark: 'rgb(5 10 18 / 0.8)' }
+const CONTACTS_SHOW_HIDE = [['show', 'Показывать'], ['hide', 'Скрыть']]
 
 export function loadContactsData(locale: Locale): Promise<ContactsData> {
   return getPageContent<ContactsData>(locale, 'contacts')
 }
 
-export function ContactsSection({ data }: SectionProps) {
+export function ContactsSection({ data, settings = {} }: SectionProps) {
   const ICONS: Record<string, ReactNode> = {
     Email: <MdEmail size={22} />,
     Facebook: <FaFacebook size={20} />,
@@ -54,7 +58,7 @@ export function ContactsSection({ data }: SectionProps) {
   return (
     <section className="relative min-h-[90vh] overflow-hidden flex flex-col justify-center">
 
-      {data?.background_video && (
+      {settings.video !== 'hide' && data?.background_video && (
         <video
           className="absolute inset-0 h-full w-full object-cover"
           src={data.background_video}
@@ -64,9 +68,11 @@ export function ContactsSection({ data }: SectionProps) {
           playsInline
         />
       )}
-      <div className="absolute inset-0 bg-ink-950/50" />
+      <div className="absolute inset-0" style={{ backgroundColor: OVERLAY[settings.overlay ?? ''] ?? OVERLAY.normal }} />
 
       <div className="relative mx-auto flex w-full max-w-[84rem] flex-1 flex-col justify-center px-6 pt-42 pb-12">
+        {settings.socials !== 'hide' && (
+          <>
         <FadeIn>
           <p className="text-xs uppercase tracking-[0.2em] text-white/40">Социальные сети</p>
         </FadeIn>
@@ -85,8 +91,10 @@ export function ContactsSection({ data }: SectionProps) {
             </FadeIn>
           ))}
         </div>
+          </>
+        )}
 
-        {data?.career_heading && (
+        {settings.career !== 'hide' && data?.career_heading && (
           <div className="mt-5 max-w-xl border-t border-line pt-5 sm:mt-5 sm:pt-8">
             {data.career_label && (
               <FadeIn delay={0.1}>
@@ -119,7 +127,7 @@ export function ContactsSection({ data }: SectionProps) {
         )}
       </div>
 
-      {(data?.address || data?.phone) && (
+      {settings.info !== 'hide' && (data?.address || data?.phone) && (
         <div className="relative border-t border-line bg-ink-950 px-6 py-8 text-sm text-white/50">
           <div className="mx-auto flex max-w-[84rem] flex-wrap gap-x-10 gap-y-2">
             {data?.address && <p data-edit="contacts:address">{data.address}</p>}
@@ -135,11 +143,23 @@ export function ContactsSection({ data }: SectionProps) {
 export interface ContactsBlock {
   id: string
   label: string
+  settings?: { name: string; label: string; options: string[][] }[]
   render: (props: SectionProps) => ReactNode
 }
 
 export const CONTACTS_BLOCKS: ContactsBlock[] = [
-  { id: 'contacts-main', label: 'Контакты', render: (p) => <ContactsSection {...p} /> },
+  {
+    id: 'contacts-main',
+    label: 'Контакты',
+    settings: [
+      { name: 'video', label: 'Фоновое видео', options: CONTACTS_SHOW_HIDE },
+      { name: 'overlay', label: 'Затемнение', options: [['normal', 'Среднее'], ['light', 'Светлое'], ['dark', 'Тёмное']] },
+      { name: 'socials', label: 'Соцсети', options: CONTACTS_SHOW_HIDE },
+      { name: 'career', label: 'Блок «Карьера»', options: CONTACTS_SHOW_HIDE },
+      { name: 'info', label: 'Адрес и телефон', options: CONTACTS_SHOW_HIDE },
+    ],
+    render: (p) => <ContactsSection {...p} />,
+  },
 ]
 
 export const DEFAULT_CONTACTS_LAYOUT = CONTACTS_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { getPageContent } from '../api/content'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
@@ -26,6 +26,7 @@ export type ApproachData = Record<string, ApproachCategory>
 interface SectionProps {
   data: ApproachData
   locale: Locale
+  settings?: Record<string, string>
 }
 
 const EASE: [number, number, number, number] = [0.76, 0, 0.24, 1]
@@ -34,7 +35,7 @@ export function loadApproachData(locale: Locale): Promise<ApproachData> {
   return getPageContent<ApproachData>(locale, 'approach')
 }
 
-export function ApproachSection({ data, locale }: SectionProps) {
+export function ApproachSection({ data, locale, settings = {} }: SectionProps) {
   const tr = t(locale)
   const CATEGORIES: [string, string][] = [
     ['architecture', tr.approach.categories.architecture],
@@ -42,7 +43,10 @@ export function ApproachSection({ data, locale }: SectionProps) {
     ['urbanism', tr.approach.categories.urbanism],
     ['interior', tr.approach.categories.interior],
   ]
-  const [category, setCategory] = useState(CATEGORIES[0][0])
+  const initialCategory = CATEGORIES.some(([value]) => value === settings.category) ? settings.category! : CATEGORIES[0][0]
+  const [category, setCategory] = useState(initialCategory)
+  useEffect(() => setCategory(initialCategory), [initialCategory])
+  const imageLeft = settings.image === 'left'
   const [activeStep, setActiveStep] = useState<number | null>(null)
 
   const current = data?.[category]
@@ -77,7 +81,9 @@ export function ApproachSection({ data, locale }: SectionProps) {
         ))}
       </div>
 
-      <div className="mx-auto grid max-w-[84rem] gap-4 px-6 pt-2 pb-24 md:grid-cols-[45%_1fr] md:gap-16 md:pt-12">
+      <div
+        className={`mx-auto grid max-w-[84rem] gap-4 px-6 pt-2 pb-24 md:gap-16 md:pt-12 ${imageLeft ? 'md:grid-cols-[1fr_45%]' : 'md:grid-cols-[45%_1fr]'}`}
+      >
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -156,7 +162,9 @@ export function ApproachSection({ data, locale }: SectionProps) {
           </motion.div>
         </AnimatePresence>
 
-        <div className="relative order-first overflow-hidden bg-ink-800 md:order-none md:sticky md:top-24 md:h-fit">
+        <div
+          className={`relative order-first overflow-hidden bg-ink-800 md:sticky md:top-24 md:h-fit ${imageLeft ? 'md:order-first' : 'md:order-none'}`}
+        >
           <AnimatePresence mode="wait">
             <motion.div
               key={image}
@@ -196,11 +204,24 @@ export function ApproachSection({ data, locale }: SectionProps) {
 export interface ApproachBlock {
   id: string
   label: string
+  settings?: { name: string; label: string; options: string[][] }[]
   render: (props: SectionProps) => ReactNode
 }
 
 export const APPROACH_BLOCKS: ApproachBlock[] = [
-  { id: 'approach-main', label: 'Подход: вкладки и этапы', render: (p) => <ApproachSection {...p} /> },
+  {
+    id: 'approach-main',
+    label: 'Подход: вкладки и этапы',
+    settings: [
+      {
+        name: 'category',
+        label: 'Открытая вкладка',
+        options: [['architecture', 'Архитектура'], ['engineering', 'Рабочее проектирование'], ['urbanism', 'Урбанистика'], ['interior', 'Дизайн интерьера']],
+      },
+      { name: 'image', label: 'Фото', options: [['right', 'Справа'], ['left', 'Слева']] },
+    ],
+    render: (p) => <ApproachSection {...p} />,
+  },
 ]
 
 export const DEFAULT_APPROACH_LAYOUT = APPROACH_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')

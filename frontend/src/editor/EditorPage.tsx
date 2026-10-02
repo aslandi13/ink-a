@@ -26,7 +26,7 @@ import {
   templateCategory,
 } from '../sections/project'
 import { createContentStore, type ContentStore } from './contentStore'
-import { EXPLODERS } from './explode'
+import { CONTACTS_EXPLODERS, EXPLODERS, LEGAL_EXPLODERS } from './explode'
 import { ABOUT_BLOCKS, DEFAULT_ABOUT_LAYOUT, loadAboutData } from '../sections/about'
 import {
   applyNewsField,
@@ -135,6 +135,7 @@ function pageKind(slug: string): PageKind {
       load: loadLegalData,
       blocks: LEGAL_BLOCKS as InkBlock[],
       defaultLayout: DEFAULT_LEGAL_LAYOUT,
+      exploders: LEGAL_EXPLODERS as PageKind['exploders'],
       previewPath: (locale) => `/${locale}/legal?preview=1`,
     }
   }
@@ -165,6 +166,7 @@ function pageKind(slug: string): PageKind {
       load: loadContactsData,
       blocks: CONTACTS_BLOCKS as InkBlock[],
       defaultLayout: DEFAULT_CONTACTS_LAYOUT,
+      exploders: CONTACTS_EXPLODERS as PageKind['exploders'],
       previewPath: (locale) => `/${locale}/contacts?preview=1`,
     }
   }

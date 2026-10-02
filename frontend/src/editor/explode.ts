@@ -1,5 +1,6 @@
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
+import type { ContactsData } from '../sections/contacts'
 import type { HomeData } from '../sections/home'
 
 function esc(value: string | null | undefined): string {
@@ -154,4 +155,57 @@ export const EXPLODERS: Record<string, (data: HomeData, locale: Locale) => strin
   offices: explodeOffices,
   video: explodeVideo,
   projects: explodeProjects,
+}
+
+function explodeContacts(data: ContactsData): string {
+  const socials = [
+    data.email && { label: 'Email', value: data.email, href: `mailto:${data.email}` },
+    data.facebook_handle && { label: 'Facebook', value: data.facebook_handle, href: data.facebook_url },
+    data.instagram_handle && { label: 'Instagram', value: data.instagram_handle, href: data.instagram_url },
+    data.linkedin_handle && { label: 'LinkedIn', value: data.linkedin_handle, href: data.linkedin_url },
+  ].filter(Boolean) as { label: string; value: string; href?: string }[]
+
+  const socialLinks = socials
+    .map(
+      (item) =>
+        `<a data-gjs-name="${esc(item.label)}" href="${esc(item.href)}" class="group block"><span class="block text-white transition-colors group-hover:text-accent">${esc(item.value)}</span><span class="mt-1 block text-xs text-white/40">${esc(item.label)}</span></a>`,
+    )
+    .join('')
+
+  const career = data.career_heading
+    ? `<div data-gjs-name="Карьера" class="mt-5 max-w-xl border-t border-line pt-5 sm:pt-8">
+      ${data.career_label ? `<p class="text-xs uppercase tracking-[0.2em] text-white/40">${esc(data.career_label)}</p>` : ''}
+      <h1 class="mt-3 whitespace-pre-line font-serif text-4xl text-white md:text-5xl">${esc(data.career_heading)}</h1>
+      ${data.career_text ? `<p class="mt-1 text-white/60">${esc(data.career_text)}</p>` : ''}
+      ${data.career_cta_label ? `<a href="${esc(data.career_cta_url ?? `mailto:${data.email ?? ''}`)}" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-2 border border-white/30 px-6 py-3 text-sm text-white transition-colors hover:border-white hover:bg-white hover:text-ink-950">${esc(data.career_cta_label)} →</a>` : ''}
+    </div>`
+    : ''
+
+  const info = [data.address, data.phone, data.whatsapp ? `WhatsApp: ${data.whatsapp}` : null]
+    .filter(Boolean)
+    .map((line) => `<p>${esc(line)}</p>`)
+    .join('')
+
+  return `<section data-gjs-name="Контакты" class="relative flex min-h-[90vh] flex-col justify-center overflow-hidden">
+    ${data.background_video ? `<video ${LOCKED} data-gjs-name="Фон: видео" class="absolute inset-0 h-full w-full object-cover" src="${esc(data.background_video)}" autoplay muted loop playsinline></video>` : ''}
+    <div ${DECOR} class="pointer-events-none absolute inset-0 bg-ink-950/50"></div>
+    <div data-gjs-name="Содержимое" class="relative mx-auto flex w-full max-w-[84rem] flex-1 flex-col justify-center px-6 pt-42 pb-12">
+      <p class="text-xs uppercase tracking-[0.2em] text-white/40">Социальные сети</p>
+      <div data-gjs-name="Соцсети" class="mt-6 flex flex-wrap gap-x-12 gap-y-6">${socialLinks}</div>
+      ${career}
+    </div>
+    ${info ? `<div data-gjs-name="Адрес и телефон" class="relative border-t border-line bg-ink-950 px-6 py-8 text-sm text-white/50"><div class="mx-auto flex max-w-[84rem] flex-wrap gap-x-10 gap-y-2">${info}</div></div>` : ''}
+  </section>`
+}
+
+function explodeLegalTitle(_data: unknown, locale: Locale): string {
+  return `<div data-gjs-name="Заголовок" class="mx-auto max-w-4xl px-6 pt-24"><h1 class="text-3xl font-medium tracking-tight text-white">${esc(t(locale).legal.title)}</h1></div>`
+}
+
+export const CONTACTS_EXPLODERS: Record<string, (data: ContactsData, locale: Locale) => string> = {
+  'contacts-main': explodeContacts,
+}
+
+export const LEGAL_EXPLODERS: Record<string, (data: unknown, locale: Locale) => string> = {
+  'legal-title': explodeLegalTitle,
 }

@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { getPageContent } from '../api/content'
 import FadeIn from '../components/FadeIn'
 import Reveal from '../components/Reveal'
@@ -56,7 +56,12 @@ export interface AboutPageData {
 interface SectionProps {
   data: AboutPageData
   locale: Locale
+  settings?: Record<string, string>
 }
+
+type AboutTab = 'history' | 'team' | 'founder'
+const TEAM_COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4', '5': 'md:grid-cols-5' }
+const TEAM_RATIO: Record<string, string> = { square: '1/1', portrait: '3/4', tall: '2/3' }
 
 const EASE: [number, number, number, number] = [0.76, 0, 0.24, 1]
 
@@ -68,14 +73,18 @@ export function loadAboutData(locale: Locale): Promise<AboutPageData> {
   ]).then(([history, team, founder]) => ({ history, team, founder }))
 }
 
-export function AboutTabsSection({ data, locale }: SectionProps) {
+export function AboutTabsSection({ data, locale, settings = {} }: SectionProps) {
   const tr = t(locale)
   const TABS = [
     { value: 'history' as const, label: tr.about.tabs.history },
     { value: 'team' as const, label: tr.about.tabs.team },
     { value: 'founder' as const, label: tr.about.tabs.founder },
   ]
-  const [tab, setTab] = useState<'history' | 'team' | 'founder'>('history')
+  const initialTab = (['history', 'team', 'founder'].includes(settings.tab ?? '') ? settings.tab : 'history') as AboutTab
+  const [tab, setTab] = useState<AboutTab>(initialTab)
+  useEffect(() => setTab(initialTab), [initialTab])
+  const teamCols = TEAM_COLS[settings.teamCols ?? ''] ?? TEAM_COLS['4']
+  const teamRatio = TEAM_RATIO[settings.teamRatio ?? ''] ?? TEAM_RATIO.square
   const { history, founder } = data
   const team = data.team.members ?? []
 
@@ -208,10 +217,10 @@ export function AboutTabsSection({ data, locale }: SectionProps) {
 
           {tab === 'team' && (
             <div className="mx-auto max-w-[84rem] px-6 pt-2 pb-24 sm:pt-10">
-              <div className="grid gap-[10px] grid-cols-2 md:grid-cols-4">
+              <div className={`grid gap-[10px] grid-cols-2 ${teamCols}`}>
                 {team.map((m, i) => (
                   <Reveal key={i} delay={(i % 4) * 0.08}>
-                    <div className="aspect-square overflow-hidden bg-ink-800">
+                    <div className="overflow-hidden bg-ink-800" style={{ aspectRatio: teamRatio }}>
                       {m.photo && (
                         <img data-edit-image={`about.team:members.${i}.photo`} src={m.photo} alt={m.name} className="h-full w-full object-cover object-top" />
                       )}
@@ -292,11 +301,21 @@ export function AboutTabsSection({ data, locale }: SectionProps) {
 export interface AboutBlock {
   id: string
   label: string
+  settings?: { name: string; label: string; options: string[][] }[]
   render: (props: SectionProps) => ReactNode
 }
 
 export const ABOUT_BLOCKS: AboutBlock[] = [
-  { id: 'about-tabs', label: 'О нас: вкладки', render: (p) => <AboutTabsSection {...p} /> },
+  {
+    id: 'about-tabs',
+    label: 'О нас: вкладки',
+    settings: [
+      { name: 'tab', label: 'Открытая вкладка', options: [['history', 'История'], ['team', 'Команда'], ['founder', 'Об основателе']] },
+      { name: 'teamCols', label: 'Команда: колонок', options: [['4', '4'], ['3', '3'], ['5', '5'], ['2', '2']] },
+      { name: 'teamRatio', label: 'Команда: форма фото', options: [['square', 'Квадрат'], ['portrait', '3:4'], ['tall', '2:3']] },
+    ],
+    render: (p) => <AboutTabsSection {...p} />,
+  },
 ]
 
 export const DEFAULT_ABOUT_LAYOUT = ABOUT_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')
