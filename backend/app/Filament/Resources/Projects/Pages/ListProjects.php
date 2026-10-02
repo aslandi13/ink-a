@@ -23,19 +23,17 @@ class ListProjects extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            CreateAction::make()
+                ->url(fn () => ProjectResource::getUrl('create', ['category' => $this->currentCategory()])),
         ];
     }
 
     public function getTabs(): array
     {
-        $counts = Project::query()->selectRaw('category, count(*) as total')->groupBy('category')->pluck('total', 'category');
-
-        $tabs = ['all' => Tab::make('Все')->badge($counts->sum())];
+        $tabs = [];
 
         foreach (self::CATEGORIES as $key => $label) {
             $tabs[$key] = Tab::make($label)
-                ->badge($counts[$key] ?? 0)
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('category', $key));
         }
 
@@ -44,7 +42,21 @@ class ListProjects extends ListRecords
 
     public function getDefaultActiveTab(): string | int | null
     {
-        return 'all';
+        return array_key_first(self::CATEGORIES);
+    }
+
+    public function currentCategory(): string
+    {
+        return array_key_exists((string) $this->activeTab, self::CATEGORIES) ? (string) $this->activeTab : array_key_first(self::CATEGORIES);
+    }
+
+    public function categoryTabs(): array
+    {
+        $counts = Project::query()->selectRaw('category, count(*) as total')->groupBy('category')->pluck('total', 'category');
+
+        return collect(self::CATEGORIES)
+            ->map(fn (string $label, string $key) => ['label' => $label, 'count' => (int) ($counts[$key] ?? 0)])
+            ->all();
     }
 
     public function getTabsContentComponent(): \Filament\Schemas\Components\Component

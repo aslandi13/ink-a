@@ -50,6 +50,7 @@ class ProjectForm
                 Select::make('category')
                     ->label('Категория')
                     ->required()
+                    ->default(fn () => in_array(request()->query('category'), ['architecture', 'engineering', 'urbanism', 'interior'], true) ? request()->query('category') : null)
                     ->options([
                         'architecture' => 'Архитектура',
                         'engineering' => 'Рабочее проектирование',
