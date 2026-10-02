@@ -15,7 +15,9 @@ class Page extends Model
 
     public const ABOUT = 'about';
 
-    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT];
+    public const CONTACTS = 'contacts';
+
+    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT, self::CONTACTS];
 
     public const PROJECT_TEMPLATE = 'project-template';
 
@@ -60,6 +62,7 @@ class Page extends Model
         $titles = [
             self::APPROACH => 'Подход',
             self::ABOUT => 'О нас',
+            self::CONTACTS => 'Контакты',
             self::PROJECT_TEMPLATE => 'Шаблон проекта: общий',
             self::PROJECT_TEMPLATE.'-architecture' => 'Шаблон проекта: Архитектура',
             self::PROJECT_TEMPLATE.'-engineering' => 'Шаблон проекта: Рабочее проектирование',

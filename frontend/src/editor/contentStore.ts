@@ -14,6 +14,7 @@ const KEY_TO_PROP: Record<string, string> = {
   'about.history': 'history',
   'about.team': 'team',
   'about.founder': 'founder',
+  contacts: '',
 }
 
 function setPath<T>(data: T, key: string, field: string, value: string | null): T {

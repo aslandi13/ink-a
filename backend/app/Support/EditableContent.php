@@ -17,6 +17,7 @@ class EditableContent
         'approach' => ['expertise_intro', 'steps.*.title', 'steps.*.text', 'steps.*.image_caption'],
         'about.history' => ['intro', 'stats.*.number', 'stats.*.label', 'highlights.*.heading', 'highlights.*.text'],
         'about.founder' => ['bio', 'position', 'achievements.*', 'credential_highlights.*.text'],
+        'contacts' => ['career_label', 'career_heading', 'career_text', 'career_cta_label'],
     ];
 
     private const LOCALE_IMAGE_FIELDS = [
@@ -29,6 +30,7 @@ class EditableContent
         'about.history' => ['gallery.*.overlay_text'],
         'about.team' => ['members.*.name'],
         'about.founder' => ['name'],
+        'contacts' => ['email', 'facebook_handle', 'instagram_handle', 'linkedin_handle', 'address', 'phone', 'whatsapp'],
     ];
 
     private const NESTED_LOCALE_TEXT_FIELDS = [

@@ -28,6 +28,7 @@ import {
 import { createContentStore, type ContentStore } from './contentStore'
 import { EXPLODERS } from './explode'
 import { ABOUT_BLOCKS, DEFAULT_ABOUT_LAYOUT, loadAboutData } from '../sections/about'
+import { CONTACTS_BLOCKS, DEFAULT_CONTACTS_LAYOUT, loadContactsData } from '../sections/contacts'
 import { APPROACH_BLOCKS, DEFAULT_APPROACH_LAYOUT, loadApproachData } from '../sections/approach'
 import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sections/projectFields'
 import { inkPlugin, type InkBlock, type InkFields } from './inkPlugin'
@@ -89,6 +90,7 @@ const PAGE_OPTIONS = [
   { slug: 'home', label: 'Главная' },
   { slug: 'about', label: 'О нас' },
   { slug: 'approach', label: 'Подход' },
+  { slug: 'contacts', label: 'Контакты' },
   { slug: PROJECT_TEMPLATE, label: 'Шаблон проекта: общий' },
   ...PROJECT_CATEGORIES.map((c) => ({ slug: `${PROJECT_TEMPLATE}-${c.id}`, label: `Шаблон проекта: ${c.label}` })),
 ]
@@ -103,6 +105,14 @@ interface PageKind {
 }
 
 function pageKind(slug: string): PageKind {
+  if (slug === 'contacts') {
+    return {
+      load: loadContactsData,
+      blocks: CONTACTS_BLOCKS as InkBlock[],
+      defaultLayout: DEFAULT_CONTACTS_LAYOUT,
+      previewPath: (locale) => `/${locale}/contacts?preview=1`,
+    }
+  }
   if (slug === 'about') {
     return {
       load: loadAboutData,
@@ -301,7 +311,7 @@ export default function EditorPage() {
               ? `Версия ${locale.toUpperCase()} создана из RU — измените тексты и сохраните`
               : page.draft
                 ? 'Дважды кликните по тексту или фото, чтобы изменить'
-                : slug === 'approach' || slug === 'about'
+                : ['approach', 'about', 'contacts'].includes(slug)
                   ? 'Раскладка из текущей страницы. Дважды кликните по тексту или фото, чтобы изменить'
                   : isProjectTemplate(slug)
                   ? 'Шаблон показан на примере проекта. Данные проектов меняются в админке'
