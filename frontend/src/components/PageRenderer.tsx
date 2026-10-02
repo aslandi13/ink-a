@@ -8,6 +8,7 @@ interface Segment {
   id?: string
   html?: string
   bleed?: boolean
+  settings?: Record<string, string>
 }
 
 function parseSegments(html: string): Segment[] {
@@ -25,7 +26,11 @@ function parseSegments(html: string): Segment[] {
   doc.body.childNodes.forEach((node) => {
     if (node instanceof HTMLElement && node.dataset.block) {
       flush()
-      segments.push({ key: `block-${segments.length}`, block: node.dataset.block, id: node.id || undefined })
+      const settings: Record<string, string> = {}
+      for (const attr of Array.from(node.attributes)) {
+        if (attr.name.startsWith('data-s-')) settings[attr.name.slice(7)] = attr.value
+      }
+      segments.push({ key: `block-${segments.length}`, block: node.dataset.block, id: node.id || undefined, settings })
     } else if (node instanceof HTMLElement) {
       if (!buffer.trim()) bufferBleeds = node.hasAttribute('data-bleed')
       buffer += node.outerHTML
@@ -43,7 +48,7 @@ interface Props<T> {
   css: string
   data: T
   locale: Locale
-  blocks: { id: string; render: (props: { data: T; locale: Locale }) => ReactNode }[]
+  blocks: { id: string; render: (props: { data: T; locale: Locale; settings?: Record<string, string> }) => ReactNode }[]
   bleedBlock?: string
   offsetClass?: string
   transformHtml?: (html: string) => string
@@ -66,7 +71,7 @@ export default function PageRenderer<T>({ html, css, data, locale, blocks, bleed
           if (!block) return null
           return (
             <div key={segment.key} id={segment.id}>
-              {block.render({ data, locale })}
+              {block.render({ data, locale, settings: segment.settings })}
             </div>
           )
         }

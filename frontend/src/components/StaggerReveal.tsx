@@ -30,10 +30,11 @@ interface Props {
   style?: React.CSSProperties
 }
 
-export function StaggerList({ children, className }: Props) {
+export function StaggerList({ children, className, style }: Props) {
   return (
     <motion.div
       className={className}
+      style={style}
       variants={containerVariants}
       initial="hidden"
       whileInView="show"

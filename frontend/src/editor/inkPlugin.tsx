@@ -20,14 +20,35 @@ const CANVAS_CSS = `
 export interface InkBlock {
   id: string
   label: string
-  render: (props: { data: never; locale: Locale }) => ReactNode
+  settings?: { name: string; label: string; options: string[][] }[]
+  render: (props: { data: never; locale: Locale; settings?: Record<string, string> }) => ReactNode
 }
 
-function BlockPreview({ id, store, locale, blocks }: { id: string; store: ContentStore; locale: Locale; blocks: InkBlock[] }) {
+function readSettings(attributes: Record<string, string>): Record<string, string> {
+  const settings: Record<string, string> = {}
+  for (const [name, value] of Object.entries(attributes)) {
+    if (name.startsWith('data-s-') && value) settings[name.slice(7)] = value
+  }
+  return settings
+}
+
+function BlockPreview({
+  id,
+  store,
+  locale,
+  blocks,
+  settings,
+}: {
+  id: string
+  store: ContentStore
+  locale: Locale
+  blocks: InkBlock[]
+  settings: Record<string, string>
+}) {
   const { data, version } = useSyncExternalStore(store.subscribe, store.getSnapshot)
   const block = blocks.find((b) => b.id === id)
   if (!block) return <div style={{ padding: 24, color: '#fff' }}>Неизвестный блок: {id}</div>
-  return <Fragment key={version}>{block.render({ data: data as never, locale })}</Fragment>
+  return <Fragment key={version}>{block.render({ data: data as never, locale, settings })}</Fragment>
 }
 
 function parseTarget(value: string): [string, string] {
@@ -55,7 +76,7 @@ export function inkPlugin({ store, locale, blocks, exploders = {}, fields, onCon
   return (editor: Editor) => {
     const roots = new WeakMap<HTMLElement, Root>()
 
-    const mount = (el: HTMLElement, id: string) => {
+    const mount = (el: HTMLElement, id: string, settings: Record<string, string>) => {
       let root = roots.get(el)
       if (!root) {
         root = createRoot(el)
@@ -64,7 +85,7 @@ export function inkPlugin({ store, locale, blocks, exploders = {}, fields, onCon
       root.render(
         <MemoryRouter initialEntries={[`/${locale}`]}>
           <Routes>
-            <Route path=":locale/*" element={<BlockPreview id={id} store={store} locale={locale} blocks={blocks} />} />
+            <Route path=":locale/*" element={<BlockPreview id={id} store={store} locale={locale} blocks={blocks} settings={settings} />} />
           </Routes>
         </MemoryRouter>,
       )
@@ -83,13 +104,28 @@ export function inkPlugin({ store, locale, blocks, exploders = {}, fields, onCon
         },
         init(this: Component) {
           const id = this.getAttributes()['data-block']
-          const label = blocks.find((b) => b.id === id)?.label ?? id
-          this.set('name', `Секция: ${label}`)
+          const block = blocks.find((b) => b.id === id)
+          this.set('name', `Секция: ${block?.label ?? id}`)
+          if (block?.settings?.length) {
+            this.setTraits(
+              block.settings.map((setting) => ({
+                type: 'select',
+                name: `data-s-${setting.name}`,
+                label: setting.label,
+                options: setting.options.map(([value, label]) => ({ id: value, label })),
+              })),
+            )
+          }
+          this.on('change:attributes', () => {
+            const el = this.getEl()
+            if (el) mount(el, id, readSettings(this.getAttributes()))
+          })
         },
       },
       view: {
         onRender({ el, model }) {
-          mount(el as HTMLElement, model.getAttributes()['data-block'])
+          const attributes = model.getAttributes()
+          mount(el as HTMLElement, attributes['data-block'], readSettings(attributes))
         },
       },
     })

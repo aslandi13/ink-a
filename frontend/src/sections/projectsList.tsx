@@ -6,8 +6,30 @@ import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 
-export function ProjectsListSection({ locale }: { data: unknown; locale: Locale }) {
+type Settings = Record<string, string>
+
+const COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
+const RATIO: Record<string, string> = { wide: '16/9', cinema: '21/9', square: '1/1', tall: '3/4' }
+const TITLE: Record<string, string> = { s: '1rem', m: '1.3rem', l: '1.8rem', xl: '2.4rem' }
+const GAP: Record<string, string> = { none: '0', s: '0.5rem', l: '1rem' }
+
+export const PROJECTS_LIST_SETTINGS = [
+  { name: 'cols', label: 'Колонок', options: [['4', '4'], ['3', '3'], ['2', '2']] },
+  { name: 'ratio', label: 'Форма картинок', options: [['wide', 'Широкие 16:9'], ['cinema', 'Очень широкие 21:9'], ['square', 'Квадрат'], ['tall', 'Вертикальные 3:4']] },
+  { name: 'featured', label: 'Большие карточки', options: [['on', 'Показывать'], ['off', 'Все одинаковые']] },
+  { name: 'gap', label: 'Отступ между', options: [['s', 'Обычный'], ['none', 'Без отступа'], ['l', 'Большой']] },
+  { name: 'title', label: 'Размер названия', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой'], ['xl', 'Очень большой']] },
+  { name: 'location', label: 'Город', options: [['show', 'Показывать'], ['hide', 'Скрыть']] },
+]
+
+export function ProjectsListSection({ locale, settings = {} }: { data: unknown; locale: Locale; settings?: Settings }) {
   const tr = t(locale)
+  const cols = COLS[settings.cols ?? ''] ?? COLS['4']
+  const ratio = RATIO[settings.ratio ?? ''] ?? RATIO.wide
+  const featured = settings.featured !== 'off'
+  const titleSize = TITLE[settings.title ?? ''] ?? TITLE.m
+  const gap = GAP[settings.gap ?? ''] ?? GAP.s
+  const showLocation = settings.location !== 'hide'
 
   const CATEGORIES = [
     { value: '', label: tr.projects.categories.all },
@@ -83,14 +105,14 @@ export function ProjectsListSection({ locale }: { data: unknown; locale: Locale 
         <p className="mt-16 text-white/40">{tr.projects.empty}</p>
       ) : (
         <>
-        <StaggerList className="mt-2 sm:mt-6 grid grid-flow-dense grid-cols-2 gap-2 md:grid-cols-4">
+        <StaggerList className={`mt-2 sm:mt-6 grid grid-flow-dense grid-cols-2 ${cols}`} style={{ gap }}>
             {projects.map((project, i) => {
-              const isFeatured = i % 13 === 0
+              const isFeatured = featured && i % 13 === 0
               return (
                 <StaggerItem
                   key={project.id}
-                  className={`${i === 0 ? 'col-span-2' : ''} ${isFeatured ? 'md:col-span-2 md:row-span-2' : ''}`}
-                  style={{ aspectRatio: '16/9' }}
+                  className={`${featured && i === 0 ? 'col-span-2' : ''} ${isFeatured ? 'md:col-span-2 md:row-span-2' : ''}`}
+                  style={{ aspectRatio: ratio }}
                 >
                   <Link
                     to={`/${locale}/projects/${project.slug}`}
@@ -103,14 +125,13 @@ export function ProjectsListSection({ locale }: { data: unknown; locale: Locale 
                         className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                       />
                     )}
-                    {/* Overlay при hover */}
                     <div className="absolute inset-0 bg-ink-950/0 transition-colors duration-700 group-hover:bg-ink-950/25" />
                     <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/70 to-transparent" />
                     <div className="absolute inset-x-0 bottom-0 p-4">
-                      <p className="font-serif text-[1.3rem] leading-[1.1] text-white">
+                      <p className="font-serif leading-[1.1] text-white" style={{ fontSize: titleSize }}>
                         {project.title}
                       </p>
-                      {project.location && (
+                      {showLocation && project.location && (
                         <p className="mt-1 text-[0.9rem] text-white/60">{project.location}</p>
                       )}
                     </div>
@@ -139,7 +160,12 @@ export function ProjectsListSection({ locale }: { data: unknown; locale: Locale 
 }
 
 export const PROJECTS_LIST_BLOCKS = [
-  { id: 'projects-list', label: 'Список проектов', render: (p: { data: unknown; locale: Locale }) => <ProjectsListSection {...p} /> },
+  {
+    id: 'projects-list',
+    label: 'Список проектов',
+    settings: PROJECTS_LIST_SETTINGS,
+    render: (p: { data: unknown; locale: Locale; settings?: Settings }) => <ProjectsListSection {...p} />,
+  },
 ]
 
 export const DEFAULT_PROJECTS_LIST_LAYOUT = PROJECTS_LIST_BLOCKS.map((b) => `<section data-block="${b.id}"></section>`).join('')

@@ -361,6 +361,11 @@ export default function EditorPage() {
 
         editor.onReady(() => {
           editor.runCommand('open-blocks')
+          editor.on('component:selected', (component) => {
+            if (component.get('type') === 'ink-block' && (component.get('traits')?.length ?? 0) > 0) {
+              editor.runCommand('open-tm')
+            }
+          })
           setStatus(
             page.inherited
               ? `Версия ${locale.toUpperCase()} создана из RU — измените тексты и сохраните`
