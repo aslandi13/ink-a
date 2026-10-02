@@ -48,6 +48,28 @@ class Page extends Model
         return $this->slug === self::HOME;
     }
 
+    public function isBuiltInRecord(): bool
+    {
+        return self::isBuiltIn($this->slug);
+    }
+
+    public static function ensureBuiltIns(): void
+    {
+        $titles = [
+            self::APPROACH => 'Подход',
+            self::PROJECT_TEMPLATE => 'Шаблон проекта: общий',
+            self::PROJECT_TEMPLATE.'-architecture' => 'Шаблон проекта: Архитектура',
+            self::PROJECT_TEMPLATE.'-engineering' => 'Шаблон проекта: Рабочее проектирование',
+            self::PROJECT_TEMPLATE.'-urbanism' => 'Шаблон проекта: Урбанистика и мастерпланирование',
+            self::PROJECT_TEMPLATE.'-interior' => 'Шаблон проекта: Дизайн интерьера',
+        ];
+        $order = 100;
+
+        foreach ($titles as $slug => $title) {
+            self::firstOrCreate(['slug' => $slug], ['title' => ['ru' => $title], 'menu_order' => $order++]);
+        }
+    }
+
     public static function isTemplate(string $slug): bool
     {
         return in_array($slug, self::templateSlugs(), true);

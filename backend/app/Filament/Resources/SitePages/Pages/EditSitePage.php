@@ -20,7 +20,7 @@ class EditSitePage extends EditRecord
                 ->label('Открыть в редакторе')
                 ->icon(Heroicon::OutlinedPaintBrush)
                 ->url(fn () => SitePageResource::editorUrl($this->getRecord())),
-            DeleteAction::make()->hidden(fn () => $this->getRecord()->isHome()),
+            DeleteAction::make()->hidden(fn () => $this->getRecord()->isBuiltInRecord()),
         ];
     }
 

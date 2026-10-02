@@ -23,7 +23,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -78,23 +77,18 @@ class SitePageResource extends Resource
                         'unique' => 'Страница с таким адресом уже есть.',
                     ])
                     ->unique(ignoreRecord: true)
-                    ->rules(fn (?Page $record) => $record?->isHome() ? [] : [Rule::notIn(Page::RESERVED_SLUGS)])
-                    ->disabled(fn (?Page $record) => (bool) $record?->isHome())
-                    ->dehydrated(fn (?Page $record) => ! $record?->isHome()),
+                    ->rules(fn (?Page $record) => $record?->isBuiltInRecord() ? [] : [Rule::notIn(Page::RESERVED_SLUGS)])
+                    ->disabled(fn (?Page $record) => (bool) $record?->isBuiltInRecord())
+                    ->dehydrated(fn (?Page $record) => ! $record?->isBuiltInRecord()),
                 TextInput::make('menu_order')
                     ->label('Порядок в меню')
                     ->numeric()
                     ->default(0),
                 Toggle::make('show_in_menu')
                     ->label('Показывать в меню сайта')
-                    ->hidden(fn (?Page $record) => (bool) $record?->isHome()),
+                    ->hidden(fn (?Page $record) => (bool) $record?->isBuiltInRecord()),
             ]),
         ]);
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()->whereNotIn('slug', [...Page::templateSlugs(), Page::APPROACH]);
     }
 
     public static function table(Table $table): Table
@@ -105,7 +99,11 @@ class SitePageResource extends Resource
                 TextColumn::make('title')->label('Название')->searchable(),
                 TextColumn::make('slug')
                     ->label('Адрес')
-                    ->formatStateUsing(fn (string $state) => $state === Page::HOME ? '/ru' : "/ru/{$state}"),
+                    ->formatStateUsing(fn (string $state) => match (true) {
+                        $state === Page::HOME => '/ru',
+                        Page::isTemplate($state) => 'Все страницы проектов',
+                        default => "/ru/{$state}",
+                    }),
                 TextColumn::make('status')
                     ->label('Статус')
                     ->state(fn (Page $record) => match (true) {
@@ -134,7 +132,7 @@ class SitePageResource extends Resource
                     ->visible(fn (Page $record) => $record->published_at !== null)
                     ->action(fn (Page $record) => $record->update(['published' => null, 'published_at' => null])),
                 EditAction::make(),
-                DeleteAction::make()->hidden(fn (Page $record) => $record->isHome()),
+                DeleteAction::make()->hidden(fn (Page $record) => $record->isBuiltInRecord()),
             ]);
     }
 
