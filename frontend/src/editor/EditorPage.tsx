@@ -27,7 +27,8 @@ import {
 } from '../sections/project'
 import { createContentStore, type ContentStore } from './contentStore'
 import { EXPLODERS } from './explode'
-import { inkPlugin, type InkBlock } from './inkPlugin'
+import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sections/projectFields'
+import { inkPlugin, type InkBlock, type InkFields } from './inkPlugin'
 import LoginForm from './LoginForm'
 import './editor.css'
 
@@ -93,6 +94,7 @@ interface PageKind {
   blocks: InkBlock[]
   defaultLayout: string
   exploders?: Record<string, (data: never, locale: Locale) => string>
+  fields?: InkFields
   previewPath: (locale: Locale, data: unknown) => string
 }
 
@@ -102,6 +104,12 @@ function pageKind(slug: string): PageKind {
       load: (locale) => loadSampleProject(locale, templateCategory(slug)),
       blocks: PROJECT_BLOCKS as InkBlock[],
       defaultLayout: DEFAULT_PROJECT_LAYOUT,
+      fields: {
+        apply: applyProjectField as InkFields['apply'],
+        options: PROJECT_FIELDS,
+        blocks: PROJECT_FIELD_BLOCKS,
+        category: 'Поля проекта',
+      },
       previewPath: (locale, data) =>
         `/${locale}/projects/${(data as { project: { slug: string } }).project.slug}?preview=1&template=${slug}`,
     }
@@ -178,7 +186,7 @@ export default function EditorPage() {
             messages: { ru },
             messagesAdd: { ru: { styleManager: { properties: STYLE_PROPERTIES_RU } } },
           },
-          plugins: [inkPlugin({ store, locale, blocks: kind.blocks, exploders: kind.exploders, onContentChange: markDirty })],
+          plugins: [inkPlugin({ store, locale, blocks: kind.blocks, exploders: kind.exploders, fields: kind.fields, onContentChange: markDirty })],
           ...((draft?.project?.pages?.length ?? 0) > 0
             ? { projectData: draft!.project }
             : { components: draft?.html || kind.defaultLayout, style: draft?.css ?? '' }),

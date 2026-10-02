@@ -46,13 +46,14 @@ interface Props<T> {
   blocks: { id: string; render: (props: { data: T; locale: Locale }) => ReactNode }[]
   bleedBlock?: string
   offsetClass?: string
+  transformHtml?: (html: string) => string
 }
 
 export function usesBlocks(html: string): boolean {
   return /data-block=/.test(html)
 }
 
-export default function PageRenderer<T>({ html, css, data, locale, blocks, bleedBlock, offsetClass }: Props<T>) {
+export default function PageRenderer<T>({ html, css, data, locale, blocks, bleedBlock, offsetClass, transformHtml }: Props<T>) {
   const segments = useMemo(() => parseSegments(html), [html])
   const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
 
@@ -69,7 +70,7 @@ export default function PageRenderer<T>({ html, css, data, locale, blocks, bleed
             </div>
           )
         }
-        return <div key={segment.key} dangerouslySetInnerHTML={{ __html: sanitiseLayout(segment.html) }} />
+        return <div key={segment.key} dangerouslySetInnerHTML={{ __html: sanitiseLayout(transformHtml ? transformHtml(segment.html ?? '') : segment.html) }} />
       })}
     </div>
   )

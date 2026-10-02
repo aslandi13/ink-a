@@ -35,15 +35,23 @@ function parseTarget(value: string): [string, string] {
   return [value.slice(0, index), value.slice(index + 1)]
 }
 
+export interface InkFields {
+  apply: (el: HTMLElement, data: never, locale: Locale) => void
+  options: { id: string; label: string }[]
+  blocks: { id: string; label: string; content: string }[]
+  category: string
+}
+
 interface Options {
   store: ContentStore
   locale: Locale
   blocks: InkBlock[]
   exploders?: Record<string, (data: never, locale: Locale) => string>
+  fields?: InkFields
   onContentChange: () => void
 }
 
-export function inkPlugin({ store, locale, blocks, exploders = {}, onContentChange }: Options) {
+export function inkPlugin({ store, locale, blocks, exploders = {}, fields, onContentChange }: Options) {
   return (editor: Editor) => {
     const roots = new WeakMap<HTMLElement, Root>()
 
@@ -85,6 +93,38 @@ export function inkPlugin({ store, locale, blocks, exploders = {}, onContentChan
         },
       },
     })
+
+    if (fields) {
+      editor.DomComponents.addType('ink-field', {
+        isComponent: (el) => (el?.getAttribute?.('data-field') ? { type: 'ink-field' } : undefined),
+        model: {
+          defaults: {
+            droppable: false,
+            editable: false,
+            components: [],
+            traits: [{ type: 'select', name: 'data-field', label: 'Поле', options: fields.options.map((o) => ({ id: o.id, label: o.label })) }],
+          },
+          init(this: Component) {
+            const label = fields.options.find((o) => o.id === this.getAttributes()['data-field'])?.label
+            if (label && !this.get('name')) this.set('name', `Поле: ${label}`)
+            this.on('change:attributes:data-field', () => this.view?.render())
+          },
+        },
+        view: {
+          onRender({ el }) {
+            const node = el as HTMLElement
+            fields.apply(node, store.getSnapshot().data as never, locale)
+            if (node.tagName !== 'IMG' && !node.textContent?.trim() && !node.children.length) {
+              node.textContent = '— пусто в этом проекте —'
+              node.style.opacity = '0.4'
+            }
+          },
+        },
+      })
+      fields.blocks.forEach((block) => {
+        editor.Blocks.add(block.id, { label: block.label, category: fields.category, content: block.content })
+      })
+    }
 
     editor.on('component:remove', (component: Component) => {
       const el = component.getEl()

@@ -16,6 +16,7 @@ import {
   PROJECT_TEMPLATE,
   type ProjectPageData,
 } from '../sections/project'
+import { fillProjectFields } from '../sections/projectFields'
 
 async function loadDraftTemplate(locale: Locale, category: string, forced: string | null): Promise<PageLayout | null> {
   const slugs = forced && isProjectTemplate(forced) ? [forced] : [`${PROJECT_TEMPLATE}-${category}`, PROJECT_TEMPLATE]
@@ -89,6 +90,7 @@ export default function ProjectDetail() {
         locale={locale}
         blocks={PROJECT_BLOCKS}
         bleedBlock="project-hero"
+        transformHtml={(html) => fillProjectFields(html, data, locale)}
       />
     </article>
   )
