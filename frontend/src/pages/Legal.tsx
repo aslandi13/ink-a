@@ -1,46 +1,73 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { getPageContent } from '../api/content'
+import { useSearchParams } from 'react-router-dom'
+import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
+import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
-import { sanitise } from '../lib/sanitise'
 import { useLocale } from '../lib/useLocale'
+import { DEFAULT_LEGAL_LAYOUT, LEGAL_BLOCKS, loadLegalData, type LegalData } from '../sections/legal'
 
 export default function Legal() {
   const locale = useLocale()
   const tr = t(locale)
-  const [body, setBody] = useState<string>('')
+  const [searchParams] = useSearchParams()
+  const preview = searchParams.has('preview') && !!getEditorToken()
+  const [data, setData] = useState<LegalData | null>(null)
+  const [layout, setLayout] = useState<PageLayout | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
   useEffect(() => {
     setLoading(true)
     setError(false)
-    getPageContent<{ body?: string }>(locale, 'legal')
-      .then((data) => setBody(data.body ?? ''))
+    const layoutRequest = preview
+      ? getDraftPage('legal', locale).then((res) => res.draft)
+      : getLocalizedPage(locale, 'legal')
+    Promise.all([loadLegalData(locale), layoutRequest.catch(() => null)])
+      .then(([legal, pageLayout]) => {
+        setData(legal)
+        setLayout(pageLayout)
+      })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale])
+  }, [locale, preview])
+
+  if (loading) {
+    return <section className="flex min-h-[60vh] items-center justify-center text-white/40">{tr.ui.loading}</section>
+  }
+
+  if (error || !data) {
+    return <ErrorMessage>{tr.ui.error}</ErrorMessage>
+  }
 
   return (
-    <section className="mx-auto max-w-4xl px-6 py-24">
+    <>
       <Helmet>
         <title>{tr.legal.title} — INK Architects</title>
-        <meta name="description" content={locale === 'ru' ? 'Юридическая информация, политика конфиденциальности и условия использования INK Architects.' : 'Legal information, privacy policy and terms of use for INK Architects.'} />
+        <meta
+          name="description"
+          content={
+            locale === 'ru'
+              ? 'Юридическая информация, политика конфиденциальности и условия использования INK Architects.'
+              : 'Legal information, privacy policy and terms of use for INK Architects.'
+          }
+        />
       </Helmet>
 
-      <h1 className="text-3xl font-medium tracking-tight text-white">{tr.legal.title}</h1>
-
-      {loading ? (
-        <p className="mt-8 text-white/50">{tr.ui.loading}</p>
-      ) : error ? (
-        <ErrorMessage>{tr.ui.error}</ErrorMessage>
-      ) : (
-        <div
-          className="prose prose-invert mt-10 max-w-none text-white/70"
-          dangerouslySetInnerHTML={{ __html: sanitise(body) }}
-        />
+      {preview && (
+        <div className="fixed bottom-4 left-4 z-50 rounded-full bg-accent px-4 py-2 text-xs font-medium text-ink-950">
+          Предпросмотр черновика
+        </div>
       )}
-    </section>
+
+      <PageRenderer
+        html={layout?.html || DEFAULT_LEGAL_LAYOUT}
+        css={layout?.css ?? ''}
+        data={data}
+        locale={locale}
+        blocks={LEGAL_BLOCKS}
+      />
+    </>
   )
 }

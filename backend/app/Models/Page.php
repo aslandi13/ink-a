@@ -21,7 +21,9 @@ class Page extends Model
 
     public const NEWS_TEMPLATE = 'news-template';
 
-    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT, self::CONTACTS, self::NEWS];
+    public const LEGAL = 'legal';
+
+    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT, self::CONTACTS, self::NEWS, self::LEGAL];
 
     public const PROJECT_TEMPLATE = 'project-template';
 
@@ -69,6 +71,7 @@ class Page extends Model
             self::CONTACTS => 'Контакты',
             self::NEWS => 'Новости',
             self::NEWS_TEMPLATE => 'Шаблон новости',
+            self::LEGAL => 'Правовая информация',
             self::PROJECT_TEMPLATE => 'Шаблон проекта: общий',
             self::PROJECT_TEMPLATE.'-architecture' => 'Шаблон проекта: Архитектура',
             self::PROJECT_TEMPLATE.'-engineering' => 'Шаблон проекта: Рабочее проектирование',

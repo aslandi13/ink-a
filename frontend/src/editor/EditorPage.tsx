@@ -39,6 +39,7 @@ import {
   NEWS_LIST_BLOCKS,
   NEWS_TEMPLATE,
 } from '../sections/news'
+import { DEFAULT_LEGAL_LAYOUT, LEGAL_BLOCKS, loadLegalData } from '../sections/legal'
 import { CONTACTS_BLOCKS, DEFAULT_CONTACTS_LAYOUT, loadContactsData } from '../sections/contacts'
 import { APPROACH_BLOCKS, DEFAULT_APPROACH_LAYOUT, loadApproachData } from '../sections/approach'
 import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sections/projectFields'
@@ -104,6 +105,7 @@ const PAGE_OPTIONS = [
   { slug: 'contacts', label: 'Контакты' },
   { slug: 'news', label: 'Новости' },
   { slug: NEWS_TEMPLATE, label: 'Шаблон новости' },
+  { slug: 'legal', label: 'Правовая информация' },
   { slug: PROJECT_TEMPLATE, label: 'Шаблон проекта: общий' },
   ...PROJECT_CATEGORIES.map((c) => ({ slug: `${PROJECT_TEMPLATE}-${c.id}`, label: `Шаблон проекта: ${c.label}` })),
 ]
@@ -118,6 +120,14 @@ interface PageKind {
 }
 
 function pageKind(slug: string): PageKind {
+  if (slug === 'legal') {
+    return {
+      load: loadLegalData,
+      blocks: LEGAL_BLOCKS as InkBlock[],
+      defaultLayout: DEFAULT_LEGAL_LAYOUT,
+      previewPath: (locale) => `/${locale}/legal?preview=1`,
+    }
+  }
   if (slug === 'news') {
     return {
       load: () => Promise.resolve(null),
@@ -346,7 +356,9 @@ export default function EditorPage() {
               ? `Версия ${locale.toUpperCase()} создана из RU — измените тексты и сохраните`
               : page.draft
                 ? 'Дважды кликните по тексту или фото, чтобы изменить'
-                : ['approach', 'about', 'contacts', 'news'].includes(slug)
+                : slug === 'legal'
+                  ? 'Раскладка из текущей страницы. Текст документа меняется в админке'
+                  : ['approach', 'about', 'contacts', 'news'].includes(slug)
                   ? 'Раскладка из текущей страницы. Дважды кликните по тексту или фото, чтобы изменить'
                   : isProjectTemplate(slug) || slug === NEWS_TEMPLATE
                   ? 'Шаблон показан на примере. Сами данные меняются в админке'
