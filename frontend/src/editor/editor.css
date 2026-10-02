@@ -43,14 +43,34 @@
   display: none !important;
 }
 
+@media (min-width: 768px) {
+  .ink-editor .gjs-cv-canvas {
+    width: 78%;
+  }
+
+  .ink-editor .gjs-pn-views-container,
+  .ink-editor .gjs-pn-views {
+    width: 22%;
+  }
+
+  .ink-editor .gjs-pn-views {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .ink-editor .gjs-pn-options {
+    right: 22%;
+  }
+}
+
 .ink-editor .gjs-pn-views .gjs-pn-btn {
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   width: auto;
-  min-width: 48px;
+  min-width: 0;
   height: auto;
-  padding: 4px 6px 2px;
+  padding: 4px 4px 2px;
 }
 
 .ink-editor .ink-view-label {
