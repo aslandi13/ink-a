@@ -17,7 +17,11 @@ class Page extends Model
 
     public const CONTACTS = 'contacts';
 
-    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT, self::CONTACTS];
+    public const NEWS = 'news';
+
+    public const NEWS_TEMPLATE = 'news-template';
+
+    public const BUILT_IN = [self::HOME, self::APPROACH, self::ABOUT, self::CONTACTS, self::NEWS];
 
     public const PROJECT_TEMPLATE = 'project-template';
 
@@ -27,7 +31,7 @@ class Page extends Model
         'home', 'about', 'projects', 'approach', 'news', 'contacts', 'legal',
         'editor', 'admin', 'api', 'storage', 'livewire', 'up', 'project-template',
         'project-template-architecture', 'project-template-engineering',
-        'project-template-urbanism', 'project-template-interior',
+        'project-template-urbanism', 'project-template-interior', 'news-template',
     ];
 
     public array $translatable = ['title', 'seo_title', 'seo_description'];
@@ -63,6 +67,8 @@ class Page extends Model
             self::APPROACH => 'Подход',
             self::ABOUT => 'О нас',
             self::CONTACTS => 'Контакты',
+            self::NEWS => 'Новости',
+            self::NEWS_TEMPLATE => 'Шаблон новости',
             self::PROJECT_TEMPLATE => 'Шаблон проекта: общий',
             self::PROJECT_TEMPLATE.'-architecture' => 'Шаблон проекта: Архитектура',
             self::PROJECT_TEMPLATE.'-engineering' => 'Шаблон проекта: Рабочее проектирование',
@@ -83,7 +89,11 @@ class Page extends Model
 
     public static function templateSlugs(): array
     {
-        return [self::PROJECT_TEMPLATE, ...array_map(fn ($c) => self::PROJECT_TEMPLATE.'-'.$c, self::PROJECT_CATEGORIES)];
+        return [
+            self::PROJECT_TEMPLATE,
+            ...array_map(fn ($c) => self::PROJECT_TEMPLATE.'-'.$c, self::PROJECT_CATEGORIES),
+            self::NEWS_TEMPLATE,
+        ];
     }
 
     public static function isBuiltIn(string $slug): bool

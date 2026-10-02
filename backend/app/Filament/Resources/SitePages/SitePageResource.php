@@ -101,6 +101,7 @@ class SitePageResource extends Resource
                     ->label('Адрес')
                     ->formatStateUsing(fn (string $state) => match (true) {
                         $state === Page::HOME => '/',
+                        $state === Page::NEWS_TEMPLATE => 'Все страницы новостей',
                         Page::isTemplate($state) => 'Все страницы проектов',
                         default => "/{$state}",
                     }),

@@ -52,6 +52,7 @@ Route::prefix('{locale}')->middleware(SetLocaleFromRoute::class)->group(function
     Route::get('news/{slug}', [NewsController::class, 'show']);
 
     Route::get('project-template', [PageController::class, 'projectTemplate']);
+    Route::get('news-template', [PageController::class, 'newsTemplate']);
     Route::get('menu-pages', [PageController::class, 'menu']);
     Route::get('pages/{slug}', [PageController::class, 'localized']);
 });

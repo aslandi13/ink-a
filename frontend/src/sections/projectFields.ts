@@ -1,6 +1,7 @@
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { sanitise } from '../lib/sanitise'
+import { escapeAttr, fillFields } from './fields'
 import type { ProjectPageData } from './project'
 
 type Category = keyof ReturnType<typeof t>['projects']['categories']
@@ -44,7 +45,7 @@ export function applyProjectField(el: HTMLElement, data: ProjectPageData, locale
   }
   if (field === 'gallery') {
     el.innerHTML = (project.gallery ?? [])
-      .map((src) => `<img src="${src.replace(/"/g, '&quot;')}" class="${GALLERY_ITEM}" alt="">`)
+      .map((src) => `<img src="${escapeAttr(src)}" class="${GALLERY_ITEM}" alt="">`)
       .join('')
     return
   }
@@ -56,17 +57,11 @@ export function applyProjectField(el: HTMLElement, data: ProjectPageData, locale
 }
 
 export function fillProjectFields(html: string, data: ProjectPageData, locale: Locale): string {
-  if (!html.includes('data-field')) return html
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  doc.body.querySelectorAll<HTMLElement>('[data-field]').forEach((el) => {
-    const field = el.dataset.field ?? ''
-    if (!hasFieldValue(field, data, locale)) {
-      ;(el.closest<HTMLElement>('[data-field-group]') ?? el).remove()
-      return
-    }
-    applyProjectField(el, data, locale)
-  })
-  return doc.body.innerHTML
+  return fillFields(
+    html,
+    (field) => hasFieldValue(field, data, locale),
+    (el) => applyProjectField(el, data, locale),
+  )
 }
 
 const fact = (field: string, label: string) =>

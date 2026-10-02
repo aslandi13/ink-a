@@ -58,6 +58,17 @@ class PageController extends Controller
         return response()->json(['message' => 'No template.'], 404);
     }
 
+    public function newsTemplate(string $locale): JsonResponse
+    {
+        $page = Page::where('slug', Page::NEWS_TEMPLATE)->whereNotNull('published_at')->first();
+
+        if ($page === null || $page->published === null) {
+            return response()->json(['message' => 'No template.'], 404);
+        }
+
+        return response()->json(['data' => $this->layout($page, app()->getLocale())]);
+    }
+
     public function menu(string $locale): JsonResponse
     {
         $locale = app()->getLocale();

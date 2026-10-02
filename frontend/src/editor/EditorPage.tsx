@@ -28,6 +28,17 @@ import {
 import { createContentStore, type ContentStore } from './contentStore'
 import { EXPLODERS } from './explode'
 import { ABOUT_BLOCKS, DEFAULT_ABOUT_LAYOUT, loadAboutData } from '../sections/about'
+import {
+  applyNewsField,
+  DEFAULT_NEWS_LAYOUT,
+  DEFAULT_NEWS_LIST_LAYOUT,
+  loadSampleNews,
+  NEWS_BLOCKS,
+  NEWS_FIELD_BLOCKS,
+  NEWS_FIELDS,
+  NEWS_LIST_BLOCKS,
+  NEWS_TEMPLATE,
+} from '../sections/news'
 import { CONTACTS_BLOCKS, DEFAULT_CONTACTS_LAYOUT, loadContactsData } from '../sections/contacts'
 import { APPROACH_BLOCKS, DEFAULT_APPROACH_LAYOUT, loadApproachData } from '../sections/approach'
 import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sections/projectFields'
@@ -91,6 +102,8 @@ const PAGE_OPTIONS = [
   { slug: 'about', label: 'О нас' },
   { slug: 'approach', label: 'Подход' },
   { slug: 'contacts', label: 'Контакты' },
+  { slug: 'news', label: 'Новости' },
+  { slug: NEWS_TEMPLATE, label: 'Шаблон новости' },
   { slug: PROJECT_TEMPLATE, label: 'Шаблон проекта: общий' },
   ...PROJECT_CATEGORIES.map((c) => ({ slug: `${PROJECT_TEMPLATE}-${c.id}`, label: `Шаблон проекта: ${c.label}` })),
 ]
@@ -105,6 +118,28 @@ interface PageKind {
 }
 
 function pageKind(slug: string): PageKind {
+  if (slug === 'news') {
+    return {
+      load: () => Promise.resolve(null),
+      blocks: NEWS_LIST_BLOCKS as InkBlock[],
+      defaultLayout: DEFAULT_NEWS_LIST_LAYOUT,
+      previewPath: (locale) => `/${locale}/news?preview=1`,
+    }
+  }
+  if (slug === NEWS_TEMPLATE) {
+    return {
+      load: loadSampleNews,
+      blocks: NEWS_BLOCKS as InkBlock[],
+      defaultLayout: DEFAULT_NEWS_LAYOUT,
+      fields: {
+        apply: applyNewsField as InkFields['apply'],
+        options: NEWS_FIELDS,
+        blocks: NEWS_FIELD_BLOCKS,
+        category: 'Поля новости',
+      },
+      previewPath: (locale, data) => `/${locale}/news/${(data as { item: { slug: string } }).item.slug}?preview=1`,
+    }
+  }
   if (slug === 'contacts') {
     return {
       load: loadContactsData,
@@ -311,10 +346,10 @@ export default function EditorPage() {
               ? `Версия ${locale.toUpperCase()} создана из RU — измените тексты и сохраните`
               : page.draft
                 ? 'Дважды кликните по тексту или фото, чтобы изменить'
-                : ['approach', 'about', 'contacts'].includes(slug)
+                : ['approach', 'about', 'contacts', 'news'].includes(slug)
                   ? 'Раскладка из текущей страницы. Дважды кликните по тексту или фото, чтобы изменить'
-                  : isProjectTemplate(slug)
-                  ? 'Шаблон показан на примере проекта. Данные проектов меняются в админке'
+                  : isProjectTemplate(slug) || slug === NEWS_TEMPLATE
+                  ? 'Шаблон показан на примере. Сами данные меняются в админке'
                   : slug === 'home'
                     ? 'Раскладка из текущей главной. Дважды кликните по тексту или фото, чтобы изменить'
                     : 'Пустая страница — перетащите блоки справа',

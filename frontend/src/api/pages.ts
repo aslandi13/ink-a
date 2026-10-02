@@ -107,3 +107,10 @@ export function getProjectTemplate(locale: string, category: string): Promise<Pa
     .then((res) => res.data.data as PageLayout)
     .catch(() => null)
 }
+
+export function getNewsTemplate(locale: string): Promise<PageLayout | null> {
+  return api
+    .get(`/api/${locale}/news-template`)
+    .then((res) => res.data.data as PageLayout)
+    .catch(() => null)
+}
