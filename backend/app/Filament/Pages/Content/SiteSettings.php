@@ -5,6 +5,7 @@ namespace App\Filament\Pages\Content;
 use App\Filament\Pages\SingletonContentPage;
 use App\Filament\Support\TranslatableTabs;
 use BackedEnum;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -32,6 +33,20 @@ class SiteSettings extends SingletonContentPage
         return $schema
             ->statePath('data')
             ->components([
+                Section::make('Языки сайта')
+                    ->description('Выключенный язык пропадает из переключателя на сайте, а его страницы открываются на русском.')
+                    ->schema([
+                        CheckboxList::make('enabled_locales')
+                            ->hiddenLabel()
+                            ->options(['ru' => 'Русский (RU)', 'kz' => 'Қазақша (KZ)', 'en' => 'English (EN)'])
+                            ->afterStateHydrated(fn (CheckboxList $component, ?array $state) => $component->state(
+                                array_values(array_unique(['ru', ...($state ?: ['kz', 'en'])]))
+                            ))
+                            ->disableOptionWhen(fn (string $value) => $value === 'ru')
+                            ->dehydrateStateUsing(fn (?array $state) => array_values(array_unique(['ru', ...($state ?? [])])))
+                            ->columns(3),
+                    ]),
+
                 Section::make('SEO')
                     ->description('Отображается в поисковых системах и при шаринге ссылки')
                     ->schema([

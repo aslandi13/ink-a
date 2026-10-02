@@ -4,6 +4,7 @@ import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { getPageContent } from '../api/content'
 import { getMenuPages, type MenuPage } from '../api/pages'
 import { t } from '../lib/i18n'
+import { useEnabledLocales } from '../lib/enabledLocales'
 import { LOCALES } from '../lib/locale'
 import { useLocale } from '../lib/useLocale'
 
@@ -20,6 +21,8 @@ interface SettingsData {
 export default function Header() {
   const locale = useLocale()
   const tr = t(locale)
+  const locales = useEnabledLocales() ?? LOCALES
+  const showLocales = locales.length > 1
   const location = useLocation()
   const navigate = useNavigate()
   const [settings, setSettings] = useState<SettingsData>({})
@@ -107,8 +110,9 @@ export default function Header() {
                   </NavLink>
                 </li>
               ))}
+              {showLocales && (
               <li className="flex gap-3 border-l border-line pl-6 text-xs text-white/50 md:text-sm">
-                {LOCALES.map((code) => (
+                {locales.map((code) => (
                   <NavLink
                     key={code}
                     to={`/${code}`}
@@ -120,13 +124,15 @@ export default function Header() {
                   </NavLink>
                 ))}
               </li>
+              )}
             </ul>
           </nav>
 
           <div className="flex items-center gap-5 lg:hidden">
+            {showLocales && (
             <button
               onClick={() => {
-                const next = LOCALES[(LOCALES.indexOf(locale) + 1) % LOCALES.length]
+                const next = locales[(locales.indexOf(locale) + 1) % locales.length]
                 navigate(location.pathname.replace(new RegExp(`^/${locale}(?=/|$)`), `/${next}`) + location.search)
               }}
               className="relative z-50 text-base text-white transition-opacity hover:opacity-70"
@@ -134,6 +140,7 @@ export default function Header() {
             >
               {locale.charAt(0).toUpperCase() + locale.slice(1)}
             </button>
+            )}
             <button
               onClick={() => setOpen((v) => !v)}
               className="relative z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5"
@@ -191,8 +198,8 @@ export default function Header() {
                 ))}
               </ul>
 
-              <div className="mt-10 flex gap-4 text-sm text-white/40">
-                {LOCALES.map((code) => (
+              <div className={`mt-10 gap-4 text-sm text-white/40 ${showLocales ? 'flex' : 'hidden'}`}>
+                {locales.map((code) => (
                   <NavLink
                     key={code}
                     to={`/${code}`}

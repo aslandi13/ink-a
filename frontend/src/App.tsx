@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react'
-import { Navigate, Route, Routes, useParams } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import Layout from './components/Layout'
 import SiteSettingsProvider from './components/SiteSettingsProvider'
+import { useEnabledLocales } from './lib/enabledLocales'
 import { DEFAULT_LOCALE, isLocale } from './lib/locale'
 import About from './pages/About'
 import Approach from './pages/Approach'
@@ -18,9 +19,19 @@ const EditorPage = lazy(() => import('./editor/EditorPage'))
 
 function LocaleGate() {
   const { locale } = useParams()
+  const location = useLocation()
+  const enabled = useEnabledLocales()
 
   if (!isLocale(locale)) {
     return <Navigate to={`/${DEFAULT_LOCALE}`} replace />
+  }
+
+  if (locale !== DEFAULT_LOCALE) {
+    if (!enabled) return null
+    if (!enabled.includes(locale)) {
+      const rest = location.pathname.replace(new RegExp(`^/${locale}(?=/|$)`), '')
+      return <Navigate to={`/${DEFAULT_LOCALE}${rest}${location.search}`} replace />
+    }
   }
 
   return (
