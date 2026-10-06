@@ -132,11 +132,13 @@ class SitePageResource extends Resource
                     ->label('История')
                     ->icon(Heroicon::OutlinedClock)
                     ->color('gray')
-                    ->visible(fn (Page $record) => $record->versions()->exists())
                     ->modalHeading('Предыдущие публикации')
-                    ->modalDescription('Выберите версию — она снова станет опубликованной на сайте и откроется в редакторе. Текущая версия тоже сохранится в истории. Тексты секций, которые меняются в разделах админки, не откатываются.')
+                    ->modalDescription(fn (Page $record) => $record->versions()->exists()
+                        ? 'Выберите версию — она снова станет опубликованной на сайте и откроется в редакторе. Текущая версия тоже сохранится в истории. Тексты секций, которые меняются в разделах админки, не откатываются.'
+                        : 'Пока нет прошлых версий. При каждой новой публикации предыдущая сохраняется здесь (последние 10).')
+                    ->modalSubmitAction(fn (Page $record, $action) => $record->versions()->exists() ? $action : false)
                     ->modalSubmitActionLabel('Вернуть эту версию')
-                    ->schema(fn (Page $record) => [
+                    ->schema(fn (Page $record) => $record->versions()->doesntExist() ? [] : [
                         Radio::make('version_id')
                             ->label('Версия')
                             ->required()
