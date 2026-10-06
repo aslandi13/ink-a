@@ -8,7 +8,7 @@ interface WatermarkSettings {
   watermark_size?: string | null
 }
 
-const WIDTH: Record<string, string> = { small: '11%', medium: '15%', large: '20%' }
+const WIDTH: Record<string, string> = { small: '8%', medium: '11%', large: '15%' }
 
 let cached: WatermarkSettings | null = null
 
@@ -38,7 +38,7 @@ export default function Watermark() {
       alt=""
       aria-hidden
       draggable={false}
-      className="pointer-events-none absolute bottom-[3%] right-[2.5%] h-auto min-w-[64px] select-none opacity-90"
+      className="pointer-events-none absolute bottom-[3%] right-[2.5%] h-auto min-w-[48px] select-none opacity-90"
       style={{ width: watermark.width }}
     />
   )
