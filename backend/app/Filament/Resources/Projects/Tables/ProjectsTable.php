@@ -16,6 +16,7 @@ class ProjectsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->header(view('filament.projects.tabs'))
             ->defaultSort('sort_order')
             ->reorderable('sort_order')
             ->reorderRecordsTriggerAction(fn (Action $action, bool $isReordering) => $action
@@ -57,8 +58,6 @@ class ProjectsTable
                 EditAction::make(),
             ])
             ->toolbarActions([
-                Action::make('categories')
-                    ->view('filament.projects.tabs'),
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

@@ -2,6 +2,7 @@
     $currentTab = $this->currentCategory();
 @endphp
 
+<div class="px-4 pt-4 sm:px-6">
 <nav class="fi-tabs fi-contained flex gap-x-1 rounded-xl bg-white p-1 ring-1 ring-gray-950/5 dark:bg-white/5 dark:ring-white/10">
     @foreach ($this->categoryTabs() as $key => $tab)
         @php
@@ -26,3 +27,4 @@
         </button>
     @endforeach
 </nav>
+</div>
