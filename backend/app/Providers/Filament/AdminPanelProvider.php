@@ -17,6 +17,7 @@ use App\Filament\Pages\Content\VideoBanner;
 use App\Filament\Pages\VisualEditor;
 use App\Filament\Resources\NewsItems\NewsItemResource;
 use App\Filament\Resources\Projects\ProjectResource;
+use App\Filament\Resources\TeamMembers\TeamMemberResource;
 use App\Filament\Resources\SitePages\SitePageResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -77,7 +78,7 @@ class AdminPanelProvider extends PanelProvider
                         NavigationGroup::make()->items(Approach::getNavigationItems()),
                         NavigationGroup::make('О нас')->items([
                             ...AboutHistory::getNavigationItems(),
-                            ...AboutTeam::getNavigationItems(),
+                            ...TeamMemberResource::getNavigationItems(),
                             ...AboutFounder::getNavigationItems(),
                         ]),
                         NavigationGroup::make()->items(NewsItemResource::getNavigationItems()),
