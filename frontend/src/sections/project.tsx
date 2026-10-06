@@ -3,7 +3,6 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { getProject, getProjects, type ProjectDetail, type ProjectListItem } from '../api/content'
 import Lightbox from '../components/Lightbox'
-import Watermark from '../components/Watermark'
 import Reveal from '../components/Reveal'
 import type { Locale } from '../lib/locale'
 import { projectPath } from '../lib/projectPath'
@@ -307,7 +306,6 @@ export function ProjectGallerySection({ data, settings = {} }: SectionProps) {
                 className="w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                 style={{ aspectRatio: ratio }}
               />
-              <Watermark />
             </button>
           </Reveal>
         ))}
