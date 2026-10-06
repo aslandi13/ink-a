@@ -4,6 +4,7 @@ import { useParams, useSearchParams } from 'react-router-dom'
 import { getProject } from '../api/content'
 import { getDraftPage, getEditorToken, getProjectTemplate, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
+import Lightbox from '../components/Lightbox'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
@@ -40,6 +41,7 @@ export default function ProjectDetail() {
   const [layout, setLayout] = useState<PageLayout | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
 
   useEffect(() => {
     if (!slug) return
@@ -71,7 +73,16 @@ export default function ProjectDetail() {
   }
 
   return (
-    <article>
+    <article
+      onClick={(e) => {
+        const img = (e.target as HTMLElement).closest<HTMLImageElement>('[data-field="gallery"] img')
+        const container = img?.closest('[data-field="gallery"]')
+        if (!img || !container) return
+        const images = Array.from(container.querySelectorAll('img')).map((el) => el.getAttribute('src') ?? '')
+        setLightbox({ images, index: images.indexOf(img.getAttribute('src') ?? '') })
+      }}
+    >
+      <Lightbox images={lightbox?.images ?? []} index={lightbox?.index ?? null} onClose={() => setLightbox(null)} />
       <Helmet>
         <title>{data.project.title} — INK Architects</title>
         {data.project.excerpt && <meta name="description" content={data.project.excerpt} />}
