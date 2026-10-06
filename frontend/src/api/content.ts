@@ -71,11 +71,12 @@ export function getProjects(
   return req
 }
 
-export function getProject(locale: Locale, slug: string): Promise<ProjectDetail> {
-  const key = `${locale}:${slug}`
+export function getProject(locale: Locale, slug: string, category?: string): Promise<ProjectDetail> {
+  const path = category ? `${category}/${slug}` : slug
+  const key = `${locale}:${path}`
   if (projectCache.has(key)) return projectCache.get(key)!
   const req = api
-    .get(`/api/${locale}/projects/${slug}`)
+    .get(`/api/${locale}/projects/${path}`)
     .then((r) => r.data.data)
     .catch((e) => { projectCache.delete(key); throw e })
   projectCache.set(key, req)

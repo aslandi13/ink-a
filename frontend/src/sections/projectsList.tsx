@@ -5,6 +5,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
+import { projectPath } from '../lib/projectPath'
 
 type Settings = Record<string, string>
 
@@ -115,7 +116,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
                   style={{ aspectRatio: ratio }}
                 >
                   <Link
-                    to={`/${locale}/projects/${project.slug}`}
+                    to={projectPath(locale, project)}
                     className="group relative block h-full w-full overflow-hidden bg-ink-800"
                   >
                     {project.cover_image && (

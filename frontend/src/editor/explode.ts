@@ -1,5 +1,6 @@
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
+import { projectPath } from '../lib/projectPath'
 import type { ContactsData } from '../sections/contacts'
 import type { HomeData } from '../sections/home'
 
@@ -40,7 +41,7 @@ function explodeHero(data: HomeData, locale: Locale): string {
     <div data-gjs-name="Левая колонка">
       <h1 class="whitespace-pre-line text-5xl leading-[0.9] text-white sm:text-6xl md:text-7xl lg:text-8xl">${esc(hero?.title)}</h1>
       ${stats ? `<dl data-gjs-name="Цифры" class="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">${stats}</dl>` : ''}
-      ${featured ? `<div class="mt-8"><a href="/${locale}/projects/${esc(featured.slug)}" class="text-sm text-white/50 transition-colors hover:text-white/80">${esc(featured.title)}</a></div>` : ''}
+      ${featured ? `<div class="mt-8"><a href="${esc(projectPath(locale, featured))}" class="text-sm text-white/50 transition-colors hover:text-white/80">${esc(featured.title)}</a></div>` : ''}
     </div>
     <div data-gjs-name="Правая колонка" class="flex flex-col justify-end gap-5">
       ${hero?.subtitle ? `<p class="whitespace-pre-line font-serif text-2xl leading-tight text-white md:text-3xl lg:text-4xl">${esc(hero.subtitle)}</p>` : ''}
@@ -130,7 +131,7 @@ function explodeProjects(data: HomeData, locale: Locale): string {
     .slice(0, 30)
     .map((project, i) => {
       const span = `${i === 0 ? 'col-span-2' : ''} ${i % 13 === 0 ? 'md:col-span-2 md:row-span-2' : ''}`.trim()
-      return `<a href="/${locale}/projects/${esc(project.slug)}" class="group relative block aspect-[4/3] overflow-hidden bg-ink-800 ${span}">
+      return `<a href="${esc(projectPath(locale, project))}" class="group relative block aspect-[4/3] overflow-hidden bg-ink-800 ${span}">
         ${project.cover_image ? `<img class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110" src="${esc(project.cover_image)}" alt="${esc(project.title)}">` : ''}
         <div ${DECOR} class="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/70 to-transparent"></div>
         <p class="absolute bottom-4 left-4 font-serif text-[1.3rem] leading-[1.1] text-white">${esc(project.title)}</p>

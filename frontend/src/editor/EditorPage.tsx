@@ -15,6 +15,7 @@ import {
   setEditorToken,
 } from '../api/pages'
 import { LOCALES, type Locale } from '../lib/locale'
+import { projectPath } from '../lib/projectPath'
 import { DEFAULT_HOME_LAYOUT, HOME_BLOCKS, loadHomeData } from '../sections/home'
 import {
   DEFAULT_PROJECT_LAYOUT,
@@ -199,7 +200,7 @@ function pageKind(slug: string): PageKind {
         category: 'Поля проекта',
       },
       previewPath: (locale, data) =>
-        `/${locale}/projects/${(data as { project: { slug: string } }).project.slug}?preview=1&template=${slug}`,
+        `${projectPath(locale, (data as { project: { slug: string; category: string } }).project)}?preview=1&template=${slug}`,
     }
   }
   return {

@@ -5,6 +5,7 @@ import { getProject, getProjects, type ProjectDetail, type ProjectListItem } fro
 import Lightbox from '../components/Lightbox'
 import Reveal from '../components/Reveal'
 import type { Locale } from '../lib/locale'
+import { projectPath } from '../lib/projectPath'
 import { sanitise } from '../lib/sanitise'
 
 export interface ProjectPageData {
@@ -64,9 +65,9 @@ export function templateCategory(slug: string): string | undefined {
   return slug.startsWith(`${PROJECT_TEMPLATE}-`) ? slug.slice(PROJECT_TEMPLATE.length + 1) : undefined
 }
 
-export function loadOtherProjects(locale: Locale, slug: string): Promise<ProjectListItem[]> {
+export function loadOtherProjects(locale: Locale, slug: string, category?: string): Promise<ProjectListItem[]> {
   return getProjects(locale, { per_page: 12 })
-    .then((res) => res.data.filter((p) => p.slug !== slug).slice(0, 8))
+    .then((res) => res.data.filter((p) => !(p.slug === slug && (!category || p.category === category))).slice(0, 8))
     .catch(() => [])
 }
 
@@ -74,7 +75,10 @@ export async function loadSampleProject(locale: Locale, category?: string): Prom
   let list = category ? (await getProjects(locale, { category, per_page: 1 })).data : []
   if (!list.length) list = (await getProjects(locale, { per_page: 1 })).data
   if (!list.length) throw new Error('no projects')
-  const [project, others] = await Promise.all([getProject(locale, list[0].slug), loadOtherProjects(locale, list[0].slug)])
+  const [project, others] = await Promise.all([
+    getProject(locale, list[0].slug, list[0].category),
+    loadOtherProjects(locale, list[0].slug, list[0].category),
+  ])
   return { project, others }
 }
 
@@ -327,7 +331,7 @@ export function OtherProjectsSection({ data, locale, settings = {} }: SectionPro
         {others.map((item, i) => (
           <Reveal key={item.id} delay={(i % 4) * 0.05}>
             <Link
-              to={`/${locale}/projects/${item.slug}`}
+              to={projectPath(locale, item)}
               className="group relative block overflow-hidden bg-ink-800"
               style={{ aspectRatio: ratio }}
             >

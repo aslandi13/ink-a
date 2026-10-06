@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useParams, useSearchParams } from 'react-router-dom'
+import { Navigate, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { getProject } from '../api/content'
 import { getDraftPage, getEditorToken, getProjectTemplate, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
 import Lightbox from '../components/Lightbox'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { projectPath } from '../lib/projectPath'
 import type { Locale } from '../lib/locale'
 import { useLocale } from '../lib/useLocale'
 import {
@@ -33,7 +34,8 @@ async function loadDraftTemplate(locale: Locale, category: string, forced: strin
 export default function ProjectDetail() {
   const locale = useLocale()
   const tr = t(locale)
-  const { slug } = useParams()
+  const { slug, category } = useParams()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const preview = searchParams.has('preview') && !!getEditorToken()
   const forcedTemplate = searchParams.get('template')
@@ -48,7 +50,7 @@ export default function ProjectDetail() {
     setLoading(true)
     setError(false)
     setData(null)
-    Promise.all([getProject(locale, slug), loadOtherProjects(locale, slug)])
+    Promise.all([getProject(locale, slug, category), loadOtherProjects(locale, slug, category)])
       .then(async ([project, others]) => {
         const template = preview
           ? await loadDraftTemplate(locale, project.category, forcedTemplate)
@@ -58,7 +60,7 @@ export default function ProjectDetail() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, slug, preview, forcedTemplate])
+  }, [locale, slug, category, preview, forcedTemplate])
 
   if (loading) {
     return <section className="flex min-h-[60vh] items-center justify-center text-white/40">{tr.ui.loading}</section>
@@ -70,6 +72,10 @@ export default function ProjectDetail() {
 
   if (!data) {
     return <section className="mx-auto max-w-[84rem] px-6 py-24 text-white">{tr.ui.projectNotFound}</section>
+  }
+
+  if (!category && data.project.category) {
+    return <Navigate to={`${projectPath(locale, data.project)}${location.search}`} replace />
   }
 
   return (

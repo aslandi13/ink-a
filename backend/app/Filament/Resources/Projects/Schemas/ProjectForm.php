@@ -10,9 +10,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Unique;
 
 class ProjectForm
 {
@@ -44,8 +46,9 @@ class ProjectForm
                 TextInput::make('slug')
                     ->label('URL-адрес (slug)')
                     ->required()
-                    ->unique(ignoreRecord: true)
-                    ->helperText('Используется в адресе страницы, например: /projects/villa-on-the-hill'),
+                    ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('category', $get('category')))
+                    ->validationMessages(['unique' => 'В этой категории уже есть проект с таким адресом.'])
+                    ->helperText('Используется в адресе страницы после категории, например: /projects/architecture/villa-on-the-hill. В разных категориях адрес может повторяться.'),
 
                 Select::make('category')
                     ->label('Категория')

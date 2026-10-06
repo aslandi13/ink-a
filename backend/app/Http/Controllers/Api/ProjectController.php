@@ -32,11 +32,25 @@ class ProjectController extends Controller
         ]);
     }
 
+    public function showInCategory(string $locale, string $category, string $slug): JsonResponse
+    {
+        $project = Project::query()
+            ->where('category', $category)
+            ->where('slug', $slug)
+            ->where('is_published', true)
+            ->firstOrFail();
+
+        return response()->json([
+            'data' => new ProjectDetailResource($project),
+        ]);
+    }
+
     public function show(string $locale, string $slug): JsonResponse
     {
         $project = Project::query()
             ->where('slug', $slug)
             ->where('is_published', true)
+            ->orderBy('sort_order')
             ->firstOrFail();
 
         return response()->json([

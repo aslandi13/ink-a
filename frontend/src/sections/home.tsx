@@ -8,6 +8,7 @@ import Reveal from '../components/Reveal'
 import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
+import { projectPath } from '../lib/projectPath'
 
 export interface HeroData {
   title?: string
@@ -15,7 +16,7 @@ export interface HeroData {
   description?: string
   video?: string
   poster?: string
-  slides?: { image: string; title?: string; slug?: string }[]
+  slides?: { image: string; title?: string; slug?: string; category?: string }[]
   stats?: { number: string; label: string }[]
   featured_project_id?: number
 }
@@ -97,8 +98,8 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   const slides = [
-    ...(hero?.video ? [{ type: 'video' as const, src: hero.video, title: undefined as string | undefined, slug: undefined as string | undefined }] : []),
-    ...(hero?.slides ?? []).map((s) => ({ type: 'photo' as const, src: s.image, title: s.title, slug: s.slug })),
+    ...(hero?.video ? [{ type: 'video' as const, src: hero.video, title: undefined as string | undefined, slug: undefined as string | undefined, category: undefined as string | undefined }] : []),
+    ...(hero?.slides ?? []).map((s) => ({ type: 'photo' as const, src: s.image, title: s.title, slug: s.slug, category: s.category })),
   ]
   const slidesLen = slides.length
 
@@ -114,7 +115,9 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
 
   const featuredProject = projects.find((p) => p.id === hero?.featured_project_id)
   const currentSlide = slides[slideIndex]
-  const badgeSlug = currentSlide?.type === 'photo' && currentSlide.slug ? currentSlide.slug : featuredProject?.slug
+  const badgeFromSlide = currentSlide?.type === 'photo' && !!currentSlide.slug
+  const badgeSlug = badgeFromSlide ? currentSlide.slug : featuredProject?.slug
+  const badgeCategory = badgeFromSlide ? currentSlide.category : featuredProject?.category
   const badgeTitle = currentSlide?.type === 'photo' && currentSlide.title ? currentSlide.title : featuredProject?.title
 
   return (
@@ -196,7 +199,7 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
                 className="mt-8"
               >
                 <Link
-                  to={`/${locale}/projects/${badgeSlug}`}
+                  to={projectPath(locale, { slug: badgeSlug, category: badgeCategory })}
                   className="text-sm text-white/50 transition-colors hover:text-white/80"
                 >
                   {badgeTitle}
@@ -461,7 +464,7 @@ export function KeyProjectsSection({ data, locale, settings = {} }: SectionProps
                 style={{ aspectRatio: ratio }}
               >
                 <Link
-                  to={`/${locale}/projects/${project.slug}`}
+                  to={projectPath(locale, project)}
                   className="group relative block h-full w-full overflow-hidden bg-ink-800"
                 >
                   {project.cover_image && (

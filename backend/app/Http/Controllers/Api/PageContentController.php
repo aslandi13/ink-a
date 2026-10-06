@@ -26,7 +26,7 @@ class PageContentController extends Controller
         if (!empty($data['slide_project_ids'])) {
             $ids = array_values(array_map('intval', (array) $data['slide_project_ids']));
             $projects = Project::whereIn('id', $ids)
-                ->get(['id', 'cover_image', 'title', 'slug'])
+                ->get(['id', 'cover_image', 'title', 'slug', 'category'])
                 ->keyBy('id');
 
             $data['slides'] = collect($ids)
@@ -35,6 +35,7 @@ class PageContentController extends Controller
                     'image' => FileUrlResolver::resolve($projects[$id]->cover_image),
                     'title' => $projects[$id]->getTranslation('title', $locale, false) ?: $projects[$id]->getTranslation('title', 'ru', false),
                     'slug'  => $projects[$id]->slug,
+                    'category' => $projects[$id]->category,
                 ])
                 ->values()
                 ->toArray();

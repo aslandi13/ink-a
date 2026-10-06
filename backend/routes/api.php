@@ -47,6 +47,7 @@ Route::prefix('{locale}')->middleware(SetLocaleFromRoute::class)->group(function
 
     Route::get('projects', [ProjectController::class, 'index']);
     Route::get('projects/{slug}', [ProjectController::class, 'show']);
+    Route::get('projects/{category}/{slug}', [ProjectController::class, 'showInCategory']);
 
     Route::get('news', [NewsController::class, 'index']);
     Route::get('news/{slug}', [NewsController::class, 'show']);
