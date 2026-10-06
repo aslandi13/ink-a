@@ -45,6 +45,17 @@ export const PROJECT_CATEGORIES: { id: string; label: string }[] = [
 
 export const PROJECT_TEMPLATE = 'project-template'
 
+const STATUS_LABELS: Record<string, Record<Locale, string>> = {
+  completed: { ru: 'Реализован', kz: 'Аяқталған', en: 'Completed' },
+  in_progress: { ru: 'Строится', kz: 'Салынуда', en: 'Construction' },
+  concept: { ru: 'Концепция', kz: 'Тұжырымдама', en: 'Concept' },
+}
+
+export function statusLabel(status: string | null | undefined, locale: Locale): string {
+  if (!status) return ''
+  return STATUS_LABELS[status]?.[locale] ?? status
+}
+
 export function isProjectTemplate(slug: string): boolean {
   return slug === PROJECT_TEMPLATE || PROJECT_CATEGORIES.some((c) => slug === `${PROJECT_TEMPLATE}-${c.id}`)
 }
@@ -228,7 +239,7 @@ export function ProjectHeroSection({ data, settings = {} }: SectionProps) {
   )
 }
 
-export function ProjectInfoSection({ data, settings = {} }: SectionProps) {
+export function ProjectInfoSection({ data, locale, settings = {} }: SectionProps) {
   const showFacts = settings.facts !== 'hide'
   const stacked = settings.layout === 'stacked' || !showFacts
   const { project } = data
@@ -237,7 +248,7 @@ export function ProjectInfoSection({ data, settings = {} }: SectionProps) {
     ['Год', project.year],
     ['Площадь участка', project.site_area],
     ['Общая площадь', project.total_area],
-    ['Статус', project.status],
+    ['Статус', statusLabel(project.status, locale)],
   ].filter(([, value]) => value)
 
   return (

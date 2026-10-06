@@ -2,7 +2,7 @@ import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { sanitise } from '../lib/sanitise'
 import { escapeAttr, fillFields } from './fields'
-import type { ProjectPageData } from './project'
+import { statusLabel, type ProjectPageData } from './project'
 
 type Category = keyof ReturnType<typeof t>['projects']['categories']
 
@@ -24,6 +24,7 @@ const GALLERY_ITEM = 'aspect-[2/1] w-full object-cover'
 
 function textValue(field: string, data: ProjectPageData, locale: Locale): string {
   const { project } = data
+  if (field === 'status') return statusLabel(project.status, locale)
   if (field === 'category') return t(locale).projects.categories[project.category as Category] ?? project.category
   const value = (project as unknown as Record<string, unknown>)[field]
   return value == null ? '' : String(value)
