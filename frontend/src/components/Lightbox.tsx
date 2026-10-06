@@ -93,7 +93,7 @@ export default function Lightbox({ images, index, onClose }: Props) {
             </svg>
           </button>
 
-          <div className="relative flex h-full w-full items-center justify-center overflow-hidden px-4 py-20 sm:px-24">
+          <div className="relative flex h-full w-full items-center justify-center overflow-hidden px-4 py-20 sm:px-20 sm:py-24">
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.img
                 key={current}
@@ -104,7 +104,7 @@ export default function Lightbox({ images, index, onClose }: Props) {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: direction * -60 }}
                 transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                className="max-h-full max-w-full object-contain"
+                className="h-full w-full object-contain"
                 onClick={(e) => e.stopPropagation()}
               />
             </AnimatePresence>
