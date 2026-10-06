@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-do
 import Layout from './components/Layout'
 import SiteSettingsProvider from './components/SiteSettingsProvider'
 import { useEnabledLocales } from './lib/enabledLocales'
+import { DEFAULT_PROJECT_CATEGORY, isProjectCategory } from './lib/projectCategories'
 import { DEFAULT_LOCALE, isLocale } from './lib/locale'
 import About from './pages/About'
 import Approach from './pages/Approach'
@@ -16,6 +17,11 @@ import ProjectDetail from './pages/ProjectDetail'
 import Projects from './pages/Projects'
 
 const EditorPage = lazy(() => import('./editor/EditorPage'))
+
+function ProjectsOrDetail() {
+  const { slug } = useParams()
+  return isProjectCategory(slug) ? <Projects /> : <ProjectDetail />
+}
 
 function LocaleGate() {
   const { locale } = useParams()
@@ -39,8 +45,8 @@ function LocaleGate() {
       <Routes>
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="projects/:slug" element={<ProjectDetail />} />
+        <Route path="projects" element={<Navigate to={DEFAULT_PROJECT_CATEGORY} replace />} />
+        <Route path="projects/:slug" element={<ProjectsOrDetail />} />
         <Route path="projects/:category/:slug" element={<ProjectDetail />} />
         <Route path="approach" element={<Approach />} />
         <Route path="news" element={<NewsList />} />

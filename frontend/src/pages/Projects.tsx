@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { getProjects } from '../api/content'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { DEFAULT_PROJECT_CATEGORY, isProjectCategory } from '../lib/projectCategories'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_PROJECTS_LIST_LAYOUT, PROJECTS_LIST_BLOCKS } from '../sections/projectsList'
 
 export default function Projects() {
+  const { slug } = useParams()
   const locale = useLocale()
   const tr = t(locale)
   const [searchParams] = useSearchParams()
@@ -17,7 +19,7 @@ export default function Projects() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    getProjects(locale, { page: 1 }).catch(() => undefined)
+    getProjects(locale, { category: isProjectCategory(slug) ? slug : DEFAULT_PROJECT_CATEGORY, page: 1 }).catch(() => undefined)
     setReady(false)
     const request = preview ? getDraftPage('projects', locale).then((res) => res.draft) : getLocalizedPage(locale, 'projects')
     request

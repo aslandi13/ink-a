@@ -6,10 +6,11 @@ import { loadContactsData } from '../sections/contacts'
 import { loadHomeData } from '../sections/home'
 import { loadLegalData } from '../sections/legal'
 import type { Locale } from './locale'
+import { DEFAULT_PROJECT_CATEGORY } from './projectCategories'
 
 const LOADERS: Record<string, (locale: Locale) => Promise<unknown>[]> = {
   '': (locale) => [loadHomeData(locale), getLocalizedPage(locale, 'home')],
-  projects: (locale) => [getProjects(locale, { page: 1 }), getLocalizedPage(locale, 'projects')],
+  projects: (locale) => [getProjects(locale, { category: DEFAULT_PROJECT_CATEGORY, page: 1 }), getLocalizedPage(locale, 'projects')],
   approach: (locale) => [loadApproachData(locale), getLocalizedPage(locale, 'approach')],
   about: (locale) => [loadAboutData(locale), getLocalizedPage(locale, 'about')],
   news: (locale) => [getNews(locale, { page: 1 }), getLocalizedPage(locale, 'news')],

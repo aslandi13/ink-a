@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getProjects, type ProjectListItem } from '../api/content'
 import ErrorMessage from '../components/ErrorMessage'
 import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { prefetchProject } from '../lib/prefetch'
+import { DEFAULT_PROJECT_CATEGORY, isProjectCategory } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
 
 type Settings = Record<string, string>
@@ -34,14 +35,23 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   const showLocation = settings.location !== 'hide'
 
   const CATEGORIES = [
-    { value: '', label: tr.projects.categories.all },
     { value: 'architecture', label: tr.projects.categories.architecture },
     { value: 'engineering', label: tr.projects.categories.engineering },
     { value: 'urbanism', label: tr.projects.categories.urbanism },
     { value: 'interior', label: tr.projects.categories.interior },
   ]
 
-  const [category, setCategory] = useState('')
+  const params = useParams()
+  const navigate = useNavigate()
+  const routeCategory = isProjectCategory(params.slug) ? params.slug! : null
+  const [category, setCategory] = useState<string>(routeCategory ?? DEFAULT_PROJECT_CATEGORY)
+  useEffect(() => {
+    if (routeCategory) setCategory(routeCategory)
+  }, [routeCategory])
+  const selectCategory = (value: string) => {
+    setCategory(value)
+    if (routeCategory) navigate(`/${locale}/projects/${value}`)
+  }
   const [projects, setProjects] = useState<ProjectListItem[]>([])
   const [page, setPage] = useState(1)
   const [lastPage, setLastPage] = useState(1)
@@ -56,7 +66,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
     setLoading(true)
     setError(false)
 
-    getProjects(locale, category ? { category, page: 1 } : { page: 1 })
+    getProjects(locale, { category, page: 1 })
       .then((res) => {
         setProjects(res.data)
         setLastPage(res.meta.last_page)
@@ -68,7 +78,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   function loadMore() {
     const nextPage = page + 1
     setLoadingMore(true)
-    getProjects(locale, category ? { category, page: nextPage } : { page: nextPage })
+    getProjects(locale, { category, page: nextPage })
       .then((res) => {
         setProjects((prev) => [...prev, ...res.data])
         setPage(nextPage)
@@ -87,7 +97,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
           <button
             key={c.value}
             data-interactive
-            onClick={() => setCategory(c.value)}
+            onClick={() => selectCategory(c.value)}
             className={
               c.value === category
                 ? 'border-b border-white pb-1 text-white'
