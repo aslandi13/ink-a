@@ -29,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         // Videos, SVGs and other non-raster files are stored as-is without modification.
         FileUpload::configureUsing(function (FileUpload $fileUpload): void {
             $fileUpload
+                ->imageEditor(fn (FileUpload $component): bool => in_array('image/*', $component->getAcceptedFileTypes() ?? [], true))
                 ->maxSize(51200)
                 ->hint('до 50 МБ · авто-сжатие WebP')
                 ->saveUploadedFileUsing(function (BaseFileUpload $component, TemporaryUploadedFile $file): ?string {
