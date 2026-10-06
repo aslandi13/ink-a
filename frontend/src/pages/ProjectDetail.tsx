@@ -91,7 +91,7 @@ export default function ProjectDetail() {
     >
       <Lightbox images={lightbox?.images ?? []} index={lightbox?.index ?? null} onClose={() => setLightbox(null)} />
       <Helmet>
-        <title>{data.project.title}</title>
+        <title>{`${data.project.title} — INK Architects`}</title>
         {metaText(data.project.excerpt, data.project.body) && <meta name="description" content={metaText(data.project.excerpt, data.project.body)} />}
         {data.project.cover_image && <meta property="og:image" content={data.project.cover_image} />}
       </Helmet>

@@ -54,7 +54,7 @@ export default function NewsDetail() {
   return (
     <article>
       <Helmet>
-        <title>{data.item.title}</title>
+        <title>{`${data.item.title} — INK Architects`}</title>
         {metaText(data.item.excerpt, data.item.body) && <meta name="description" content={metaText(data.item.excerpt, data.item.body)} />}
         {data.item.cover_image && <meta property="og:image" content={data.item.cover_image} />}
       </Helmet>
