@@ -5,6 +5,7 @@ import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from 
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { metaText } from '../lib/metaText'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_LEGAL_LAYOUT, LEGAL_BLOCKS, loadLegalData, type LegalData } from '../sections/legal'
 
@@ -47,11 +48,7 @@ export default function Legal() {
         <title>{`${tr.legal.title} — INK Architects`}</title>
         <meta
           name="description"
-          content={
-            locale === 'ru'
-              ? 'Юридическая информация, политика конфиденциальности и условия использования INK Architects.'
-              : 'Legal information, privacy policy and terms of use for INK Architects.'
-          }
+          content={metaText(data.body) || (locale === 'ru' ? 'Юридическая информация, политика конфиденциальности и условия использования INK Architects.' : 'Legal information, privacy policy and terms of use for INK Architects.')}
         />
       </Helmet>
 
