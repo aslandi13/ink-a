@@ -85,7 +85,7 @@ export default function Lightbox({ images, index, onClose }: Props) {
           <button
             onClick={onClose}
             aria-label="Закрыть"
-            className="absolute right-6 top-6 z-10 text-white/70 transition-colors hover:text-white sm:right-10 sm:top-10"
+            className="absolute right-5 top-5 z-10 text-white/70 transition-colors hover:text-white sm:right-6 sm:top-4"
           >
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
               <line x1="5" y1="5" x2="19" y2="19" />
@@ -93,7 +93,7 @@ export default function Lightbox({ images, index, onClose }: Props) {
             </svg>
           </button>
 
-          <div className="relative flex h-full w-full items-center justify-center overflow-hidden px-4 py-20 sm:px-20 sm:py-24">
+          <div className="relative flex h-full w-full items-center justify-center overflow-hidden px-4 py-16 sm:px-16 sm:py-14">
             <AnimatePresence initial={false} custom={direction} mode="popLayout">
               <motion.img
                 key={current}
@@ -136,7 +136,7 @@ export default function Lightbox({ images, index, onClose }: Props) {
                   <polyline points="9 18 15 12 9 6" />
                 </svg>
               </button>
-              <p className="absolute bottom-6 left-1/2 -translate-x-1/2 text-sm tracking-widest text-white/60 sm:bottom-8">
+              <p className="absolute bottom-5 left-1/2 -translate-x-1/2 text-sm tracking-widest text-white/60 sm:bottom-4">
                 {counter(current + 1)} / {counter(images.length)}
               </p>
             </>
