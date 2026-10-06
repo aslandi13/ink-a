@@ -17,6 +17,11 @@ class ProjectsTable
     {
         return $table
             ->defaultSort('sort_order')
+            ->reorderable('sort_order')
+            ->reorderRecordsTriggerAction(fn (Action $action, bool $isReordering) => $action
+                ->button()
+                ->label($isReordering ? 'Готово' : 'Изменить порядок')
+                ->icon($isReordering ? 'heroicon-o-check' : 'heroicon-o-arrows-up-down'))
             ->columns([
                 ImageColumn::make('cover_image')
                     ->label('Обложка')
