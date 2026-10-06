@@ -3,6 +3,7 @@
 namespace App\Filament\Pages\Content;
 
 use App\Filament\Pages\SingletonContentPage;
+use App\Models\PageContent;
 use App\Filament\Support\TranslatableTabs;
 use BackedEnum;
 use Filament\Forms\Components\CheckboxList;
@@ -30,6 +31,16 @@ class SiteSettings extends SingletonContentPage
         return 'site_settings';
     }
 
+    public function mount(): void
+    {
+        $record = PageContent::firstOrCreate(['key' => static::contentKey()], ['data' => []]);
+        $data = $record->data ?? [];
+        $data['watermark_enabled'] ??= true;
+        $data['watermark_size'] ??= 'medium';
+
+        $this->form->fill($data);
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -54,8 +65,7 @@ class SiteSettings extends SingletonContentPage
                     ->columns(2)
                     ->schema([
                         Toggle::make('watermark_enabled')
-                            ->label('Показывать водяной знак')
-                            ->afterStateHydrated(fn (Toggle $component, $state) => $component->state($state ?? true)),
+                            ->label('Показывать водяной знак'),
 
                         Select::make('watermark_size')
                             ->label('Размер')
