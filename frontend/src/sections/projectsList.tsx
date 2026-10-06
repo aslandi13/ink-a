@@ -6,7 +6,7 @@ import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { prefetchProject } from '../lib/prefetch'
-import { DEFAULT_PROJECT_CATEGORY, isProjectCategory } from '../lib/projectCategories'
+import { DEFAULT_PROJECT_CATEGORY, isProjectCategory, PROJECTS_PER_PAGE } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
 
 type Settings = Record<string, string>
@@ -66,7 +66,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
     setLoading(true)
     setError(false)
 
-    getProjects(locale, { category, page: 1 })
+    getProjects(locale, { category, page: 1, per_page: PROJECTS_PER_PAGE })
       .then((res) => {
         setProjects(res.data)
         setLastPage(res.meta.last_page)
@@ -78,7 +78,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   function loadMore() {
     const nextPage = page + 1
     setLoadingMore(true)
-    getProjects(locale, { category, page: nextPage })
+    getProjects(locale, { category, page: nextPage, per_page: PROJECTS_PER_PAGE })
       .then((res) => {
         setProjects((prev) => [...prev, ...res.data])
         setPage(nextPage)

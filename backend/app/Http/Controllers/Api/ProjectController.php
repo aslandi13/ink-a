@@ -20,7 +20,7 @@ class ProjectController extends Controller
                 fn ($query) => $query->where('category', $request->string('category'))
             )
             ->orderBy('sort_order')
-            ->paginate($request->integer('per_page', 9));
+            ->paginate(min($request->integer('per_page', 9), 100));
 
         return response()->json([
             'data' => ProjectListResource::collection($projects->items()),
