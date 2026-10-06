@@ -17,7 +17,11 @@ class GalleryWatermark
 
     public const FULL_QUALITY = 90;
 
-    private const SIZES = ['small' => 0.08, 'medium' => 0.11, 'large' => 0.15];
+    private const SIZES = ['small' => 0.075, 'medium' => 0.1014, 'large' => 0.135];
+
+    private const RIGHT = 0.025;
+
+    private const BOTTOM = 0.0375;
 
     public static function thumbPath(string $path): string
     {
@@ -108,8 +112,8 @@ class GalleryWatermark
         $ratio = self::SIZES[$settings['watermark_size'] ?? ''] ?? self::SIZES['medium'];
         $markWidth = max(60, (int) round($width * $ratio));
         $markHeight = (int) round($markWidth * imagesy($mark) / imagesx($mark));
-        $x = $width - $markWidth - (int) round($width * 0.025);
-        $y = $height - $markHeight - (int) round($height * 0.03);
+        $x = $width - $markWidth - (int) round($width * self::RIGHT);
+        $y = $height - $markHeight - (int) round($height * self::BOTTOM);
 
         imagealphablending($image, true);
         imagecopyresampled($image, $mark, $x, $y, 0, 0, $markWidth, $markHeight, imagesx($mark), imagesy($mark));
