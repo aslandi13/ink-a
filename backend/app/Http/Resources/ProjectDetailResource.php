@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Support\FileUrlResolver;
+use App\Support\GalleryWatermark;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,6 +27,10 @@ class ProjectDetailResource extends JsonResource
             'cover_image' => FileUrlResolver::resolve($this->cover_image),
             'cover_focus' => $this->cover_focus ?? 'center',
             'gallery' => FileUrlResolver::resolve($this->gallery ?? []),
+            'gallery_thumbs' => FileUrlResolver::resolve(array_map(
+                fn (string $path) => GalleryWatermark::isProcessed($path) ? GalleryWatermark::thumbPath($path) : $path,
+                $this->gallery ?? [],
+            )),
         ];
     }
 }

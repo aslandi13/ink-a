@@ -61,7 +61,7 @@ class SiteSettings extends SingletonContentPage
                     ]),
 
                 Section::make('Водяной знак')
-                    ->description('Показывается в правом нижнем углу фото в галерее проекта и при просмотре фото на весь экран.')
+                    ->description('Впечатывается в правый нижний угол фото галереи проекта при загрузке. В сетке галереи показываются чистые превью, а в просмотре на весь экран и при скачивании — фото со знаком. Изменения действуют на новые загрузки.')
                     ->columns(2)
                     ->schema([
                         Toggle::make('watermark_enabled')
@@ -75,9 +75,9 @@ class SiteSettings extends SingletonContentPage
 
                         FileUpload::make('watermark')
                             ->label('Свой файл знака')
-                            ->acceptedFileTypes(['image/svg+xml', 'image/png', 'image/webp'])
+                            ->acceptedFileTypes(['image/png', 'image/webp'])
                             ->directory('settings')
-                            ->helperText('SVG или PNG с прозрачным фоном. Если не загружать — используется стандартный белый «© INK Architects».')
+                            ->helperText('PNG с прозрачным фоном. Если не загружать — используется стандартный белый «© INK Architects».')
                             ->columnSpanFull(),
                     ]),
 

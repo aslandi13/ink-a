@@ -85,8 +85,9 @@ export default function ProjectDetail() {
         const img = (e.target as HTMLElement).closest<HTMLImageElement>('[data-field="gallery"] img')
         const container = img?.closest('[data-field="gallery"]')
         if (!img || !container) return
-        const images = Array.from(container.querySelectorAll('img')).map((el) => el.getAttribute('src') ?? '')
-        setLightbox({ images, index: images.indexOf(img.getAttribute('src') ?? '') })
+        const items = Array.from(container.querySelectorAll('img'))
+        const images = items.map((el) => el.dataset.full || el.getAttribute('src') || '')
+        setLightbox({ images, index: items.indexOf(img) })
       }}
     >
       <Lightbox images={lightbox?.images ?? []} index={lightbox?.index ?? null} onClose={() => setLightbox(null)} />

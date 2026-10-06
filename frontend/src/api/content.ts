@@ -51,6 +51,7 @@ export interface ProjectDetail extends ProjectListItem {
   total_apartments?: string | null
   status: string | null
   gallery: string[]
+  gallery_thumbs?: string[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

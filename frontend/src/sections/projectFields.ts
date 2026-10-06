@@ -47,7 +47,10 @@ export function applyProjectField(el: HTMLElement, data: ProjectPageData, locale
   }
   if (field === 'gallery') {
     el.innerHTML = (project.gallery ?? [])
-      .map((src) => `<img src="${escapeAttr(src)}" class="${GALLERY_ITEM} cursor-zoom-in" alt="">`)
+      .map(
+        (src, i) =>
+          `<img src="${escapeAttr(project.gallery_thumbs?.[i] ?? src)}" data-full="${escapeAttr(src)}" class="${GALLERY_ITEM} cursor-zoom-in" alt="">`,
+      )
       .join('')
     return
   }

@@ -301,7 +301,7 @@ export function ProjectGallerySection({ data, settings = {} }: SectionProps) {
           <Reveal key={i} delay={(i % 4) * 0.06}>
             <button type="button" onClick={() => setOpenIndex(i)} className="relative block w-full cursor-zoom-in overflow-hidden">
               <img
-                src={src}
+                src={data.project.gallery_thumbs?.[i] ?? src}
                 alt=""
                 className="w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                 style={{ aspectRatio: ratio }}

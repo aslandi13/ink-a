@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import Watermark from './Watermark'
 
 interface Props {
   images: string[]
@@ -129,7 +128,6 @@ export default function Lightbox({ images, index, onClose }: Props) {
                     className="h-full w-full object-contain"
                     onLoad={(e) => setRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)}
                   />
-                  <Watermark />
                 </motion.div>
               </AnimatePresence>
             </div>
