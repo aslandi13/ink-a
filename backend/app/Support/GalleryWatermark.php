@@ -121,8 +121,18 @@ class GalleryWatermark
         $target = self::webpPath($path);
         ob_start();
         imagewebp($image, null, self::FULL_QUALITY);
-        $disk->put($target, (string) ob_get_clean(), 'public');
+        $contents = (string) ob_get_clean();
         imagedestroy($image);
+
+        $temporary = $target.'.tmp';
+        $written = $disk->put($temporary, $contents, 'public');
+
+        if (! $written || ! @rename($disk->path($temporary), $disk->path($target))) {
+            $disk->delete($temporary);
+            Log::warning('Gallery watermark failed: cannot write file', ['file' => $target]);
+
+            return $path;
+        }
 
         if ($target !== $path) {
             $disk->move(self::thumbPath($path), self::thumbPath($target));
