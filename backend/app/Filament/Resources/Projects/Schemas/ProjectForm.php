@@ -111,7 +111,7 @@ class ProjectForm
                             ->label('Статус')
                             ->options([
                                 'completed' => 'Completed',
-                                'in_progress' => 'In Progress',
+                                'in_progress' => 'Construction',
                                 'concept' => 'Concept',
                             ]),
                     ]),
