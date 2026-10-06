@@ -137,7 +137,7 @@ class SitePageResource extends Resource
                     ->modalDescription('Выберите версию — она снова станет опубликованной на сайте и откроется в редакторе. Текущая версия тоже сохранится в истории. Тексты секций, которые меняются в разделах админки, не откатываются.')
                     ->modalSubmitActionLabel('Вернуть эту версию')
                     ->schema(fn (Page $record) => [
-                        Radio::make('version')
+                        Radio::make('version_id')
                             ->label('Версия')
                             ->required()
                             ->options($record->versions()->get()->mapWithKeys(fn (PageVersion $version) => [
@@ -145,7 +145,7 @@ class SitePageResource extends Resource
                             ])),
                     ])
                     ->action(function (Page $record, array $data) {
-                        $version = $record->versions()->findOrFail($data['version']);
+                        $version = $record->versions()->findOrFail($data['version_id']);
                         $record->restoreVersion($version);
                         Notification::make()->title('Версия возвращена')->success()->send();
                     }),
