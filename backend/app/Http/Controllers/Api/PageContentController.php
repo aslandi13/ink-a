@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PageContent;
 use App\Models\Project;
+use App\Models\TeamMember;
 use App\Support\FileUrlResolver;
 use App\Support\LocaleResolver;
 use Illuminate\Http\JsonResponse;
@@ -21,6 +22,20 @@ class PageContentController extends Controller
 
         $data = LocaleResolver::resolve($record->data ?? [], app()->getLocale());
         $data = FileUrlResolver::resolve($data);
+
+        if ($key === 'about.team') {
+            $data['members'] = TeamMember::query()
+                ->where('is_published', true)
+                ->orderBy('sort_order')
+                ->get()
+                ->map(fn (TeamMember $member) => [
+                    'name' => $member->name,
+                    'photo' => FileUrlResolver::resolve($member->photo),
+                    'position' => $member->getTranslation('position', $locale, false) ?: $member->getTranslation('position', 'ru', false),
+                    'credentials' => $member->getTranslation('credentials', $locale, false) ?: $member->getTranslation('credentials', 'ru', false),
+                ])
+                ->all();
+        }
 
         // Обогащение: slide_project_ids → slides с cover_image (для любого блока)
         if (!empty($data['slide_project_ids'])) {

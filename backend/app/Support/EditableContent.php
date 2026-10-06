@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\PageContent;
+use App\Models\TeamMember;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
@@ -28,14 +29,11 @@ class EditableContent
     private const ROOT_TEXT_FIELDS = [
         'approach' => ['default_image_caption'],
         'about.history' => ['gallery.*.overlay_text'],
-        'about.team' => ['members.*.name'],
         'about.founder' => ['name'],
         'contacts' => ['email', 'facebook_handle', 'instagram_handle', 'linkedin_handle', 'address', 'phone', 'whatsapp'],
     ];
 
-    private const NESTED_LOCALE_TEXT_FIELDS = [
-        'about.team' => ['members.*.position', 'members.*.credentials'],
-    ];
+    private const NESTED_LOCALE_TEXT_FIELDS = [];
 
     private const GROUPED_KEYS = [
         'approach' => ['architecture', 'engineering', 'urbanism', 'interior'],
@@ -46,7 +44,6 @@ class EditableContent
         'home.offices' => ['map_poster'],
         'approach' => ['default_image'],
         'about.history' => ['gallery.*.image'],
-        'about.team' => ['members.*.photo'],
         'about.founder' => ['photo'],
     ];
 
@@ -55,7 +52,15 @@ class EditableContent
      */
     public static function apply(string $locale, array $changes): void
     {
-        $grouped = collect($changes)->groupBy('key');
+        [$teamChanges, $changes] = collect($changes)->partition(
+            fn (array $change) => $change['key'] === 'about.team' && str_starts_with($change['field'], 'members.')
+        );
+
+        foreach ($teamChanges as $change) {
+            self::applyTeamMember($locale, $change['field'], $change['value']);
+        }
+
+        $grouped = collect($changes->values()->all())->groupBy('key');
 
         foreach ($grouped as $key => $items) {
             $record = PageContent::firstOrCreate(['key' => $key], ['data' => []]);
@@ -77,6 +82,27 @@ class EditableContent
 
             $record->update(['data' => $data]);
         }
+    }
+
+    private static function applyTeamMember(string $locale, string $field, ?string $value): void
+    {
+        if (! preg_match('/^members\.(\d+)\.(name|photo|position|credentials)$/', $field, $match)) {
+            throw new InvalidArgumentException("Поле about.team:{$field} нельзя редактировать.");
+        }
+
+        $member = TeamMember::query()->where('is_published', true)->orderBy('sort_order')->skip((int) $match[1])->first();
+
+        if ($member === null) {
+            throw new InvalidArgumentException('Сотрудник не найден.');
+        }
+
+        match ($match[2]) {
+            'name' => $member->name = (string) $value,
+            'photo' => $member->photo = self::toStoragePath($value),
+            default => $member->setTranslation($match[2], $locale, (string) $value),
+        };
+
+        $member->save();
     }
 
     private static function applyField(array $data, string $key, string $field, ?string $value, string $locale): array

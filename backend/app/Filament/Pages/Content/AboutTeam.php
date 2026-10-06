@@ -6,7 +6,6 @@ use App\Filament\Pages\SingletonContentPage;
 use App\Filament\Support\TranslatableTabs;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -23,7 +22,9 @@ class AboutTeam extends SingletonContentPage
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $title = 'Команда';
+    protected static ?string $title = 'Команда — SEO';
+
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function contentKey(): string
     {
@@ -35,36 +36,6 @@ class AboutTeam extends SingletonContentPage
         return $schema
             ->statePath('data')
             ->components([
-                Repeater::make('members')
-                    ->label('Сотрудники')
-                    ->reorderable()
-                    ->addActionLabel('Добавить сотрудника')
-                    ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-                    ->schema([
-                        FileUpload::make('photo')
-                            ->label('Фото')
-                            ->image()
-                            ->directory('about/team')
-                            ->imageEditor(),
-
-                        TextInput::make('name')
-                            ->label('Имя')
-                            ->required()
-                            ->helperText('Имя не переводится, указывается один раз'),
-
-                        TranslatableTabs::make(fn (string $locale) => [
-                            TextInput::make('position')
-                                ->label('Должность')
-                                ->required($locale === 'ru')
-                                ->helperText('Например: «Основатель, креативный директор» или «Управляющий директор / Вице-президент»'),
-
-                            TextInput::make('credentials')
-                                ->label('Регалии')
-                                ->helperText('Необязательно. Например: «RIBA, AIA, IAA» или «AIA, NCARB»'),
-                        ]),
-                    ])
-                    ->columns(1),
-
                 Section::make('SEO')
                     ->description('Отображается в поисковых системах и при шаринге ссылки')
                     ->schema([
