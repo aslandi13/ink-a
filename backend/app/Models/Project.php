@@ -23,6 +23,7 @@ class Project extends Model
         'location',
         'site_area',
         'total_area',
+        'total_apartments',
         'status',
         'year',
         'is_published',

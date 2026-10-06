@@ -13,6 +13,7 @@ export const PROJECT_FIELDS: { id: string; label: string }[] = [
   { id: 'year', label: 'Год' },
   { id: 'site_area', label: 'Площадь участка' },
   { id: 'total_area', label: 'Общая площадь' },
+  { id: 'total_apartments', label: 'Количество квартир' },
   { id: 'status', label: 'Статус' },
   { id: 'excerpt', label: 'Краткое описание' },
   { id: 'body', label: 'Полное описание' },
@@ -75,6 +76,7 @@ export const PROJECT_FIELD_BLOCKS: { id: string; label: string; content: string 
   { id: 'field-year', label: 'Год', content: fact('year', 'Год') },
   { id: 'field-site-area', label: 'Площадь участка', content: fact('site_area', 'Площадь участка') },
   { id: 'field-total-area', label: 'Общая площадь', content: fact('total_area', 'Общая площадь') },
+  { id: 'field-total-apartments', label: 'Количество квартир', content: fact('total_apartments', 'Количество квартир') },
   { id: 'field-status', label: 'Статус', content: fact('status', 'Статус') },
   { id: 'field-excerpt', label: 'Краткое описание', content: '<p data-field="excerpt" class="max-w-2xl text-base leading-relaxed text-white/70"></p>' },
   { id: 'field-body', label: 'Полное описание', content: '<div data-field="body" class="prose prose-invert max-w-none text-white/70"></div>' },
@@ -92,6 +94,6 @@ export const PROJECT_FIELD_BLOCKS: { id: string; label: string; content: string 
   {
     id: 'field-facts',
     label: 'Характеристики',
-    content: `<div data-gjs-name="Характеристики" class="mx-auto grid max-w-[84rem] gap-4 px-6 py-10 sm:grid-cols-2 md:grid-cols-5">${fact('location', 'Местоположение')}${fact('year', 'Год')}${fact('site_area', 'Площадь участка')}${fact('total_area', 'Общая площадь')}${fact('status', 'Статус')}</div>`,
+    content: `<div data-gjs-name="Характеристики" class="mx-auto grid max-w-[84rem] gap-4 px-6 py-10 sm:grid-cols-2 md:grid-cols-5">${fact('location', 'Местоположение')}${fact('year', 'Год')}${fact('site_area', 'Площадь участка')}${fact('total_area', 'Общая площадь')}${fact('total_apartments', 'Количество квартир')}${fact('status', 'Статус')}</div>`,
   },
 ]

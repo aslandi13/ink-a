@@ -248,6 +248,7 @@ export function ProjectInfoSection({ data, locale, settings = {} }: SectionProps
     ['Год', project.year],
     ['Площадь участка', project.site_area],
     ['Общая площадь', project.total_area],
+    ['Количество квартир', project.total_apartments],
     ['Статус', statusLabel(project.status, locale)],
   ].filter(([, value]) => value)
 

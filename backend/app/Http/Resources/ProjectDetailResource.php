@@ -20,6 +20,7 @@ class ProjectDetailResource extends JsonResource
             'location' => $this->location,
             'site_area' => $this->site_area,
             'total_area' => $this->total_area,
+            'total_apartments' => $this->total_apartments,
             'status' => $this->status,
             'year' => $this->year,
             'cover_image' => FileUrlResolver::resolve($this->cover_image),

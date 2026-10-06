@@ -48,6 +48,7 @@ export interface ProjectDetail extends ProjectListItem {
   cover_focus?: 'center' | 'left' | 'right' | 'top' | 'bottom'
   site_area: string | null
   total_area: string | null
+  total_apartments?: string | null
   status: string | null
   gallery: string[]
 }

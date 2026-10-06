@@ -107,6 +107,10 @@ class ProjectForm
                             ->label('Общая площадь')
                             ->helperText('Например: 17 102 m²'),
 
+                        TextInput::make('total_apartments')
+                            ->label('Количество квартир')
+                            ->helperText('Например: 240'),
+
                         Select::make('status')
                             ->label('Статус')
                             ->options([
