@@ -16,7 +16,7 @@ class ImageOptimizer
 
     /**
      * WebP output quality (0-100).
-     * 82 gives excellent visual fidelity while cutting file size by 80-95%.
+     * 90 keeps photos visually lossless while still cutting file size several times.
      */
     public const QUALITY = 90;
 
