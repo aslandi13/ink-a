@@ -122,7 +122,7 @@ class EditorController extends Controller
             return response()->json(['message' => 'Сначала сохраните черновик.'], 422);
         }
 
-        $page->update(['published' => Page::normalizeLayouts($page->draft), 'published_at' => now()]);
+        $page->publishLayout(Page::normalizeLayouts($page->draft));
 
         return response()->json(['data' => ['published_at' => $page->published_at]]);
     }

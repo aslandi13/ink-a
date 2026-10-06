@@ -8,13 +8,16 @@ use App\Filament\Resources\SitePages\Pages\EditSitePage;
 use App\Filament\Resources\SitePages\Pages\ListSitePages;
 use App\Filament\Support\TranslatableTabs;
 use App\Models\Page;
+use App\Models\PageVersion;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Set;
@@ -125,6 +128,27 @@ class SitePageResource extends Resource
                     ->label('Открыть в редакторе')
                     ->icon(Heroicon::OutlinedPaintBrush)
                     ->url(fn (Page $record) => static::editorUrl($record)),
+                Action::make('history')
+                    ->label('История')
+                    ->icon(Heroicon::OutlinedClock)
+                    ->color('gray')
+                    ->visible(fn (Page $record) => $record->versions()->exists())
+                    ->modalHeading('Предыдущие публикации')
+                    ->modalDescription('Выберите версию — она снова станет опубликованной на сайте и откроется в редакторе. Текущая версия тоже сохранится в истории. Тексты секций, которые меняются в разделах админки, не откатываются.')
+                    ->modalSubmitActionLabel('Вернуть эту версию')
+                    ->schema(fn (Page $record) => [
+                        Radio::make('version')
+                            ->label('Версия')
+                            ->required()
+                            ->options($record->versions()->get()->mapWithKeys(fn (PageVersion $version) => [
+                                $version->id => 'Опубликована '.($version->published_at?->timezone(config('app.timezone'))->format('d.m.Y H:i') ?? '—'),
+                            ])),
+                    ])
+                    ->action(function (Page $record, array $data) {
+                        $version = $record->versions()->findOrFail($data['version']);
+                        $record->restoreVersion($version);
+                        Notification::make()->title('Версия возвращена')->success()->send();
+                    }),
                 Action::make('unpublish')
                     ->label('Снять с публикации')
                     ->icon(Heroicon::OutlinedEyeSlash)

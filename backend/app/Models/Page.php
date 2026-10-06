@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
 class Page extends Model
@@ -53,6 +54,32 @@ class Page extends Model
             'published_at' => 'datetime',
             'show_in_menu' => 'boolean',
         ];
+    }
+
+    public const KEEP_VERSIONS = 10;
+
+    public function versions(): HasMany
+    {
+        return $this->hasMany(PageVersion::class)->latest('id');
+    }
+
+    public function publishLayout(array $layout): void
+    {
+        if ($this->published !== null) {
+            $this->versions()->create(['layout' => $this->published, 'published_at' => $this->published_at]);
+
+            $keep = $this->versions()->take(self::KEEP_VERSIONS)->pluck('id');
+            $this->versions()->whereNotIn('id', $keep)->delete();
+        }
+
+        $this->update(['published' => $layout, 'published_at' => now()]);
+    }
+
+    public function restoreVersion(PageVersion $version): void
+    {
+        $layout = $version->layout;
+        $this->publishLayout($layout);
+        $this->update(['draft' => $layout]);
     }
 
     public function isHome(): bool
