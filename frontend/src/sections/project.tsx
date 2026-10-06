@@ -6,6 +6,7 @@ import Lightbox from '../components/Lightbox'
 import Reveal from '../components/Reveal'
 import type { Locale } from '../lib/locale'
 import { projectPath } from '../lib/projectPath'
+import { prefetchProject } from '../lib/prefetch'
 import { sanitise } from '../lib/sanitise'
 
 export interface ProjectPageData {
@@ -332,6 +333,7 @@ export function OtherProjectsSection({ data, locale, settings = {} }: SectionPro
           <Reveal key={item.id} delay={(i % 4) * 0.05}>
             <Link
               to={projectPath(locale, item)}
+              onMouseEnter={() => prefetchProject(locale, item)}
               className="group relative block overflow-hidden bg-ink-800"
               style={{ aspectRatio: ratio }}
             >

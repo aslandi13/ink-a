@@ -5,6 +5,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
+import { prefetchProject } from '../lib/prefetch'
 import { projectPath } from '../lib/projectPath'
 
 type Settings = Record<string, string>
@@ -99,7 +100,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
       </div>
 
       {loading ? (
-        <p className="mt-16 text-white/40">{tr.ui.loading}</p>
+        <div className="min-h-[60vh]" />
       ) : error ? (
         <ErrorMessage>{tr.ui.error}</ErrorMessage>
       ) : projects.length === 0 ? (
@@ -117,6 +118,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
                 >
                   <Link
                     to={projectPath(locale, project)}
+                    onMouseEnter={() => prefetchProject(locale, project)}
                     className="group relative block h-full w-full overflow-hidden bg-ink-800"
                   >
                     {project.cover_image && (

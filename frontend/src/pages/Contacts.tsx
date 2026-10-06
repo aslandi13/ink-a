@@ -34,7 +34,7 @@ export default function Contacts() {
   }, [locale, preview])
 
   if (loading) {
-    return <section className="flex min-h-[60vh] items-center justify-center text-white/40">{tr.ui.loading}</section>
+    return <section className="min-h-[60vh]" />
   }
 
   if (error || !data) {

@@ -36,9 +36,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <section className="flex min-h-[60vh] items-center justify-center text-white/40">
-        {tr.ui.loading}
-      </section>
+      <section className="min-h-[60vh]" />
     )
   }
 

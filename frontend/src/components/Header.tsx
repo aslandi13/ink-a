@@ -5,6 +5,7 @@ import { getPageContent } from '../api/content'
 import { getMenuPages, type MenuPage } from '../api/pages'
 import { t } from '../lib/i18n'
 import { useEnabledLocales } from '../lib/enabledLocales'
+import { prefetchAll, prefetchPage } from '../lib/prefetch'
 import { LOCALES } from '../lib/locale'
 import { useLocale } from '../lib/useLocale'
 
@@ -50,6 +51,11 @@ export default function Header() {
     { to: 'contacts', label: nav.contacts },
     ...menuPages.map((page) => ({ to: page.slug, label: page.title })),
   ]
+
+  useEffect(() => {
+    const timer = setTimeout(() => prefetchAll(locale), 2000)
+    return () => clearTimeout(timer)
+  }, [locale])
 
   // Close menu on route change
   useEffect(() => { setOpen(false) }, [location.pathname])
@@ -101,6 +107,8 @@ export default function Header() {
                 <li key={link.to}>
                   <NavLink
                     to={`/${locale}/${link.to}`}
+                    onMouseEnter={() => prefetchPage(locale, link.to)}
+                    onTouchStart={() => prefetchPage(locale, link.to)}
                     end={link.to === ''}
                     className={({ isActive }) =>
                       `border-b pb-1 transition-colors ${isActive ? 'border-white text-white' : 'border-transparent hover:text-white'}`
@@ -187,6 +195,8 @@ export default function Header() {
                   >
                     <NavLink
                       to={`/${locale}/${link.to}`}
+                      onMouseEnter={() => prefetchPage(locale, link.to)}
+                      onTouchStart={() => prefetchPage(locale, link.to)}
                       end={link.to === ''}
                       className={({ isActive }) =>
                         `block py-3 font-serif text-3xl tracking-tight transition-colors ${isActive ? 'text-white' : 'text-white/50 hover:text-white'}`

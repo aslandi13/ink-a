@@ -8,6 +8,7 @@ import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { sanitise } from '../lib/sanitise'
+import { prefetchNews } from '../lib/prefetch'
 import { fillFields } from './fields'
 
 type Settings = Record<string, string>
@@ -74,7 +75,7 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
   return (
     <section className="flex flex-col items-center gap-[10px] pb-24 pt-[110px]">
       {loading ? (
-        <p className="text-white/40">{tr.ui.loading}</p>
+        <div className="min-h-[60vh]" />
       ) : error ? (
         <ErrorMessage>{tr.ui.error}</ErrorMessage>
       ) : (
@@ -84,6 +85,7 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
               <StaggerItem key={item.id}>
                 <Link
                   to={`/${locale}/news/${item.slug}`}
+                  onMouseEnter={() => prefetchNews(locale, item.slug)}
                   className="group block"
                   style={{ textDecoration: 'none' }}
                 >
@@ -316,6 +318,7 @@ export function OtherNewsSection({ data, locale, settings = {} }: SectionProps) 
           <Link
             key={other.id}
             to={`/${locale}/news/${other.slug}`}
+            onMouseEnter={() => prefetchNews(locale, other.slug)}
             className="group block"
             style={{ textDecoration: 'none' }}
           >

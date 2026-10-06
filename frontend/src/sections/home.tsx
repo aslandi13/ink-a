@@ -8,6 +8,7 @@ import Reveal from '../components/Reveal'
 import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
+import { prefetchProject } from '../lib/prefetch'
 import { projectPath } from '../lib/projectPath'
 
 export interface HeroData {
@@ -468,6 +469,7 @@ export function KeyProjectsSection({ data, locale, settings = {} }: SectionProps
               >
                 <Link
                   to={projectPath(locale, project)}
+                  onMouseEnter={() => prefetchProject(locale, project)}
                   className="group relative block h-full w-full overflow-hidden bg-ink-800"
                 >
                   {project.cover_image && (

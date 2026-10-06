@@ -47,14 +47,29 @@ function authHeaders(): Record<string, string> {
   return token ? { Authorization: `Bearer ${token}` } : {}
 }
 
+const publicCache = new Map<string, Promise<unknown>>()
+
+function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
+  const hit = publicCache.get(key)
+  if (hit) return hit as Promise<T>
+  const request = load().catch((err) => {
+    publicCache.delete(key)
+    throw err
+  })
+  publicCache.set(key, request)
+  return request
+}
+
 export function getLocalizedPage(locale: string, slug: string): Promise<LocalizedPage | null> {
-  return api
-    .get(`/api/${locale}/pages/${slug}`)
-    .then((res) => res.data.data as LocalizedPage)
-    .catch((err) => {
-      if (axios.isAxiosError(err) && err.response?.status === 404) return null
-      throw err
-    })
+  return cached(`page:${locale}:${slug}`, () =>
+    api
+      .get(`/api/${locale}/pages/${slug}`)
+      .then((res) => res.data.data as LocalizedPage)
+      .catch((err) => {
+        if (axios.isAxiosError(err) && err.response?.status === 404) return null
+        throw err
+      }),
+  )
 }
 
 export function getMenuPages(locale: string): Promise<MenuPage[]> {
@@ -103,15 +118,19 @@ export function editorAuthHeaders(): Record<string, string> {
 }
 
 export function getProjectTemplate(locale: string, category: string): Promise<PageLayout | null> {
-  return api
-    .get(`/api/${locale}/project-template`, { params: { category } })
-    .then((res) => res.data.data as PageLayout)
-    .catch(() => null)
+  return cached(`project-template:${locale}:${category}`, () =>
+    api
+      .get(`/api/${locale}/project-template`, { params: { category } })
+      .then((res) => res.data.data as PageLayout)
+      .catch(() => null),
+  )
 }
 
 export function getNewsTemplate(locale: string): Promise<PageLayout | null> {
-  return api
-    .get(`/api/${locale}/news-template`)
-    .then((res) => res.data.data as PageLayout)
-    .catch(() => null)
+  return cached(`news-template:${locale}`, () =>
+    api
+      .get(`/api/${locale}/news-template`)
+      .then((res) => res.data.data as PageLayout)
+      .catch(() => null),
+  )
 }

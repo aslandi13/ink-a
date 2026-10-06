@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useSearchParams } from 'react-router-dom'
+import { getNews } from '../api/content'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
@@ -16,6 +17,7 @@ export default function NewsList() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
+    getNews(locale, { page: 1 }).catch(() => undefined)
     setReady(false)
     const request = preview ? getDraftPage('news', locale).then((res) => res.draft) : getLocalizedPage(locale, 'news')
     request
@@ -46,7 +48,7 @@ export default function NewsList() {
           blocks={NEWS_LIST_BLOCKS}
         />
       ) : (
-        <section className="flex min-h-[60vh] items-center justify-center text-white/40">{tr.ui.loading}</section>
+        <section className="min-h-[60vh]" />
       )}
     </>
   )

@@ -56,7 +56,7 @@ export default function CustomPage() {
   if (state.status === 'missing') return <NotFound />
   if (state.status === 'error') return <ErrorMessage>{tr.ui.error}</ErrorMessage>
   if (state.status === 'loading') {
-    return <section className="flex min-h-[60vh] items-center justify-center text-white/40">{tr.ui.loading}</section>
+    return <section className="min-h-[60vh]" />
   }
 
   const { page, data } = state
