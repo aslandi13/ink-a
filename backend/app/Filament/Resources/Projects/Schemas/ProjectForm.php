@@ -86,8 +86,11 @@ class ProjectForm
                     ->image()
                     ->multiple()
                     ->reorderable()
+                    ->appendFiles()
+                    ->panelLayout('grid')
+                    ->imagePreviewHeight('140')
                     ->directory('projects/gallery')
-                    ->helperText('Эти же фото используются и в слайдере наверху страницы проекта, и в сетке ниже описания'),
+                    ->helperText('Порядок фото меняется перетаскиванием: наведите на фото и потяните за стрелки ↕ вверху. Эти же фото используются в слайдере наверху страницы проекта и в сетке ниже описания.'),
 
                 Section::make('Параметры проекта')
                     ->columns(2)
