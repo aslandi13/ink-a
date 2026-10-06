@@ -10,28 +10,33 @@ class WatermarkProjectGalleries extends Command
 {
     protected $signature = 'projects:watermark-galleries';
 
-    protected $description = 'Create clean thumbnails and stamp the watermark on project gallery photos that are not processed yet';
+    protected $description = 'Create clean thumbnails and stamp the watermark on project gallery photos that do not have it yet';
 
     public function handle(): int
     {
-        $done = 0;
+        $stamped = 0;
 
-        Project::query()->each(function (Project $project) use (&$done) {
+        Project::query()->each(function (Project $project) use (&$stamped) {
             $gallery = $project->gallery ?? [];
-            $pending = array_filter($gallery, fn (string $path) => ! GalleryWatermark::isProcessed($path));
+            $pending = array_values(array_filter($gallery, fn (string $path) => ! GalleryWatermark::isStamped($path)));
 
             if ($pending === []) {
                 return;
             }
 
-            $project->gallery = array_map(fn (string $path) => GalleryWatermark::process($path), $gallery);
+            $project->gallery = array_map(fn (string $path) => GalleryWatermark::stampExisting($path), $gallery);
             $project->saveQuietly();
-            $count = count(array_filter($project->gallery, fn (string $path) => GalleryWatermark::isProcessed($path))) - (count($gallery) - count($pending));
-            $done += $count;
+
+            $count = count(array_filter($project->gallery, fn (string $path) => GalleryWatermark::isStamped($path))) - (count($gallery) - count($pending));
+            $stamped += $count;
             $this->line("{$project->slug}: {$count} из ".count($pending));
         });
 
-        $this->info("Обработано фото: {$done}");
+        $this->info("Фото со знаком: {$stamped}");
+
+        if ($stamped === 0) {
+            $this->warn('Если ожидались фото — проверьте, что в «Настройках сайта» водяной знак включён.');
+        }
 
         return self::SUCCESS;
     }

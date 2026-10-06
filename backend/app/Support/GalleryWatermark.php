@@ -36,6 +36,16 @@ class GalleryWatermark
         return Storage::disk('public')->exists(self::thumbPath($path));
     }
 
+    public static function markerPath(string $path): string
+    {
+        return $path.'.stamped';
+    }
+
+    public static function isStamped(string $path): bool
+    {
+        return Storage::disk('public')->exists(self::markerPath($path));
+    }
+
     public static function process(string $path): string
     {
         $disk = Storage::disk('public');
@@ -45,42 +55,83 @@ class GalleryWatermark
         }
 
         try {
-            $image = @imagecreatefromstring((string) $disk->get($path));
+            $image = self::load($path);
 
-            if (! $image instanceof GdImage) {
+            if ($image === null) {
                 return $path;
             }
 
-            imagepalettetotruecolor($image);
             self::saveThumb($disk, $image, $path);
 
-            $settings = self::settings();
-
-            if (($settings['watermark_enabled'] ?? true) === false) {
-                imagedestroy($image);
-
-                return $path;
-            }
-
-            self::stamp($image, $settings);
-
-            $target = self::webpPath($path);
-            ob_start();
-            imagewebp($image, null, self::FULL_QUALITY);
-            $disk->put($target, (string) ob_get_clean(), 'public');
-            imagedestroy($image);
-
-            if ($target !== $path) {
-                $disk->move(self::thumbPath($path), self::thumbPath($target));
-                $disk->delete($path);
-            }
-
-            return $target;
+            return self::stampAndSave($image, $path);
         } catch (Throwable $e) {
             Log::warning('Gallery watermark failed: '.$e->getMessage(), ['file' => $path]);
 
             return $path;
         }
+    }
+
+    public static function stampExisting(string $path): string
+    {
+        if (! self::isProcessed($path)) {
+            return self::process($path);
+        }
+
+        if (self::isStamped($path)) {
+            return $path;
+        }
+
+        try {
+            $image = self::load($path);
+
+            return $image === null ? $path : self::stampAndSave($image, $path);
+        } catch (Throwable $e) {
+            Log::warning('Gallery watermark failed: '.$e->getMessage(), ['file' => $path]);
+
+            return $path;
+        }
+    }
+
+    private static function load(string $path): ?GdImage
+    {
+        $image = @imagecreatefromstring((string) Storage::disk('public')->get($path));
+
+        if (! $image instanceof GdImage) {
+            return null;
+        }
+
+        imagepalettetotruecolor($image);
+
+        return $image;
+    }
+
+    private static function stampAndSave(GdImage $image, string $path): string
+    {
+        $disk = Storage::disk('public');
+        $settings = self::settings();
+
+        if (($settings['watermark_enabled'] ?? true) === false) {
+            imagedestroy($image);
+
+            return $path;
+        }
+
+        self::stamp($image, $settings);
+
+        $target = self::webpPath($path);
+        ob_start();
+        imagewebp($image, null, self::FULL_QUALITY);
+        $disk->put($target, (string) ob_get_clean(), 'public');
+        imagedestroy($image);
+
+        if ($target !== $path) {
+            $disk->move(self::thumbPath($path), self::thumbPath($target));
+            $disk->delete($path);
+        }
+
+        $disk->put(self::markerPath($target), '');
+
+        return $target;
     }
 
     private static function saveThumb(Filesystem $disk, GdImage $image, string $path): void
