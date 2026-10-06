@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState, type ReactNode } from 'react'
 import { getPageContent } from '../api/content'
 import { t } from '../lib/i18n'
+import { useReportActiveTab } from '../lib/activeTab'
 import type { Locale } from '../lib/locale'
 
 export interface ApproachStep {
@@ -45,6 +46,7 @@ export function ApproachSection({ data, locale, settings = {} }: SectionProps) {
   ]
   const initialCategory = CATEGORIES.some(([value]) => value === settings.category) ? settings.category! : CATEGORIES[0][0]
   const [category, setCategory] = useState(initialCategory)
+  useReportActiveTab(category)
   useEffect(() => setCategory(initialCategory), [initialCategory])
   const imageLeft = settings.image === 'left'
   const [activeStep, setActiveStep] = useState<number | null>(null)

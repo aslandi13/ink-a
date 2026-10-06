@@ -4,6 +4,7 @@ import { getPageContent } from '../api/content'
 import FadeIn from '../components/FadeIn'
 import Reveal from '../components/Reveal'
 import { t } from '../lib/i18n'
+import { useReportActiveTab } from '../lib/activeTab'
 import type { Locale } from '../lib/locale'
 
 export interface GalleryCell {
@@ -82,6 +83,7 @@ export function AboutTabsSection({ data, locale, settings = {} }: SectionProps) 
   ]
   const initialTab = (['history', 'team', 'founder'].includes(settings.tab ?? '') ? settings.tab : 'history') as AboutTab
   const [tab, setTab] = useState<AboutTab>(initialTab)
+  useReportActiveTab(tab)
   useEffect(() => setTab(initialTab), [initialTab])
   const teamCols = TEAM_COLS[settings.teamcols ?? ''] ?? TEAM_COLS['4']
   const teamRatio = TEAM_RATIO[settings.teamratio ?? ''] ?? TEAM_RATIO.square

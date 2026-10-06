@@ -5,6 +5,7 @@ import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from 
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { ActiveTabContext } from '../lib/activeTab'
 import { useLocale } from '../lib/useLocale'
 import { ABOUT_BLOCKS, DEFAULT_ABOUT_LAYOUT, loadAboutData, type AboutPageData } from '../sections/about'
 
@@ -17,6 +18,7 @@ export default function About() {
   const [layout, setLayout] = useState<PageLayout | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [activeTab, setActiveTab] = useState('history')
 
   useEffect(() => {
     setLoading(true)
@@ -41,7 +43,7 @@ export default function About() {
     return <ErrorMessage>{tr.ui.error}</ErrorMessage>
   }
 
-  const seo = data.history
+  const seo = data[activeTab as 'history' | 'team' | 'founder'] ?? data.history
 
   return (
     <>
@@ -57,14 +59,16 @@ export default function About() {
         </div>
       )}
 
-      <PageRenderer
-        html={layout?.html || DEFAULT_ABOUT_LAYOUT}
-        css={layout?.css ?? ''}
-        translations={layout?.translations}
-        data={data}
-        locale={locale}
-        blocks={ABOUT_BLOCKS}
-      />
+      <ActiveTabContext.Provider value={setActiveTab}>
+        <PageRenderer
+          html={layout?.html || DEFAULT_ABOUT_LAYOUT}
+          css={layout?.css ?? ''}
+          translations={layout?.translations}
+          data={data}
+          locale={locale}
+          blocks={ABOUT_BLOCKS}
+        />
+      </ActiveTabContext.Provider>
     </>
   )
 }

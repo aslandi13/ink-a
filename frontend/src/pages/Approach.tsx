@@ -5,6 +5,7 @@ import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from 
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { ActiveTabContext } from '../lib/activeTab'
 import { useLocale } from '../lib/useLocale'
 import { APPROACH_BLOCKS, DEFAULT_APPROACH_LAYOUT, loadApproachData, type ApproachData } from '../sections/approach'
 
@@ -17,6 +18,7 @@ export default function Approach() {
   const [layout, setLayout] = useState<PageLayout | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [activeTab, setActiveTab] = useState('architecture')
 
   useEffect(() => {
     setLoading(true)
@@ -41,7 +43,7 @@ export default function Approach() {
     return <ErrorMessage>{tr.ui.error}</ErrorMessage>
   }
 
-  const seo = data.architecture
+  const seo = data[activeTab] ?? data.architecture
 
   return (
     <>
@@ -57,14 +59,16 @@ export default function Approach() {
         </div>
       )}
 
-      <PageRenderer
-        html={layout?.html || DEFAULT_APPROACH_LAYOUT}
-        css={layout?.css ?? ''}
-        translations={layout?.translations}
-        data={data}
-        locale={locale}
-        blocks={APPROACH_BLOCKS}
-      />
+      <ActiveTabContext.Provider value={setActiveTab}>
+        <PageRenderer
+          html={layout?.html || DEFAULT_APPROACH_LAYOUT}
+          css={layout?.css ?? ''}
+          translations={layout?.translations}
+          data={data}
+          locale={locale}
+          blocks={APPROACH_BLOCKS}
+        />
+      </ActiveTabContext.Provider>
     </>
   )
 }
