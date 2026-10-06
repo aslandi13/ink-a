@@ -5,6 +5,7 @@ import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from 
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { metaText } from '../lib/metaText'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_HOME_LAYOUT, HOME_BLOCKS, loadHomeData, type HomeData } from '../sections/home'
 
@@ -48,8 +49,11 @@ export default function Home() {
   return (
     <>
       <Helmet>
-        <title>INK Architects</title>
-        <meta name="description" content={data.hero?.description ?? 'INK Architects — архитектурное бюро'} />
+        {data.hero?.seo_title && <title>{data.hero.seo_title}</title>}
+        {metaText(data.hero?.seo_description, data.hero?.description) && (
+          <meta name="description" content={metaText(data.hero?.seo_description, data.hero?.description)} />
+        )}
+        {data.hero?.og_image && <meta property="og:image" content={data.hero.og_image} />}
       </Helmet>
 
       {preview && (

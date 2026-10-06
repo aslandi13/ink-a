@@ -9,6 +9,7 @@ use BackedEnum;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -106,6 +107,24 @@ class Hero extends SingletonContentPage
                         ->columns(2)
                         ->helperText('Например: 850+ проектов, 200+ мастерпланов, 5 студий, 22 года опыта, 12 стран / 61 город, 2 млн+ жителей'),
                 ]),
+
+                Section::make('SEO главной страницы')
+                    ->description('Заголовок и описание главной в поисковиках и при шаринге ссылки. Если пусто — берутся из «Настроек сайта».')
+                    ->schema([
+                        TranslatableTabs::make(fn (string $locale) => [
+                            TextInput::make('seo_title')
+                                ->label('SEO-заголовок'),
+
+                            Textarea::make('seo_description')
+                                ->label('SEO-описание')
+                                ->rows(3),
+                        ]),
+
+                        FileUpload::make('og_image')
+                            ->label('OG-изображение для соцсетей')
+                            ->image()
+                            ->directory('seo'),
+                    ]),
             ]);
     }
 }

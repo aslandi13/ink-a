@@ -11,6 +11,9 @@ import type { Locale } from '../lib/locale'
 import { projectPath } from '../lib/projectPath'
 
 export interface HeroData {
+  seo_title?: string
+  seo_description?: string
+  og_image?: string
   title?: string
   subtitle?: string
   description?: string

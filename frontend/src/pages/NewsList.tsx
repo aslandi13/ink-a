@@ -27,7 +27,7 @@ export default function NewsList() {
   return (
     <>
       <Helmet>
-        <title>{tr.news.title} — INK Architects</title>
+        <title>{`${tr.news.title} — INK Architects`}</title>
       </Helmet>
 
       {preview && (

@@ -6,6 +6,7 @@ import { getDraftPage, getEditorToken, getNewsTemplate, type PageLayout } from '
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { metaText } from '../lib/metaText'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_NEWS_LAYOUT, fillNewsFields, loadOtherNews, NEWS_BLOCKS, NEWS_TEMPLATE, type NewsPageData } from '../sections/news'
 
@@ -53,8 +54,9 @@ export default function NewsDetail() {
   return (
     <article>
       <Helmet>
-        <title>{data.item.title} — INK Architects</title>
-        {data.item.excerpt && <meta name="description" content={data.item.excerpt} />}
+        <title>{`${data.item.title} — INK Architects`}</title>
+        {metaText(data.item.excerpt, data.item.body) && <meta name="description" content={metaText(data.item.excerpt, data.item.body)} />}
+        {data.item.cover_image && <meta property="og:image" content={data.item.cover_image} />}
       </Helmet>
 
       {preview && (

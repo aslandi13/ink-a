@@ -44,7 +44,7 @@ export default function Legal() {
   return (
     <>
       <Helmet>
-        <title>{tr.legal.title} — INK Architects</title>
+        <title>{`${tr.legal.title} — INK Architects`}</title>
         <meta
           name="description"
           content={

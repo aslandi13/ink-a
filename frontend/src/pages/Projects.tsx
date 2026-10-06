@@ -27,7 +27,7 @@ export default function Projects() {
   return (
     <>
       <Helmet>
-        <title>{tr.projects.title} — INK Architects</title>
+        <title>{`${tr.projects.title} — INK Architects`}</title>
         <meta name="description" content={locale === 'ru' ? 'Портфолио INK Architects — архитектурные проекты, жилые комплексы, общественные пространства и урбанистические проекты в Казахстане.' : 'INK Architects portfolio — residential complexes, public spaces and urban planning projects in Kazakhstan.'} />
       </Helmet>
 

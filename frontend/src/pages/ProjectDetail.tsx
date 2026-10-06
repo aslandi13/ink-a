@@ -9,6 +9,7 @@ import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
 import { projectPath } from '../lib/projectPath'
 import type { Locale } from '../lib/locale'
+import { metaText } from '../lib/metaText'
 import { useLocale } from '../lib/useLocale'
 import {
   DEFAULT_PROJECT_LAYOUT,
@@ -90,8 +91,9 @@ export default function ProjectDetail() {
     >
       <Lightbox images={lightbox?.images ?? []} index={lightbox?.index ?? null} onClose={() => setLightbox(null)} />
       <Helmet>
-        <title>{data.project.title} — INK Architects</title>
-        {data.project.excerpt && <meta name="description" content={data.project.excerpt} />}
+        <title>{`${data.project.title} — INK Architects`}</title>
+        {metaText(data.project.excerpt, data.project.body) && <meta name="description" content={metaText(data.project.excerpt, data.project.body)} />}
+        {data.project.cover_image && <meta property="og:image" content={data.project.cover_image} />}
       </Helmet>
 
       {preview && (
