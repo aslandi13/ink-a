@@ -7,6 +7,8 @@ use App\Filament\Support\TranslatableTabs;
 use BackedEnum;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
@@ -45,6 +47,28 @@ class SiteSettings extends SingletonContentPage
                             ))
                             ->dehydrateStateUsing(fn (?array $state) => ['ru', ...array_values(array_intersect($state ?? [], ['kz', 'en']))])
                             ->columns(2),
+                    ]),
+
+                Section::make('Водяной знак')
+                    ->description('Показывается в правом нижнем углу фото в галерее проекта и при просмотре фото на весь экран.')
+                    ->columns(2)
+                    ->schema([
+                        Toggle::make('watermark_enabled')
+                            ->label('Показывать водяной знак')
+                            ->afterStateHydrated(fn (Toggle $component, $state) => $component->state($state ?? true)),
+
+                        Select::make('watermark_size')
+                            ->label('Размер')
+                            ->options(['small' => 'Маленький', 'medium' => 'Средний', 'large' => 'Большой'])
+                            ->default('medium')
+                            ->selectablePlaceholder(false),
+
+                        FileUpload::make('watermark')
+                            ->label('Свой файл знака')
+                            ->acceptedFileTypes(['image/svg+xml', 'image/png', 'image/webp'])
+                            ->directory('settings')
+                            ->helperText('SVG или PNG с прозрачным фоном. Если не загружать — используется стандартный белый «© INK Architects».')
+                            ->columnSpanFull(),
                     ]),
 
                 Section::make('SEO')

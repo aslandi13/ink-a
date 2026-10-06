@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import Watermark from './Watermark'
 
 interface Props {
   images: string[]
@@ -24,12 +25,27 @@ export default function Lightbox({ images, index, onClose }: Props) {
   const [direction, setDirection] = useState(1)
   const touchX = useRef<number | null>(null)
   const open = index !== null && images.length > 0
+  const stageRef = useRef<HTMLDivElement>(null)
+  const [stage, setStage] = useState({ width: 0, height: 0 })
+  const [ratio, setRatio] = useState(16 / 9)
+  const fitWidth = Math.min(stage.width, stage.height * ratio)
+  const frame = stage.width ? { width: fitWidth, height: fitWidth / ratio } : { width: '100%', height: '100%' }
   const [mounted, setMounted] = useState(open)
   const [shown, setShown] = useState(false)
 
   useEffect(() => {
     if (index !== null) setCurrent(index)
   }, [index])
+
+  useEffect(() => {
+    const el = stageRef.current
+    if (!el || !mounted) return
+    const measure = () => setStage({ width: el.clientWidth, height: el.clientHeight })
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [mounted])
 
   useEffect(() => {
     if (open) {
@@ -94,20 +110,29 @@ export default function Lightbox({ images, index, onClose }: Props) {
           </button>
 
           <div className="relative flex h-full w-full items-center justify-center overflow-hidden px-4 py-16 sm:px-16 sm:py-14">
-            <AnimatePresence initial={false} custom={direction} mode="popLayout">
-              <motion.img
-                key={current}
-                src={images[current]}
-                alt=""
-                custom={direction}
-                initial={{ opacity: 0, x: direction * 60 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: direction * -60 }}
-                transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
-                className="h-full w-full object-contain"
-                onClick={(e) => e.stopPropagation()}
-              />
-            </AnimatePresence>
+            <div ref={stageRef} className="relative flex h-full w-full items-center justify-center">
+              <AnimatePresence initial={false} custom={direction} mode="popLayout">
+                <motion.div
+                  key={current}
+                  custom={direction}
+                  initial={{ opacity: 0, x: direction * 60 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: direction * -60 }}
+                  transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+                  className="relative"
+                  style={frame}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <img
+                    src={images[current]}
+                    alt=""
+                    className="h-full w-full object-contain"
+                    onLoad={(e) => setRatio(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight)}
+                  />
+                  <Watermark />
+                </motion.div>
+              </AnimatePresence>
+            </div>
           </div>
 
           {images.length > 1 && (

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { getProject, getProjects, type ProjectDetail, type ProjectListItem } from '../api/content'
 import Lightbox from '../components/Lightbox'
+import Watermark from '../components/Watermark'
 import Reveal from '../components/Reveal'
 import type { Locale } from '../lib/locale'
 import { projectPath } from '../lib/projectPath'
@@ -299,13 +300,14 @@ export function ProjectGallerySection({ data, settings = {} }: SectionProps) {
       <div className={`mt-4 grid grid-cols-2 sm:mt-12 ${cols}`} style={{ gap }}>
         {gallery.map((src, i) => (
           <Reveal key={i} delay={(i % 4) * 0.06}>
-            <button type="button" onClick={() => setOpenIndex(i)} className="block w-full cursor-zoom-in overflow-hidden">
+            <button type="button" onClick={() => setOpenIndex(i)} className="relative block w-full cursor-zoom-in overflow-hidden">
               <img
                 src={src}
                 alt=""
                 className="w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                 style={{ aspectRatio: ratio }}
               />
+              <Watermark />
             </button>
           </Reveal>
         ))}
