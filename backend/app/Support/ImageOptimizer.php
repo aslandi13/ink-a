@@ -12,13 +12,13 @@ class ImageOptimizer
      * Max dimension (width or height) in pixels.
      * 2048px is standard for high-res web displays (Retina/4K).
      */
-    public const MAX_DIMENSION = 2048;
+    public const MAX_DIMENSION = 3000;
 
     /**
      * WebP output quality (0-100).
      * 82 gives excellent visual fidelity while cutting file size by 80-95%.
      */
-    public const QUALITY = 82;
+    public const QUALITY = 90;
 
     /**
      * Optimizes an image stored on disk:

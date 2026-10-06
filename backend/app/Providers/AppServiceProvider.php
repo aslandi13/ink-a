@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         // Allow up to 50MB uploads (e.g. high-res camera photos or videos).
-        // Raster images (JPEG, PNG, WebP) are automatically downscaled to max 2048px
+        // Raster images (JPEG, PNG, WebP) are automatically downscaled to max 3000px
         // and converted to modern WebP format on the server to keep site fast.
         // Videos, SVGs and other non-raster files are stored as-is without modification.
         FileUpload::configureUsing(function (FileUpload $fileUpload): void {
