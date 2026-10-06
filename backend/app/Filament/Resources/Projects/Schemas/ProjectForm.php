@@ -86,6 +86,7 @@ class ProjectForm
                     ->image()
                     ->multiple()
                     ->reorderable()
+                    ->imageEditor()
                     ->appendFiles()
                     ->panelLayout('grid')
                     ->imagePreviewHeight('140')
