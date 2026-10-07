@@ -8,7 +8,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -65,7 +65,8 @@ class NewsItemForm
                             ->helperText('Перетащите изображение или выберите файл'),
                     ]),
 
-                Hidden::make('is_published')
+                Toggle::make('is_published')
+                    ->label('Опубликована')
                     ->default(true),
             ]);
     }
