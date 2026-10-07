@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { getNewsItem } from '../api/content'
@@ -23,10 +23,13 @@ export default function NewsDetail() {
   const [error, setError] = useState(false)
 
   const refresh = useRefresh()
+  const loadedSlug = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (!slug) return
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-    if (!refresh.silent()) setLoading(true)
+    const sameSlug = loadedSlug.current === slug
+    loadedSlug.current = slug
+    if (!refresh.silent() && !(sameSlug && data)) setLoading(true)
     setError(false)
     setData(null)
     const template = preview
@@ -42,7 +45,7 @@ export default function NewsDetail() {
   }, [locale, slug, preview, refresh.key])
 
   if (loading) {
-    return <section className="min-h-[60vh]" />
+    return <section className="min-h-screen" />
   }
 
   if (error) {

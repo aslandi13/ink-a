@@ -23,7 +23,7 @@ export default function About() {
 
   const refresh = useRefresh()
   useEffect(() => {
-    if (!refresh.silent()) setLoading(true)
+    if (!refresh.silent() && !data) setLoading(true)
     setError(false)
     const layoutRequest = preview
       ? getDraftPage('about', locale).then((res) => res.draft)
@@ -38,7 +38,7 @@ export default function About() {
   }, [locale, preview, refresh.key])
 
   if (loading) {
-    return <section className="min-h-[60vh]" />
+    return <section className="min-h-screen" />
   }
 
   if (error || !data) {

@@ -68,6 +68,8 @@ interface Props<T> {
   prepare?: (body: HTMLElement) => void
 }
 
+const REVEAL_SELECTOR = ['h1', 'h2', 'h3', 'p', 'dl', 'blockquote'].map((tag) => `[data-exploded] ${tag}`).join(', ')
+
 export interface HtmlPortal {
   selector: string
   render: () => ReactNode
@@ -95,6 +97,26 @@ function HtmlSegment({ html, portals }: { html: string; portals?: HtmlPortal[] }
     })
     setTargets(found)
   }, [html, portals])
+
+  useLayoutEffect(() => {
+    const root = ref.current
+    if (!root) return
+    const items = Array.from(root.querySelectorAll<HTMLElement>(REVEAL_SELECTOR))
+    if (!items.length) return
+    if (typeof IntersectionObserver === 'undefined') return
+    items.forEach((el) => el.classList.add('reveal'))
+    const observer = new IntersectionObserver(
+      (entries) =>
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
+          entry.target.classList.add('is-visible')
+          observer.unobserve(entry.target)
+        }),
+      { rootMargin: '0px 0px -10% 0px' },
+    )
+    items.forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
+  }, [html])
 
   return (
     <>
@@ -126,7 +148,7 @@ export default function PageRenderer<T>({
   const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
 
   return (
-    <div className={bleeds ? '-mt-24' : offsetClass}>
+    <div className={`page-fade ${bleeds ? '-mt-24' : offsetClass ?? ''}`}>
       {css && <style>{css}</style>}
       {segments.map((segment) => {
         if (segment.block) {

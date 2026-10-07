@@ -25,7 +25,7 @@ export default function Legal() {
 
   const refresh = useRefresh()
   useEffect(() => {
-    if (!refresh.silent()) setLoading(true)
+    if (!refresh.silent() && !data) setLoading(true)
     setError(false)
     const layoutRequest = preview
       ? getDraftPage('legal', locale).then((res) => res.draft)
@@ -40,7 +40,7 @@ export default function Legal() {
   }, [locale, preview, refresh.key])
 
   if (loading) {
-    return <section className="min-h-[60vh]" />
+    return <section className="min-h-screen" />
   }
 
   if (error || !data) {

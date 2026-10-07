@@ -22,7 +22,7 @@ export default function Projects() {
   const refresh = useRefresh()
   useEffect(() => {
     getProjects(locale, { category: categoryFromSlug(slug) ?? DEFAULT_PROJECT_CATEGORY, page: 1, per_page: PROJECTS_PER_PAGE }).catch(() => undefined)
-    if (!refresh.silent()) setReady(false)
+    refresh.silent()
     const request = preview ? getDraftPage('projects', locale).then((res) => res.draft) : getLocalizedPage(locale, 'projects')
     request
       .catch(() => null)
@@ -53,7 +53,7 @@ export default function Projects() {
           blocks={PROJECTS_LIST_BLOCKS}
         />
       ) : (
-        <section className="min-h-[60vh]" />
+        <section className="min-h-screen" />
       )}
     </>
   )

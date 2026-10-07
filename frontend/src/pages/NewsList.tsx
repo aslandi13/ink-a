@@ -20,7 +20,7 @@ export default function NewsList() {
   const refresh = useRefresh()
   useEffect(() => {
     getNews(locale, { page: 1 }).catch(() => undefined)
-    if (!refresh.silent()) setReady(false)
+    refresh.silent()
     const request = preview ? getDraftPage('news', locale).then((res) => res.draft) : getLocalizedPage(locale, 'news')
     request
       .catch(() => null)
@@ -50,7 +50,7 @@ export default function NewsList() {
           blocks={NEWS_LIST_BLOCKS}
         />
       ) : (
-        <section className="min-h-[60vh]" />
+        <section className="min-h-screen" />
       )}
     </>
   )

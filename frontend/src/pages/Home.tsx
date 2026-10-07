@@ -34,7 +34,7 @@ export default function Home() {
 
   const refresh = useRefresh()
   useEffect(() => {
-    if (!refresh.silent()) setLoading(true)
+    if (!refresh.silent() && !data) setLoading(true)
     setError(false)
     const layoutRequest = preview
       ? getDraftPage('home', locale).then((res) => res.draft)
@@ -50,7 +50,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <section className="min-h-[60vh]" />
+      <section className="min-h-screen" />
     )
   }
 

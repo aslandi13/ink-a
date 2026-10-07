@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getPageContent, getProjects, type ProjectListItem } from '../api/content'
 import ErrorMessage from '../components/ErrorMessage'
@@ -63,6 +63,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   const [error, setError] = useState(false)
   const [intro, setIntro] = useState<ProjectsIntro>({})
   const refresh = useRefresh()
+  const loadedCategory = useRef<string | null>(null)
 
   useEffect(() => {
     getPageContent<ProjectsIntro>(locale, 'projects-intro')
@@ -74,7 +75,9 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   const offset = introCard ? 1 : 0
 
   useEffect(() => {
-    if (!refresh.silent()) {
+    const sameCategory = loadedCategory.current === category
+    loadedCategory.current = category
+    if (!refresh.silent() && !(sameCategory && projects.length)) {
       setProjects([])
       setPage(1)
       setLastPage(1)

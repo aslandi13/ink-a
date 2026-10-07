@@ -32,6 +32,7 @@ export default function Header() {
   const [menuPages, setMenuPages] = useState<MenuPage[]>([])
 
   const isNewsDetail = /\/news\/[^/]+/.test(location.pathname)
+  const localePath = (code: string) => `${location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, `/${code}`)}${location.search}`
 
   const nav = {
     home:     settings.nav_home     || tr.nav.home,
@@ -123,7 +124,7 @@ export default function Header() {
                 {locales.map((code) => (
                   <NavLink
                     key={code}
-                    to={`/${code}`}
+                    to={localePath(code)}
                     className={({ isActive }) =>
                       `uppercase transition-colors ${isActive || code === locale ? 'text-white' : 'hover:text-white'}`
                     }
@@ -212,7 +213,7 @@ export default function Header() {
                 {locales.map((code) => (
                   <NavLink
                     key={code}
-                    to={`/${code}`}
+                    to={localePath(code)}
                     className={`uppercase transition-colors ${code === locale ? 'text-white' : 'hover:text-white'}`}
                   >
                     {code}

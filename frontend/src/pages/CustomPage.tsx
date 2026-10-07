@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { getDraftPage, getEditorToken, getLocalizedPage, type LocalizedPage } from '../api/pages'
@@ -25,12 +25,15 @@ export default function CustomPage() {
   const [state, setState] = useState<State>({ status: 'loading' })
 
   const refresh = useRefresh()
+  const loadedSlug = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setState({ status: 'missing' })
       return
     }
-    if (!refresh.silent()) setState({ status: 'loading' })
+    const sameSlug = loadedSlug.current === slug
+    loadedSlug.current = slug
+    if (!refresh.silent() && !(sameSlug && state.status === 'ready')) setState({ status: 'loading' })
 
     const pageRequest: Promise<LocalizedPage | null> = preview
       ? Promise.all([getDraftPage(slug, locale), getLocalizedPage(locale, slug)]).then(([res, published]) =>
@@ -58,7 +61,7 @@ export default function CustomPage() {
   if (state.status === 'missing') return <NotFound />
   if (state.status === 'error') return <ErrorMessage>{tr.ui.error}</ErrorMessage>
   if (state.status === 'loading') {
-    return <section className="min-h-[60vh]" />
+    return <section className="min-h-screen" />
   }
 
   const { page, data } = state

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Navigate, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { getProject } from '../api/content'
@@ -50,9 +50,12 @@ export default function ProjectDetail() {
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
 
   const refresh = useRefresh()
+  const loadedSlug = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (!slug) return
-    if (!refresh.silent()) setLoading(true)
+    const sameSlug = loadedSlug.current === slug
+    loadedSlug.current = slug
+    if (!refresh.silent() && !(sameSlug && data)) setLoading(true)
     setError(false)
     setData(null)
     Promise.all([getProject(locale, slug, category), loadOtherProjects(locale, slug, category)])
@@ -68,7 +71,7 @@ export default function ProjectDetail() {
   }, [locale, slug, category, preview, forcedTemplate, refresh.key])
 
   if (loading) {
-    return <section className="min-h-[60vh]" />
+    return <section className="min-h-screen" />
   }
 
   if (error) {

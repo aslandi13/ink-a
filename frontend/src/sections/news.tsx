@@ -48,7 +48,7 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
   const refresh = useRefresh()
 
   useEffect(() => {
-    if (!refresh.silent()) {
+    if (!refresh.silent() && !news.length) {
       setNews([])
       setPage(1)
       setLastPage(1)
