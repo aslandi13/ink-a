@@ -55,3 +55,11 @@ body {
 .prose p > img {
   display: inline-block; /* реагирует на text-align родителя */
 }
+
+video::-webkit-media-controls,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-overlay-play-button {
+  display: none !important;
+  -webkit-appearance: none;
+}
