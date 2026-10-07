@@ -271,7 +271,7 @@ export function NewsHeroSection({ data, locale, settings = {} }: SectionProps) {
       height={N_HEIGHT[settings.height ?? ''] ?? N_HEIGHT['60']}
       parallax={settings.parallax !== 'off'}
     >
-      <div className="absolute inset-0 bg-gradient-to-t from-ink-950/60 via-ink-950/0 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink-950/50 via-ink-950/0 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-950 to-transparent" />
       <div className={`absolute inset-x-0 bottom-0 mx-auto px-6 pb-10 ${width}`}>
         {showDate && <p className="text-sm text-white/50">{formatDate(item.published_at!, locale)}</p>}
