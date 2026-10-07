@@ -272,6 +272,7 @@ export function NewsHeroSection({ data, locale, settings = {} }: SectionProps) {
       parallax={settings.parallax !== 'off'}
     >
       <div className="absolute inset-0 bg-gradient-to-t from-ink-950/60 via-ink-950/0 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-950 to-transparent" />
       <div className={`absolute inset-x-0 bottom-0 mx-auto px-6 pb-10 ${width}`}>
         {showDate && <p className="text-sm text-white/50">{formatDate(item.published_at!, locale)}</p>}
         <h1 className={`mt-2 font-serif text-white ${titleClass}`}>{item.title}</h1>
@@ -476,6 +477,7 @@ export const NEWS_FIELD_BLOCKS: { id: string; label: string; content: string }[]
     content: `<section data-gjs-name="Обложка с заголовком" class="relative flex h-[60vh] items-end overflow-hidden">
       <img data-field="cover" class="absolute inset-0 h-full w-full object-cover" alt="">
       <div data-gjs-selectable="false" data-gjs-hoverable="false" data-gjs-layerable="false" class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/60 via-ink-950/0 to-transparent"></div>
+      <div data-gjs-selectable="false" data-gjs-hoverable="false" data-gjs-layerable="false" class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-950 to-transparent"></div>
       <div class="relative mx-auto w-full max-w-4xl px-6 pb-10"><p data-field="date" class="text-sm text-white/50"></p><h1 data-field="title" class="mt-2 font-serif text-3xl text-white md:text-4xl"></h1></div>
     </section>`,
   },
