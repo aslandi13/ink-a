@@ -180,7 +180,8 @@ function HeroSlider({
         />
       </AnimatePresence>
 
-      <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950 via-ink-950/60 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink-950/30 via-ink-950/0 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-ink-950 to-transparent" />
 
       <div className="absolute inset-x-0 bottom-20 mx-auto max-w-[84rem] px-6 pb-4">
         <motion.h1
