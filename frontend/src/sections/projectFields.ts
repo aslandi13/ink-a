@@ -90,7 +90,7 @@ export const PROJECT_FIELD_BLOCKS: { id: string; label: string; content: string 
     label: 'Обложка на весь экран',
     content: `<section data-bleed="1" data-gjs-name="Обложка на весь экран" class="relative flex h-[calc(65vh_+_6rem)] items-end overflow-hidden sm:h-[calc(100vh_+_6rem)]">
       <img data-field="cover" class="absolute inset-0 h-full w-full object-cover" alt="">
-      <div data-gjs-selectable="false" data-gjs-hoverable="false" data-gjs-layerable="false" class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950 via-ink-950/60 to-transparent"></div>
+      <div data-gjs-selectable="false" data-gjs-hoverable="false" data-gjs-layerable="false" class="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950/30 via-ink-950/0 to-transparent"></div>
       <div class="relative mx-auto w-full max-w-[84rem] px-6 pb-24"><h1 data-field="title" class="font-serif text-4xl text-white md:text-5xl lg:text-6xl"></h1></div>
     </section>`,
   },
