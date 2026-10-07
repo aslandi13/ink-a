@@ -2,19 +2,25 @@ export const PROJECT_CATEGORY_IDS = ['architecture', 'engineering', 'urbanism', 
 
 export const DEFAULT_PROJECT_CATEGORY = PROJECT_CATEGORY_IDS[0]
 
-export function isProjectCategory(value: string | undefined): boolean {
-  return !!value && (PROJECT_CATEGORY_IDS as readonly string[]).includes(value)
-}
-
 export const PROJECTS_PER_PAGE = 100
 
-export const APPROACH_SLUGS: Record<string, string> = {
+const CATEGORY_SLUGS: Record<string, string> = {
   architecture: 'architecture',
   engineering: 'engineering',
   urbanism: 'urban-planning',
   interior: 'public-interior',
 }
 
-export function categoryFromApproachSlug(slug: string | undefined): string | null {
-  return Object.keys(APPROACH_SLUGS).find((key) => APPROACH_SLUGS[key] === slug) ?? null
+export function categorySlug(category: string): string {
+  return CATEGORY_SLUGS[category] ?? category
+}
+
+export function categoryFromSlug(value: string | undefined): string | null {
+  if (!value) return null
+  if (value in CATEGORY_SLUGS) return value
+  return Object.keys(CATEGORY_SLUGS).find((key) => CATEGORY_SLUGS[key] === value) ?? null
+}
+
+export function isProjectCategory(value: string | undefined): boolean {
+  return categoryFromSlug(value) !== null
 }

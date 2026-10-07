@@ -93,7 +93,7 @@ class SitePageController extends Controller
         $query = Project::query()->where('is_published', true);
 
         if (count($segments) >= 3) {
-            $query->where('category', $segments[1])->where('slug', $segments[2]);
+            $query->where('category', ['urban-planning' => 'urbanism', 'public-interior' => 'interior'][$segments[1]] ?? $segments[1])->where('slug', $segments[2]);
         } else {
             $query->where('slug', $segments[1])->orderBy('sort_order');
         }

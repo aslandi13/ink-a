@@ -6,7 +6,7 @@ import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { prefetchProject } from '../lib/prefetch'
-import { APPROACH_SLUGS, DEFAULT_PROJECT_CATEGORY, isProjectCategory, PROJECTS_PER_PAGE } from '../lib/projectCategories'
+import { categoryFromSlug, categorySlug, DEFAULT_PROJECT_CATEGORY, PROJECTS_PER_PAGE } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
 
 type Settings = Record<string, string>
@@ -45,14 +45,14 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
 
   const params = useParams()
   const navigate = useNavigate()
-  const routeCategory = isProjectCategory(params.slug) ? params.slug! : null
+  const routeCategory = categoryFromSlug(params.slug)
   const [category, setCategory] = useState<string>(routeCategory ?? DEFAULT_PROJECT_CATEGORY)
   useEffect(() => {
     if (routeCategory) setCategory(routeCategory)
   }, [routeCategory])
   const selectCategory = (value: string) => {
     setCategory(value)
-    if (routeCategory) navigate(`/${locale}/projects/${value}`)
+    if (routeCategory) navigate(`/${locale}/projects/${categorySlug(value)}`)
   }
   const [projects, setProjects] = useState<ProjectListItem[]>([])
   const [page, setPage] = useState(1)
@@ -133,7 +133,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
             {introCard && (
               <StaggerItem className={featured ? 'col-span-2 md:row-span-2' : ''} style={{ aspectRatio: ratio }}>
                 <Link
-                  to={`/${locale}/approach/${APPROACH_SLUGS[category]}`}
+                  to={`/${locale}/approach/${categorySlug(category)}`}
                   className="group relative block h-full w-full overflow-hidden bg-ink-800"
                 >
                   <img

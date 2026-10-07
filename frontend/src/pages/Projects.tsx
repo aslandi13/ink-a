@@ -5,7 +5,7 @@ import { getProjects } from '../api/content'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
-import { DEFAULT_PROJECT_CATEGORY, isProjectCategory, PROJECTS_PER_PAGE } from '../lib/projectCategories'
+import { categoryFromSlug, DEFAULT_PROJECT_CATEGORY, PROJECTS_PER_PAGE } from '../lib/projectCategories'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_PROJECTS_LIST_LAYOUT, PROJECTS_LIST_BLOCKS } from '../sections/projectsList'
 
@@ -19,7 +19,7 @@ export default function Projects() {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    getProjects(locale, { category: isProjectCategory(slug) ? slug : DEFAULT_PROJECT_CATEGORY, page: 1, per_page: PROJECTS_PER_PAGE }).catch(() => undefined)
+    getProjects(locale, { category: categoryFromSlug(slug) ?? DEFAULT_PROJECT_CATEGORY, page: 1, per_page: PROJECTS_PER_PAGE }).catch(() => undefined)
     setReady(false)
     const request = preview ? getDraftPage('projects', locale).then((res) => res.draft) : getLocalizedPage(locale, 'projects')
     request

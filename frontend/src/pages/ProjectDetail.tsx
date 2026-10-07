@@ -7,6 +7,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import Lightbox from '../components/Lightbox'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { categoryFromSlug } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
 import type { Locale } from '../lib/locale'
 import { metaText } from '../lib/metaText'
@@ -35,7 +36,8 @@ async function loadDraftTemplate(locale: Locale, category: string, forced: strin
 export default function ProjectDetail() {
   const locale = useLocale()
   const tr = t(locale)
-  const { slug, category } = useParams()
+  const { slug, category: categoryParam } = useParams()
+  const category = categoryFromSlug(categoryParam) ?? categoryParam
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const preview = searchParams.has('preview') && !!getEditorToken()
@@ -75,7 +77,7 @@ export default function ProjectDetail() {
     return <section className="mx-auto max-w-[84rem] px-6 py-24 text-white">{tr.ui.projectNotFound}</section>
   }
 
-  if (!category && data.project.category) {
+  if ((!categoryParam || categoryParam !== projectPath(locale, data.project).split('/')[3]) && data.project.category) {
     return <Navigate to={`${projectPath(locale, data.project)}${location.search}`} replace />
   }
 

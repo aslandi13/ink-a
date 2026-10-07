@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { metaText } from './metaText'
+import { categoryFromSlug, categorySlug } from './projectCategories'
 import { projectPath } from './projectPath'
 import { sanitise } from './sanitise'
 
@@ -34,5 +35,20 @@ describe('sanitise', () => {
   it('removes scripts and event handlers', () => {
     const html = sanitise('<p onclick="alert(1)">Hi</p><script>alert(1)</script>')
     expect(html).toBe('<p>Hi</p>')
+  })
+})
+
+describe('category slugs', () => {
+  it('uses readable slugs in project urls', () => {
+    expect(projectPath('ru', { slug: 'park', category: 'urbanism' })).toBe('/ru/projects/urban-planning/park')
+    expect(projectPath('ru', { slug: 'flat', category: 'interior' })).toBe('/ru/projects/public-interior/flat')
+  })
+
+  it('maps slugs and old ids back to categories', () => {
+    expect(categoryFromSlug('urban-planning')).toBe('urbanism')
+    expect(categoryFromSlug('public-interior')).toBe('interior')
+    expect(categoryFromSlug('urbanism')).toBe('urbanism')
+    expect(categoryFromSlug('house')).toBeNull()
+    expect(categorySlug('engineering')).toBe('engineering')
   })
 })
