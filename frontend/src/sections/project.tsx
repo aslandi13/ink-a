@@ -48,9 +48,9 @@ export const PROJECT_CATEGORIES: { id: string; label: string }[] = [
 export const PROJECT_TEMPLATE = 'project-template'
 
 const STATUS_LABELS: Record<string, Record<Locale, string>> = {
-  completed: { ru: 'Реализован', kz: 'Аяқталған', en: 'Completed' },
-  in_progress: { ru: 'Строится', kz: 'Салынуда', en: 'Construction' },
-  concept: { ru: 'Концепция', kz: 'Тұжырымдама', en: 'Concept' },
+  completed: { ru: 'Завершён', kz: 'Аяқталған', en: 'Completed' },
+  in_progress: { ru: 'Строительство', kz: 'Салынуда', en: 'Construction' },
+  concept: { ru: 'Концепт', kz: 'Тұжырымдама', en: 'Concept' },
 }
 
 export function statusLabel(status: string | null | undefined, locale: Locale): string {
