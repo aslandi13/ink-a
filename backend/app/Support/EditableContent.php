@@ -24,10 +24,10 @@ class EditableContent
 
     private const SHARED_IMAGE_FIELDS = [
         'approach' => ['steps.*.image'],
+        'about.founder' => ['credential_highlights.*.icon'],
     ];
 
     private const LOCALE_IMAGE_FIELDS = [
-        'about.founder' => ['credential_highlights.*.icon'],
     ];
 
     private const ROOT_TEXT_FIELDS = [

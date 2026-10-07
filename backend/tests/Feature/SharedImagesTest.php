@@ -7,7 +7,7 @@ use App\Support\EditableContent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class ApproachStepImagesTest extends TestCase
+class SharedImagesTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -40,5 +40,18 @@ class ApproachStepImagesTest extends TestCase
 
         $this->assertSame('approach/new.webp', PageContent::where('key', 'approach')->first()->data['architecture']['ru']['steps'][0]['image']);
         $this->getJson('/api/kz/approach')->assertJsonPath('data.architecture.steps.0.image', url('storage/approach/new.webp'));
+    }
+
+    public function test_founder_icons_use_russian_icons(): void
+    {
+        PageContent::updateOrCreate(['key' => 'about.founder'], ['data' => [
+            'name' => 'Имя',
+            'ru' => ['credential_highlights' => [['text' => 'RU', 'icon' => 'about/founder/logo.webp']]],
+            'en' => ['credential_highlights' => [['text' => 'EN']]],
+        ]]);
+
+        $this->getJson('/api/en/about/founder')
+            ->assertJsonPath('data.credential_highlights.0.text', 'EN')
+            ->assertJsonPath('data.credential_highlights.0.icon', url('storage/about/founder/logo.webp'));
     }
 }

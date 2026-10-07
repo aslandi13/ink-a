@@ -4,7 +4,7 @@ namespace App\Filament\Pages\Content;
 
 use App\Filament\Pages\SingletonContentPage;
 use App\Filament\Support\TranslatableTabs;
-use App\Support\Locales;
+use App\Support\SharedImages;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -47,30 +47,7 @@ class Approach extends SingletonContentPage
 
     public static function prepareData(array $data): array
     {
-        return self::shareStepImages($data);
-    }
-
-    public static function shareStepImages(array $data): array
-    {
-        foreach (array_keys(self::CATEGORIES) as $category) {
-            $ruSteps = array_values($data[$category]['ru']['steps'] ?? []);
-
-            foreach (array_keys(Locales::SUPPORTED) as $locale) {
-                if ($locale === 'ru' || ! is_array($data[$category][$locale]['steps'] ?? null)) {
-                    continue;
-                }
-
-                $index = 0;
-                foreach ($data[$category][$locale]['steps'] as $key => $step) {
-                    if (is_array($step)) {
-                        $data[$category][$locale]['steps'][$key]['image'] = $ruSteps[$index]['image'] ?? null;
-                    }
-                    $index++;
-                }
-            }
-        }
-
-        return $data;
+        return SharedImages::apply('approach', $data);
     }
 
     public function form(Schema $schema): Schema

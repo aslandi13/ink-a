@@ -4,6 +4,7 @@ namespace App\Filament\Pages\Content;
 
 use App\Filament\Pages\SingletonContentPage;
 use App\Filament\Support\TranslatableTabs;
+use App\Support\SharedImages;
 use BackedEnum;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -27,6 +28,11 @@ class AboutFounder extends SingletonContentPage
     protected static ?int $navigationSort = 3;
 
     protected static ?string $title = 'Об основателе';
+
+    public static function prepareData(array $data): array
+    {
+        return SharedImages::apply('about.founder', $data);
+    }
 
     public static function contentKey(): string
     {
@@ -81,7 +87,12 @@ class AboutFounder extends SingletonContentPage
                                     FileUpload::make('icon')
                                         ->label('Иконка / логотип')
                                         ->image()
-                                        ->directory('about/founder'),
+                                        ->directory('about/founder')
+                                        ->disabled($locale !== 'ru')
+                                        ->dehydrated($locale === 'ru')
+                                        ->helperText($locale === 'ru'
+                                            ? 'Одна иконка на все языки'
+                                            : 'Берётся из вкладки «Рус» — колонка с тем же номером. Меняется там'),
 
                                     Textarea::make('text')
                                         ->label('Текст')

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Filament\Pages\Content\Approach;
 use App\Models\PageContent;
 use App\Models\Project;
 use App\Models\TeamMember;
 use App\Support\FileUrlResolver;
 use App\Support\LocaleResolver;
+use App\Support\SharedImages;
 use Illuminate\Http\JsonResponse;
 
 class PageContentController extends Controller
@@ -21,12 +21,7 @@ class PageContentController extends Controller
             return response()->json(['message' => 'Page content not found.'], 404);
         }
 
-        $raw = $record->data ?? [];
-        if ($key === 'approach') {
-            $raw = Approach::shareStepImages($raw);
-        }
-
-        $data = LocaleResolver::resolve($raw, app()->getLocale());
+        $data = LocaleResolver::resolve(SharedImages::apply($key, $record->data ?? []), app()->getLocale());
         $data = FileUrlResolver::resolve($data);
 
         if ($key === 'about.team') {
