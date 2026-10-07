@@ -8,8 +8,10 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -40,25 +42,30 @@ class NewsItemForm
                         ->resizableImages(),
                 ]),
 
-                TextInput::make('slug')
-                    ->label('URL-адрес (slug)')
-                    ->required()
-                    ->unique(ignoreRecord: true),
+                Grid::make(2)
+                    ->columnSpanFull()
+                    ->schema([
+                        Group::make([
+                            TextInput::make('slug')
+                                ->label('URL-адрес (slug)')
+                                ->required()
+                                ->unique(ignoreRecord: true),
 
-                FileUpload::make('cover_image')
-                    ->label('Обложка')
-                    ->image()
-                    ->directory('news')
-                    ->imageEditor()
-                    ->helperText('Перетащите изображение или выберите файл'),
+                            DateTimePicker::make('published_at')
+                                ->label('Дата публикации')
+                                ->default(now())
+                                ->helperText('Дата отображается на сайте'),
+                        ]),
 
-                DateTimePicker::make('published_at')
-                    ->label('Дата публикации')
-                    ->default(now())
-                    ->helperText('Дата отображается на сайте'),
+                        FileUpload::make('cover_image')
+                            ->label('Обложка')
+                            ->image()
+                            ->directory('news')
+                            ->imageEditor()
+                            ->helperText('Перетащите изображение или выберите файл'),
+                    ]),
 
-                Toggle::make('is_published')
-                    ->label('Опубликована')
+                Hidden::make('is_published')
                     ->default(true),
             ]);
     }

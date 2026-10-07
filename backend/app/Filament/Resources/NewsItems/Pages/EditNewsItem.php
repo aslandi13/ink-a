@@ -9,6 +9,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditNewsItem extends EditRecord
 {
+    use HasPublishToggle;
+
     protected static string $resource = NewsItemResource::class;
 
     protected function getHeaderActions(): array

@@ -8,6 +8,8 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateNewsItem extends CreateRecord
 {
+    use HasPublishToggle;
+
     protected static string $resource = NewsItemResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array
