@@ -127,7 +127,7 @@ export function ApproachSection({ data, locale, settings = {} }: SectionProps) {
               </motion.p>
             )}
 
-            <div className="mt-4 sm:mt-10">
+            <div className="mt-4">
               {current?.steps?.map((s, i) => (
                 <motion.div
                   key={i}
