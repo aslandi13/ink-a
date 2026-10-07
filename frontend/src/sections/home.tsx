@@ -168,8 +168,8 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
         )}
       </AnimatePresence>
 
-      <div className="absolute inset-0 bg-gradient-to-t from-ink-950/50 via-ink-950/0 to-ink-950/0" />
-      <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-950 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-t from-ink-950/30 via-ink-950/0 to-ink-950/0" />
+      <div className="absolute inset-x-0 bottom-0 h-15 bg-gradient-to-t from-ink-950 to-transparent" />
 
       <div className="relative mx-auto grid w-full max-w-[84rem] gap-8 md:grid-cols-2 md:gap-12">
         <div>
