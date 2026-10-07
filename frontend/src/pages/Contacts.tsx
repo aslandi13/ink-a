@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
+import { contentSources } from '../lib/contentSources'
 import { t } from '../lib/i18n'
 import { useLocale } from '../lib/useLocale'
 import { CONTACTS_BLOCKS, DEFAULT_CONTACTS_LAYOUT, loadContactsData, type ContactsData } from '../sections/contacts'
@@ -62,6 +63,7 @@ export default function Contacts() {
         css={layout?.css ?? ''}
         translations={layout?.translations}
         data={data}
+        sources={contentSources('contacts', data)}
         locale={locale}
         blocks={CONTACTS_BLOCKS}
       />

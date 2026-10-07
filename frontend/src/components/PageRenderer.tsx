@@ -1,6 +1,7 @@
 import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import type { Locale } from '../lib/locale'
+import { fillSources, type ContentSources } from '../lib/contentSources'
 import { sanitiseLayout } from '../lib/sanitise'
 
 interface Segment {
@@ -12,7 +13,7 @@ interface Segment {
   settings?: Record<string, string>
 }
 
-function parseSegments(html: string, translations?: Record<string, string>): Segment[] {
+function parseSegments(html: string, translations?: Record<string, string>, sources?: ContentSources): Segment[] {
   const doc = new DOMParser().parseFromString(html, 'text/html')
   if (translations) {
     doc.body.querySelectorAll<HTMLElement>('[data-t]').forEach((el) => {
@@ -20,6 +21,7 @@ function parseSegments(html: string, translations?: Record<string, string>): Seg
       if (typeof value === 'string' && value.trim() !== '') el.innerHTML = value
     })
   }
+  if (sources) fillSources(doc.body, sources)
   const segments: Segment[] = []
   let buffer = ''
   let bufferBleeds = false
@@ -61,6 +63,7 @@ interface Props<T> {
   transformHtml?: (html: string) => string
   translations?: Record<string, string>
   portals?: HtmlPortal[]
+  sources?: ContentSources
 }
 
 export interface HtmlPortal {
@@ -114,8 +117,9 @@ export default function PageRenderer<T>({
   transformHtml,
   translations,
   portals,
+  sources,
 }: Props<T>) {
-  const segments = useMemo(() => parseSegments(html, translations), [html, translations])
+  const segments = useMemo(() => parseSegments(html, translations, sources), [html, translations, sources])
   const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
 
   return (

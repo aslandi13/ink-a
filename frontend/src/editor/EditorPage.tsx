@@ -47,6 +47,8 @@ import { APPROACH_BLOCKS, DEFAULT_APPROACH_LAYOUT, loadApproachData } from '../s
 import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sections/projectFields'
 import { inkPlugin, type InkBlock, type InkFields } from './inkPlugin'
 import LoginForm from './LoginForm'
+import { contentSources } from '../lib/contentSources'
+import { applySourceChanges, collectSourceChanges, fillEditorSources } from './sources'
 import { applyTranslations, ensureTextKeys, withBaseTexts } from './translations'
 import './editor.css'
 
@@ -276,6 +278,7 @@ export default function EditorPage() {
 
         const store = createContentStore(data)
         storeRef.current = store
+        const sources = contentSources(['contacts', 'legal'].includes(slug) ? slug : kind.exploders === EXPLODERS ? 'home' : '', data)
         const markDirty = () => {
           setDirty(true)
           setStatus('Есть несохранённые изменения')
@@ -337,9 +340,12 @@ export default function EditorPage() {
         const save = async (): Promise<boolean> => {
           editor.runCommand('ink-commit-edit')
           setStatus('Сохранение…')
-          const changes = store.takePending()
+          const pending = store.takePending()
+          const sourceChanges = collectSourceChanges(editor, sources)
+          const changes = [...pending, ...sourceChanges]
           try {
             if (changes.length) await saveSectionContent(locale, changes)
+            applySourceChanges(sources, sourceChanges)
             editor.selectRemove(editor.getSelectedAll())
             ensureTextKeys(editor)
             const read = () => ({
@@ -359,7 +365,7 @@ export default function EditorPage() {
             setStatus(changes.length ? 'Сохранено. Тексты секций уже на сайте, раскладка — в черновике' : 'Черновик сохранён')
             return true
           } catch (err) {
-            store.restorePending(changes)
+            store.restorePending(pending)
             handleError(err)
             return false
           }
@@ -428,6 +434,7 @@ export default function EditorPage() {
         editor.onReady(() => {
           ensureTextKeys(editor)
           if (locale !== 'ru') originals = applyTranslations(editor, draft?.translations ?? {})
+          fillEditorSources(editor, sources)
           setTimeout(() => {
             editor.clearDirtyCount()
             setDirty(false)

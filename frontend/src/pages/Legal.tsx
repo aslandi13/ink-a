@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
+import { contentSources } from '../lib/contentSources'
 import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
 import { useLocale } from '../lib/useLocale'
@@ -63,6 +64,7 @@ export default function Legal() {
         css={layout?.css ?? ''}
         translations={layout?.translations}
         data={data}
+        sources={contentSources('legal', data)}
         locale={locale}
         blocks={LEGAL_BLOCKS}
       />

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { fillSources, readSource } from './contentSources'
 import { metaText } from './metaText'
 import { categoryFromSlug, categorySlug } from './projectCategories'
 import { projectPath } from './projectPath'
@@ -50,5 +51,23 @@ describe('category slugs', () => {
     expect(categoryFromSlug('urbanism')).toBe('urbanism')
     expect(categoryFromSlug('house')).toBeNull()
     expect(categorySlug('engineering')).toBe('engineering')
+  })
+})
+
+describe('content sources', () => {
+  const sources = { 'home.hero': { title: 'Vision.', stats: [{ number: '850+', label: '' }] } }
+
+  it('reads nested values', () => {
+    expect(readSource(sources, 'home.hero:title')).toBe('Vision.')
+    expect(readSource(sources, 'home.hero:stats.0.number')).toBe('850+')
+    expect(readSource(sources, 'home.hero:stats.0.label')).toBeNull()
+    expect(readSource(sources, 'home.about:heading')).toBeNull()
+  })
+
+  it('fills marked elements and keeps others', () => {
+    const root = document.createElement('div')
+    root.innerHTML = '<h1 data-src="home.hero:title">Смысл.</h1><p data-src="home.hero:stats.0.label">кеп</p><p>static</p>'
+    fillSources(root, sources)
+    expect(root.innerHTML).toBe('<h1 data-src="home.hero:title">Vision.</h1><p data-src="home.hero:stats.0.label">кеп</p><p>static</p>')
   })
 })

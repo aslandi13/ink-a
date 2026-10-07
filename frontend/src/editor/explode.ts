@@ -13,6 +13,8 @@ function esc(value: string | null | undefined): string {
 }
 
 const LOCKED = 'data-gjs-draggable="false" data-gjs-copyable="false"'
+const src = (target: string) => `data-src="${target}"`
+
 const DECOR = 'data-gjs-selectable="false" data-gjs-hoverable="false" data-gjs-layerable="false"'
 
 function explodeHero(data: HomeData, locale: Locale): string {
@@ -28,8 +30,8 @@ function explodeHero(data: HomeData, locale: Locale): string {
 
   const stats = (hero?.stats ?? [])
     .map(
-      (stat) =>
-        `<div data-gjs-name="Цифра"><dt class="font-serif text-xl text-white md:text-2xl lg:text-3xl">${esc(stat.number)}</dt><dd class="mt-0.5 max-w-[22ch] text-xs leading-snug text-white/50 md:text-sm">${esc(stat.label)}</dd></div>`,
+      (stat, i) =>
+        `<div data-gjs-name="Цифра"><dt ${src(`home.hero:stats.${i}.number`)} class="font-serif text-xl text-white md:text-2xl lg:text-3xl">${esc(stat.number)}</dt><dd ${src(`home.hero:stats.${i}.label`)} class="mt-0.5 max-w-[22ch] text-xs leading-snug text-white/50 md:text-sm">${esc(stat.label)}</dd></div>`,
     )
     .join('')
 
@@ -39,13 +41,13 @@ function explodeHero(data: HomeData, locale: Locale): string {
   <div ${DECOR} class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-950 to-transparent"></div>
   <div data-gjs-name="Сетка" class="relative mx-auto grid w-full max-w-[84rem] gap-8 md:grid-cols-2 md:gap-12">
     <div data-gjs-name="Левая колонка">
-      <h1 class="whitespace-pre-line text-5xl leading-[0.9] text-white sm:text-6xl md:text-7xl lg:text-8xl">${esc(hero?.title)}</h1>
+      <h1 ${src('home.hero:title')} class="whitespace-pre-line text-5xl leading-[0.9] text-white sm:text-6xl md:text-7xl lg:text-8xl">${esc(hero?.title)}</h1>
       ${stats ? `<dl data-gjs-name="Цифры" class="mt-8 grid grid-cols-2 gap-x-6 gap-y-5 sm:grid-cols-3">${stats}</dl>` : ''}
       ${featured ? `<div class="mt-8"><a href="${esc(projectPath(locale, featured))}" class="text-sm text-white/50 transition-colors hover:text-white/80">${esc(featured.title)}</a></div>` : ''}
     </div>
     <div data-gjs-name="Правая колонка" class="flex flex-col justify-end gap-5">
-      ${hero?.subtitle ? `<p class="whitespace-pre-line font-serif text-2xl leading-tight text-white md:text-3xl lg:text-4xl">${esc(hero.subtitle)}</p>` : ''}
-      ${hero?.description ? `<p class="hidden max-w-lg text-white/70 sm:block">${esc(hero.description)}</p>` : ''}
+      ${hero?.subtitle ? `<p ${src('home.hero:subtitle')} class="whitespace-pre-line font-serif text-2xl leading-tight text-white md:text-3xl lg:text-4xl">${esc(hero.subtitle)}</p>` : ''}
+      ${hero?.description ? `<p ${src('home.hero:description')} class="hidden max-w-lg text-white/70 sm:block">${esc(hero.description)}</p>` : ''}
     </div>
   </div>
 </section>`
@@ -55,16 +57,16 @@ function explodeAbout(data: HomeData, locale: Locale): string {
   const { about } = data
   const label = t(locale).home.about
   const quote = about?.quote
-    ? `<blockquote class="border-l border-accent/60 pl-4 text-sm italic text-white/80 lg:border-0 lg:pl-0 lg:text-[1.08cqw] lg:leading-snug">«${esc(about.quote)}»${about.quote_author ? `<footer class="mt-2 text-xs text-white/40 not-italic lg:mt-[0.9cqw] lg:text-[0.93cqw] lg:text-white/60">${esc(about.quote_author)}</footer>` : ''}</blockquote>`
+    ? `<blockquote class="border-l border-accent/60 pl-4 text-sm italic text-white/80 lg:border-0 lg:pl-0 lg:text-[1.08cqw] lg:leading-snug">«<span ${src('home.about:quote')}>${esc(about.quote)}</span>»${about.quote_author ? `<footer ${src('home.about:quote_author')} class="mt-2 text-xs text-white/40 not-italic lg:mt-[0.9cqw] lg:text-[0.93cqw] lg:text-white/60">${esc(about.quote_author)}</footer>` : ''}</blockquote>`
     : ''
   const intro = about?.intro
-    ? `<p class="whitespace-pre-line text-sm text-white/70 lg:text-[1.08cqw] lg:leading-snug lg:text-white/80">${esc(about.intro)}</p>`
+    ? `<p ${src('home.about:intro')} class="whitespace-pre-line text-sm text-white/70 lg:text-[1.08cqw] lg:leading-snug lg:text-white/80">${esc(about.intro)}</p>`
     : ''
 
   const main = about?.image
     ? `<div data-gjs-name="Фото с текстом" class="@container relative mt-4 lg:mt-3 lg:aspect-[3.06] lg:overflow-hidden lg:bg-ink-800">
       <div class="lg:absolute lg:inset-x-0 lg:top-0 lg:z-10 lg:px-[3cqw] lg:pt-[3cqw]">
-        <h2 class="max-w-2xl whitespace-pre-line font-serif text-2xl leading-tight text-white lg:max-w-[55cqw] lg:text-[3.6cqw]">${esc(about.heading)}</h2>
+        <h2 ${src('home.about:heading')} class="max-w-2xl whitespace-pre-line font-serif text-2xl leading-tight text-white lg:max-w-[55cqw] lg:text-[3.6cqw]">${esc(about.heading)}</h2>
       </div>
       <div data-gjs-name="Фото" class="relative mt-6 aspect-[4/3] w-full overflow-hidden bg-ink-800 lg:absolute lg:inset-0 lg:mt-0 lg:aspect-auto">
         <img class="absolute inset-0 h-full w-full object-cover" src="${esc(about.image)}" alt="">
@@ -73,7 +75,7 @@ function explodeAbout(data: HomeData, locale: Locale): string {
       </div>
       <div data-gjs-name="Тексты" class="mt-6 flex flex-col gap-6 lg:absolute lg:inset-x-0 lg:bottom-0 lg:z-10 lg:mt-0 lg:grid lg:grid-cols-[45%_40%] lg:gap-[6cqw] lg:px-[3cqw] lg:pb-[3.5cqw]">${intro}${quote}</div>
     </div>`
-    : `<h2 class="mt-4 max-w-2xl whitespace-pre-line font-serif text-3xl leading-tight text-white md:text-5xl">${esc(about?.heading)}</h2>
+    : `<h2 ${src('home.about:heading')} class="mt-4 max-w-2xl whitespace-pre-line font-serif text-3xl leading-tight text-white md:text-5xl">${esc(about?.heading)}</h2>
     <div class="mt-10 grid gap-10 md:grid-cols-[30%_37%]">${intro}${quote}</div>`
 
   const principles = about?.principles?.length
@@ -81,7 +83,7 @@ function explodeAbout(data: HomeData, locale: Locale): string {
       <div class="grid gap-10 md:grid-cols-[63%_1fr] md:items-center md:gap-5">
         ${about.principles_image ? `<div class="aspect-[185/100] w-full overflow-hidden bg-ink-800 md:aspect-[2.56]"><img class="h-full w-full object-cover" src="${esc(about.principles_image)}" alt=""></div>` : ''}
         <div class="flex flex-col justify-center gap-8">${about.principles
-          .map((p) => `<div><h3 class="font-sans text-sm font-semibold text-white md:text-base">${esc(p.heading)}</h3><p class="mt-2 text-sm leading-relaxed text-white/60 md:leading-snug md:text-white">${esc(p.text)}</p></div>`)
+          .map((p, i) => `<div><h3 ${src(`home.about:principles.${i}.heading`)} class="font-sans text-sm font-semibold text-white md:text-base">${esc(p.heading)}</h3><p ${src(`home.about:principles.${i}.text`)} class="mt-2 text-sm leading-relaxed text-white/60 md:leading-snug md:text-white">${esc(p.text)}</p></div>`)
           .join('')}</div>
       </div>
     </div>`
@@ -105,10 +107,10 @@ function explodeOffices(data: HomeData): string {
   return `<section data-gjs-name="География" class="mx-auto max-w-[84rem] px-6 pt-2 pb-4 sm:pt-10 sm:pb-16">
     <div class="grid gap-8 md:grid-cols-2 md:gap-16">
       <div>
-        <h2 class="font-serif text-[2.5rem] leading-[1.1] text-white">${esc(offices?.heading)}</h2>
-        ${offices?.video_label ? `<div class="mt-6 flex items-center gap-2 text-sm text-white/70"><span class="h-[10px] w-[10px] rounded-full bg-gold"></span>${esc(offices.video_label)}</div>` : ''}
+        <h2 ${src('home.offices:heading')} class="font-serif text-[2.5rem] leading-[1.1] text-white">${esc(offices?.heading)}</h2>
+        ${offices?.video_label ? `<div class="mt-6 flex items-center gap-2 text-sm text-white/70"><span class="h-[10px] w-[10px] rounded-full bg-gold"></span><span ${src('home.offices:video_label')}>${esc(offices.video_label)}</span></div>` : ''}
       </div>
-      ${offices?.description ? `<p class="whitespace-pre-line text-sm leading-relaxed text-white/60 md:pt-2">${esc(offices.description)}</p>` : ''}
+      ${offices?.description ? `<p ${src('home.offices:description')} class="whitespace-pre-line text-sm leading-relaxed text-white/60 md:pt-2">${esc(offices.description)}</p>` : ''}
     </div>
     ${media ? `<div data-gjs-name="Карта" class="mt-10 aspect-[2.3107] w-full overflow-hidden bg-ink-950">${media}</div>` : ''}
   </section>`
@@ -140,9 +142,9 @@ function explodeProjects(data: HomeData, locale: Locale): string {
     .join('')
 
   return `<section data-gjs-name="Ключевые проекты" class="mx-auto max-w-[84rem] px-6 pt-4 pb-28 sm:pt-20">
-    <p class="text-sm text-white/60">${esc(keyProjects?.heading || tr.home.keyProjects)}</p>
-    ${keyProjects?.statement ? `<h2 class="mt-3 max-w-4xl whitespace-pre-line font-serif text-[1.9rem] leading-[1.1] text-white sm:text-[2.5rem]">${esc(keyProjects.statement)}</h2>` : ''}
-    ${keyProjects?.description ? `<p class="mt-4 max-w-2xl text-sm leading-relaxed text-white/60">${esc(keyProjects.description)}</p>` : ''}
+    <p ${src('home.key_projects:heading')} class="text-sm text-white/60">${esc(keyProjects?.heading || tr.home.keyProjects)}</p>
+    ${keyProjects?.statement ? `<h2 ${src('home.key_projects:statement')} class="mt-3 max-w-4xl whitespace-pre-line font-serif text-[1.9rem] leading-[1.1] text-white sm:text-[2.5rem]">${esc(keyProjects.statement)}</h2>` : ''}
+    ${keyProjects?.description ? `<p ${src('home.key_projects:description')} class="mt-4 max-w-2xl text-sm leading-relaxed text-white/60">${esc(keyProjects.description)}</p>` : ''}
     ${cards ? `<div data-gjs-name="Сетка проектов" class="mt-10 grid grid-flow-dense grid-cols-2 gap-1 md:grid-cols-4">${cards}</div>` : ''}
     <div class="mt-10 flex justify-center">
       <a href="/${locale}/projects" class="inline-flex items-center rounded-[20px] bg-[rgb(57,64,75)] px-8 py-3 font-sans text-base font-medium text-white transition-opacity hover:opacity-80">${esc(tr.ui.more)}</a>
@@ -175,16 +177,19 @@ function explodeContacts(data: ContactsData): string {
 
   const career = data.career_heading
     ? `<div data-gjs-name="Карьера" class="mt-5 max-w-xl border-t border-line pt-5 sm:pt-8">
-      ${data.career_label ? `<p class="text-xs uppercase tracking-[0.2em] text-white/40">${esc(data.career_label)}</p>` : ''}
-      <h1 class="mt-3 whitespace-pre-line font-serif text-4xl text-white md:text-5xl">${esc(data.career_heading)}</h1>
-      ${data.career_text ? `<p class="mt-1 text-white/60">${esc(data.career_text)}</p>` : ''}
-      ${data.career_cta_label ? `<a href="${esc(data.career_cta_url ?? `mailto:${data.email ?? ''}`)}" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-2 border border-white/30 px-6 py-3 text-sm text-white transition-colors hover:border-white hover:bg-white hover:text-ink-950">${esc(data.career_cta_label)} →</a>` : ''}
+      ${data.career_label ? `<p ${src('contacts:career_label')} class="text-xs uppercase tracking-[0.2em] text-white/40">${esc(data.career_label)}</p>` : ''}
+      <h1 ${src('contacts:career_heading')} class="mt-3 whitespace-pre-line font-serif text-4xl text-white md:text-5xl">${esc(data.career_heading)}</h1>
+      ${data.career_text ? `<p ${src('contacts:career_text')} class="mt-1 text-white/60">${esc(data.career_text)}</p>` : ''}
+      ${data.career_cta_label ? `<a href="${esc(data.career_cta_url ?? `mailto:${data.email ?? ''}`)}" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex items-center gap-2 border border-white/30 px-6 py-3 text-sm text-white transition-colors hover:border-white hover:bg-white hover:text-ink-950"><span ${src('contacts:career_cta_label')}>${esc(data.career_cta_label)}</span> →</a>` : ''}
     </div>`
     : ''
 
-  const info = [data.address, data.phone, data.whatsapp ? `WhatsApp: ${data.whatsapp}` : null]
+  const info = [
+    data.address && `<p ${src('contacts:address')}>${esc(data.address)}</p>`,
+    data.phone && `<p ${src('contacts:phone')}>${esc(data.phone)}</p>`,
+    data.whatsapp && `<p>WhatsApp: <span ${src('contacts:whatsapp')}>${esc(data.whatsapp)}</span></p>`,
+  ]
     .filter(Boolean)
-    .map((line) => `<p>${esc(line)}</p>`)
     .join('')
 
   return `<section data-gjs-name="Контакты" class="relative flex min-h-[90vh] flex-col justify-center overflow-hidden">
@@ -200,7 +205,7 @@ function explodeContacts(data: ContactsData): string {
 }
 
 function explodeLegalTitle(data: { title?: string }, locale: Locale): string {
-  return `<div data-gjs-name="Заголовок" class="mx-auto max-w-4xl px-6 pt-24"><h1 class="text-3xl font-medium tracking-tight text-white">${esc(data.title || t(locale).legal.title)}</h1></div>`
+  return `<div data-gjs-name="Заголовок" class="mx-auto max-w-4xl px-6 pt-24"><h1 ${src('legal:title')} class="text-3xl font-medium tracking-tight text-white">${esc(data.title || t(locale).legal.title)}</h1></div>`
 }
 
 export const CONTACTS_EXPLODERS: Record<string, (data: ContactsData, locale: Locale) => string> = {
