@@ -16,6 +16,8 @@ use UnitEnum;
 
 class AboutHistory extends SingletonContentPage
 {
+    use AboutSections;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedClock;
 
     protected static ?string $navigationLabel = 'История';

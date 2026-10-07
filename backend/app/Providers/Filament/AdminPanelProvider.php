@@ -27,6 +27,7 @@ use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
 use Filament\Support\Icons\Heroicon;
 use Filament\Navigation\NavigationItem;
+use App\Filament\Support\SectionTabs;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -73,17 +74,15 @@ class AdminPanelProvider extends PanelProvider
                             NavigationItem::make('Главная')
                                 ->icon(Heroicon::OutlinedSquares2x2)
                                 ->url(fn () => Hero::getUrl())
-                                ->isActiveWhen(fn () => request()->routeIs(array_map(
-                                    fn (string $page) => $page::getRouteName(),
-                                    array_keys(Hero::sectionTabs()),
-                                ))),
+                                ->isActiveWhen(fn () => request()->routeIs(SectionTabs::routeNames(Hero::sectionTabs()))),
                         ]),
                         NavigationGroup::make()->items(ProjectResource::getNavigationItems()),
                         NavigationGroup::make()->items(Approach::getNavigationItems()),
-                        NavigationGroup::make('О нас')->items([
-                            ...AboutHistory::getNavigationItems(),
-                            ...TeamMemberResource::getNavigationItems(),
-                            ...AboutFounder::getNavigationItems(),
+                        NavigationGroup::make()->items([
+                            NavigationItem::make('О нас')
+                                ->icon(Heroicon::OutlinedInformationCircle)
+                                ->url(fn () => AboutHistory::getUrl())
+                                ->isActiveWhen(fn () => request()->routeIs(SectionTabs::routeNames(AboutHistory::sectionTabs()))),
                         ]),
                         NavigationGroup::make()->items(NewsItemResource::getNavigationItems()),
                         NavigationGroup::make()->items(Contacts::getNavigationItems()),

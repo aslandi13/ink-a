@@ -16,6 +16,8 @@ use UnitEnum;
 
 class AboutFounder extends SingletonContentPage
 {
+    use AboutSections;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUser;
 
     protected static ?string $navigationLabel = 'Об основателе';
