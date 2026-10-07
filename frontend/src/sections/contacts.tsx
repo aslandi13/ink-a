@@ -35,13 +35,18 @@ interface SectionProps {
 }
 
 const OVERLAY: Record<string, string> = { light: 'rgb(5 10 18 / 0.2)', normal: 'rgb(5 10 18 / 0.5)', dark: 'rgb(5 10 18 / 0.8)' }
+const INFO_LABELS: Record<Locale, { address: string; phone: string }> = {
+  ru: { address: 'Адрес', phone: 'Телефон' },
+  kz: { address: 'Мекенжай', phone: 'Телефон' },
+  en: { address: 'Address', phone: 'Phone' },
+}
 const CONTACTS_SHOW_HIDE = [['show', 'Показывать'], ['hide', 'Скрыть']]
 
 export function loadContactsData(locale: Locale): Promise<ContactsData> {
   return getPageContent<ContactsData>(locale, 'contacts')
 }
 
-export function ContactsSection({ data, settings = {} }: SectionProps) {
+export function ContactsSection({ data, locale, settings = {} }: SectionProps) {
   const ICONS: Record<string, ReactNode> = {
     Email: <MdEmail size={22} />,
     Facebook: <FaFacebook size={20} />,
@@ -132,9 +137,33 @@ export function ContactsSection({ data, settings = {} }: SectionProps) {
       {settings.info !== 'hide' && (data?.address || data?.phone) && (
         <div className="relative border-t border-line bg-ink-950 px-6 py-8 text-sm text-white/50">
           <div className="mx-auto flex max-w-[84rem] flex-wrap gap-x-10 gap-y-2">
-            {data?.address && <p data-edit="contacts:address">{data.address}</p>}
-            {data?.phone && <p data-edit="contacts:phone">{data.phone}</p>}
-            {data?.whatsapp && <p>WhatsApp: <span data-edit="contacts:whatsapp">{data.whatsapp}</span></p>}
+            {data?.address && (
+              <p>
+                {INFO_LABELS[locale].address}: <span data-edit="contacts:address" className="text-white/80">{data.address}</span>
+              </p>
+            )}
+            {data?.phone && (
+              <p>
+                {INFO_LABELS[locale].phone}:{' '}
+                <a href={`tel:${data.phone.replace(/[^\d+]/g, '')}`} data-edit="contacts:phone" className="text-white/80 hover:text-white">
+                  {data.phone}
+                </a>
+              </p>
+            )}
+            {data?.whatsapp && (
+              <p>
+                WhatsApp:{' '}
+                <a
+                  href={`https://wa.me/${data.whatsapp.replace(/\D/g, '')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-edit="contacts:whatsapp"
+                  className="text-white/80 hover:text-white"
+                >
+                  {data.whatsapp}
+                </a>
+              </p>
+            )}
           </div>
         </div>
       )}
