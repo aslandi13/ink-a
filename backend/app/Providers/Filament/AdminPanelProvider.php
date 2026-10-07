@@ -25,6 +25,8 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Navigation\NavigationGroup;
+use Filament\Support\Icons\Heroicon;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -67,12 +69,14 @@ class AdminPanelProvider extends PanelProvider
                         ...VisualEditor::getNavigationItems(),
                     ])
                     ->groups([
-                        NavigationGroup::make('Главная')->items([
-                            ...Hero::getNavigationItems(),
-                            ...AboutBlock::getNavigationItems(),
-                            ...Offices::getNavigationItems(),
-                            ...VideoBanner::getNavigationItems(),
-                            ...KeyProjects::getNavigationItems(),
+                        NavigationGroup::make()->items([
+                            NavigationItem::make('Главная')
+                                ->icon(Heroicon::OutlinedSquares2x2)
+                                ->url(fn () => Hero::getUrl())
+                                ->isActiveWhen(fn () => request()->routeIs(array_map(
+                                    fn (string $page) => $page::getRouteName(),
+                                    array_keys(Hero::sectionTabs()),
+                                ))),
                         ]),
                         NavigationGroup::make()->items(ProjectResource::getNavigationItems()),
                         NavigationGroup::make()->items(Approach::getNavigationItems()),

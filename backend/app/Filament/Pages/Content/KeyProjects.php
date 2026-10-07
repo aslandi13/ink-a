@@ -12,6 +12,8 @@ use UnitEnum;
 
 class KeyProjects extends SingletonContentPage
 {
+    use HomeSections;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedStar;
 
     protected static ?string $navigationLabel = 'Ключевые проекты';

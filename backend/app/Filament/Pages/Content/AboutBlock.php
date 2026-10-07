@@ -16,6 +16,8 @@ use UnitEnum;
 
 class AboutBlock extends SingletonContentPage
 {
+    use HomeSections;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedInformationCircle;
 
     protected static ?string $navigationLabel = 'О нас';

@@ -13,6 +13,8 @@ use Filament\Support\Icons\Heroicon;
 
 class VideoBanner extends SingletonContentPage
 {
+    use HomeSections;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedVideoCamera;
 
     protected static ?string $navigationLabel = 'Видео-баннер';

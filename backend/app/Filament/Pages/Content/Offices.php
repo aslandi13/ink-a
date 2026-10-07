@@ -14,6 +14,8 @@ use UnitEnum;
 
 class Offices extends SingletonContentPage
 {
+    use HomeSections;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
 
     protected static ?string $navigationLabel = 'Наши офисы';

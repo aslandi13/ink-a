@@ -27,6 +27,21 @@ abstract class SingletonContentPage extends Page
 
     abstract public static function contentKey(): string;
 
+    public static function sectionTabs(): array
+    {
+        return [];
+    }
+
+    public static function sectionGroupTitle(): ?string
+    {
+        return null;
+    }
+
+    public function getHeading(): string
+    {
+        return static::sectionGroupTitle() ?? parent::getHeading();
+    }
+
     public function mount(): void
     {
         $record = PageContent::firstOrCreate(

@@ -18,6 +18,8 @@ use UnitEnum;
 
 class Hero extends SingletonContentPage
 {
+    use HomeSections;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 
     protected static ?string $navigationLabel = 'Hero';
