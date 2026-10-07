@@ -339,11 +339,11 @@ export function AboutSection({ data, locale, settings = {} }: SectionProps) {
         </>
       )}
       {settings.principles !== 'hide' && !!about?.principles?.length && (
-        <div className="mt-4 border-t border-line pt-4 sm:mt-12 sm:pt-12">
-          <div className="grid gap-10 md:grid-cols-[38%_1fr] md:gap-20">
+        <div className="mt-4 border-t border-line pt-4 sm:mt-12 sm:pt-12 md:border-t-0 md:pt-0">
+          <div className="grid gap-10 md:grid-cols-[63%_1fr] md:items-center md:gap-5">
             {about.principles_image && (
               <Reveal>
-                <div className="aspect-[185/100] w-full overflow-hidden bg-ink-800">
+                <div className="aspect-[185/100] w-full overflow-hidden bg-ink-800 md:aspect-[2.56]">
                   <img data-edit-image="home.about:principles_image" src={about.principles_image} alt="" className="h-full w-full object-cover" />
                 </div>
               </Reveal>
@@ -351,8 +351,8 @@ export function AboutSection({ data, locale, settings = {} }: SectionProps) {
             <div className="flex flex-col justify-center gap-8">
               {about.principles.map((p, i) => (
                 <Reveal key={i} delay={i * 0.1}>
-                  <h3 data-edit={`home.about:principles.${i}.heading`} className="font-sans text-sm font-semibold text-white">{p.heading}</h3>
-                  <p data-edit={`home.about:principles.${i}.text`} className="mt-2 text-sm leading-relaxed text-white/60">{p.text}</p>
+                  <h3 data-edit={`home.about:principles.${i}.heading`} className="font-sans text-sm font-semibold text-white md:text-base">{p.heading}</h3>
+                  <p data-edit={`home.about:principles.${i}.text`} className="mt-2 text-sm leading-relaxed text-white/60 md:leading-snug md:text-white">{p.text}</p>
                 </Reveal>
               ))}
             </div>

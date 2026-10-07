@@ -77,11 +77,11 @@ function explodeAbout(data: HomeData, locale: Locale): string {
     <div class="mt-10 grid gap-10 md:grid-cols-[30%_37%]">${intro}${quote}</div>`
 
   const principles = about?.principles?.length
-    ? `<div data-gjs-name="Принципы" class="mt-4 border-t border-line pt-4 sm:mt-12 sm:pt-12">
-      <div class="grid gap-10 md:grid-cols-[38%_1fr] md:gap-20">
-        ${about.principles_image ? `<div class="aspect-[185/100] w-full overflow-hidden bg-ink-800"><img class="h-full w-full object-cover" src="${esc(about.principles_image)}" alt=""></div>` : ''}
+    ? `<div data-gjs-name="Принципы" class="mt-4 border-t border-line pt-4 sm:mt-12 sm:pt-12 md:border-t-0 md:pt-0">
+      <div class="grid gap-10 md:grid-cols-[63%_1fr] md:items-center md:gap-5">
+        ${about.principles_image ? `<div class="aspect-[185/100] w-full overflow-hidden bg-ink-800 md:aspect-[2.56]"><img class="h-full w-full object-cover" src="${esc(about.principles_image)}" alt=""></div>` : ''}
         <div class="flex flex-col justify-center gap-8">${about.principles
-          .map((p) => `<div><h3 class="font-sans text-sm font-semibold text-white">${esc(p.heading)}</h3><p class="mt-2 text-sm leading-relaxed text-white/60">${esc(p.text)}</p></div>`)
+          .map((p) => `<div><h3 class="font-sans text-sm font-semibold text-white md:text-base">${esc(p.heading)}</h3><p class="mt-2 text-sm leading-relaxed text-white/60 md:leading-snug md:text-white">${esc(p.text)}</p></div>`)
           .join('')}</div>
       </div>
     </div>`
