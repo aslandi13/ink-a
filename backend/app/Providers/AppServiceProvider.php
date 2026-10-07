@@ -6,6 +6,7 @@ use App\Support\ImageOptimizer;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
+use Filament\Tables\Table;
 use Illuminate\Support\Str;
 use Illuminate\Support\ServiceProvider;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
@@ -29,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
         // Raster images (JPEG, PNG, WebP) are automatically downscaled to max 3000px
         // and converted to modern WebP format on the server to keep site fast.
         // Videos, SVGs and other non-raster files are stored as-is without modification.
+        Table::configureUsing(fn (Table $table) => $table->paginated(false));
+
         Repeater::configureUsing(fn (Repeater $repeater) => $repeater
             ->collapsible()
             ->collapsed()
