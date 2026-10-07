@@ -14,13 +14,13 @@ type Settings = Record<string, string>
 type ProjectsIntro = Record<string, { image?: string | null; enabled?: boolean }>
 
 const COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
-const RATIO: Record<string, string> = { wide: '16/9', cinema: '21/9', square: '1/1', tall: '3/4' }
+const RATIO: Record<string, string> = { classic: '1.95/1', wide: '16/9', cinema: '21/9', square: '1/1', tall: '3/4' }
 const TITLE: Record<string, string> = { s: '1rem', m: '1.3rem', l: '1.8rem', xl: '2.4rem' }
 const GAP: Record<string, string> = { none: '0', s: '0.5rem', l: '1rem' }
 
 export const PROJECTS_LIST_SETTINGS = [
   { name: 'cols', label: 'Колонок', options: [['4', '4'], ['3', '3'], ['2', '2']] },
-  { name: 'ratio', label: 'Форма картинок', options: [['wide', 'Широкие 16:9'], ['cinema', 'Очень широкие 21:9'], ['square', 'Квадрат'], ['tall', 'Вертикальные 3:4']] },
+  { name: 'ratio', label: 'Форма картинок', options: [['classic', 'Как на ink-a.com'], ['wide', 'Широкие 16:9'], ['cinema', 'Очень широкие 21:9'], ['square', 'Квадрат'], ['tall', 'Вертикальные 3:4']] },
   { name: 'featured', label: 'Большие карточки', options: [['on', 'Показывать'], ['off', 'Все одинаковые']] },
   { name: 'gap', label: 'Отступ между', options: [['s', 'Обычный'], ['none', 'Без отступа'], ['l', 'Большой']] },
   { name: 'title', label: 'Размер названия', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой'], ['xl', 'Очень большой']] },
@@ -30,7 +30,7 @@ export const PROJECTS_LIST_SETTINGS = [
 export function ProjectsListSection({ locale, settings = {} }: { data: unknown; locale: Locale; settings?: Settings }) {
   const tr = t(locale)
   const cols = COLS[settings.cols ?? ''] ?? COLS['4']
-  const ratio = RATIO[settings.ratio ?? ''] ?? RATIO.wide
+  const ratio = RATIO[settings.ratio ?? ''] ?? RATIO.classic
   const featured = settings.featured !== 'off'
   const titleSize = TITLE[settings.title ?? ''] ?? TITLE.m
   const gap = GAP[settings.gap ?? ''] ?? GAP.s
