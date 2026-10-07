@@ -22,8 +22,11 @@ class EditableContent
         'legal' => ['title'],
     ];
 
-    private const LOCALE_IMAGE_FIELDS = [
+    private const SHARED_IMAGE_FIELDS = [
         'approach' => ['steps.*.image'],
+    ];
+
+    private const LOCALE_IMAGE_FIELDS = [
         'about.founder' => ['credential_highlights.*.icon'],
     ];
 
@@ -119,6 +122,9 @@ class EditableContent
         } elseif (self::matches(self::TEXT_FIELDS[$key] ?? [], $field)) {
             $data[$locale] = self::withListsSeeded($data[$locale] ?? [], $data['ru'] ?? [], $field);
             Arr::set($data[$locale], $field, (string) $value);
+        } elseif (self::matches(self::SHARED_IMAGE_FIELDS[$key] ?? [], $field)) {
+            $data['ru'] = self::withListsSeeded($data['ru'] ?? [], $data['ru'] ?? [], $field);
+            Arr::set($data['ru'], $field, self::toStoragePath($value));
         } elseif (self::matches(self::LOCALE_IMAGE_FIELDS[$key] ?? [], $field)) {
             $data[$locale] = self::withListsSeeded($data[$locale] ?? [], $data['ru'] ?? [], $field);
             Arr::set($data[$locale], $field, self::toStoragePath($value));

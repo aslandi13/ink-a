@@ -49,7 +49,12 @@ abstract class SingletonContentPage extends Page
             ['data' => []],
         );
 
-        $this->form->fill($record->data ?? []);
+        $this->form->fill(static::prepareData($record->data ?? []));
+    }
+
+    public static function prepareData(array $data): array
+    {
+        return $data;
     }
 
     public function content(Schema $schema): Schema
@@ -72,7 +77,7 @@ abstract class SingletonContentPage extends Page
 
     public function save(): void
     {
-        $data = $this->form->getState();
+        $data = static::prepareData($this->form->getState());
 
         PageContent::updateOrCreate(
             ['key' => static::contentKey()],

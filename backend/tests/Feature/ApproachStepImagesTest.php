@@ -1,0 +1,44 @@
+<?php
+
+namespace Tests\Feature;
+
+use App\Models\PageContent;
+use App\Support\EditableContent;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
+
+class ApproachStepImagesTest extends TestCase
+{
+    use RefreshDatabase;
+
+    private function seedApproach(): void
+    {
+        PageContent::updateOrCreate(['key' => 'approach'], ['data' => [
+            'architecture' => [
+                'ru' => ['steps' => [['title' => 'Шаг', 'text' => 'Т', 'image' => 'approach/one.webp'], ['title' => 'Шаг 2', 'text' => 'Т', 'image' => 'approach/two.webp']]],
+                'en' => ['steps' => [['title' => 'Step', 'text' => 'T', 'image' => 'approach/old.webp'], ['title' => 'Step 2', 'text' => 'T']]],
+            ],
+        ]]);
+    }
+
+    public function test_english_steps_use_russian_photos(): void
+    {
+        $this->seedApproach();
+
+        $this->getJson('/api/en/approach')
+            ->assertOk()
+            ->assertJsonPath('data.architecture.steps.0.title', 'Step')
+            ->assertJsonPath('data.architecture.steps.0.image', url('storage/approach/one.webp'))
+            ->assertJsonPath('data.architecture.steps.1.image', url('storage/approach/two.webp'));
+    }
+
+    public function test_editor_photo_change_applies_to_all_languages(): void
+    {
+        $this->seedApproach();
+
+        EditableContent::apply('en', [['key' => 'approach', 'field' => 'architecture.steps.0.image', 'value' => 'approach/new.webp']]);
+
+        $this->assertSame('approach/new.webp', PageContent::where('key', 'approach')->first()->data['architecture']['ru']['steps'][0]['image']);
+        $this->getJson('/api/kz/approach')->assertJsonPath('data.architecture.steps.0.image', url('storage/approach/new.webp'));
+    }
+}
