@@ -199,14 +199,14 @@ function explodeContacts(data: ContactsData): string {
   </section>`
 }
 
-function explodeLegalTitle(_data: unknown, locale: Locale): string {
-  return `<div data-gjs-name="Заголовок" class="mx-auto max-w-4xl px-6 pt-24"><h1 class="text-3xl font-medium tracking-tight text-white">${esc(t(locale).legal.title)}</h1></div>`
+function explodeLegalTitle(data: { title?: string }, locale: Locale): string {
+  return `<div data-gjs-name="Заголовок" class="mx-auto max-w-4xl px-6 pt-24"><h1 class="text-3xl font-medium tracking-tight text-white">${esc(data.title || t(locale).legal.title)}</h1></div>`
 }
 
 export const CONTACTS_EXPLODERS: Record<string, (data: ContactsData, locale: Locale) => string> = {
   'contacts-main': explodeContacts,
 }
 
-export const LEGAL_EXPLODERS: Record<string, (data: unknown, locale: Locale) => string> = {
+export const LEGAL_EXPLODERS: Record<string, (data: { title?: string }, locale: Locale) => string> = {
   'legal-title': explodeLegalTitle,
 }

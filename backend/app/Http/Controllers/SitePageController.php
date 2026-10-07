@@ -61,7 +61,9 @@ class SitePageController extends Controller
             $segments[0] === 'approach' => $this->approach($locale),
             $segments[0] === 'contacts' => $this->section('contacts', 'contacts', $locale),
             $segments[0] === 'legal' => [
-                'title' => $this->pageTitle('legal', $locale),
+                'title' => filled($this->content('legal', $locale)['title'] ?? null)
+                    ? $this->content('legal', $locale)['title'].' — '.self::BRAND
+                    : $this->pageTitle('legal', $locale),
                 'description' => $this->content('legal', $locale)['body'] ?? null,
             ],
             isset(self::TITLES[$segments[0]]) => ['title' => $this->pageTitle($segments[0], $locale)],

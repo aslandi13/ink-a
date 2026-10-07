@@ -5,6 +5,7 @@ import type { Locale } from '../lib/locale'
 import { sanitise } from '../lib/sanitise'
 
 export interface LegalData {
+  title?: string
   body?: string
 }
 
@@ -23,10 +24,12 @@ export function loadLegalData(locale: Locale): Promise<LegalData> {
   return getPageContent<LegalData>(locale, 'legal')
 }
 
-export function LegalTitleSection({ locale, settings = {} }: SectionProps) {
+export function LegalTitleSection({ data, locale, settings = {} }: SectionProps) {
   return (
     <div className={`mx-auto px-6 pt-24 ${LEGAL_WIDTH[settings.width ?? ''] ?? LEGAL_WIDTH.normal}`}>
-      <h1 className={`font-medium tracking-tight text-white ${LEGAL_TITLE[settings.size ?? ''] ?? LEGAL_TITLE.m}`}>{t(locale).legal.title}</h1>
+      <h1 data-edit="legal:title" className={`font-medium tracking-tight text-white ${LEGAL_TITLE[settings.size ?? ''] ?? LEGAL_TITLE.m}`}>
+        {data.title || t(locale).legal.title}
+      </h1>
     </div>
   )
 }

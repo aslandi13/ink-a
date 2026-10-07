@@ -45,7 +45,7 @@ export default function Legal() {
   return (
     <>
       <Helmet>
-        <title>{`${tr.legal.title} — INK Architects`}</title>
+        <title>{`${data.title || tr.legal.title} — INK Architects`}</title>
         <meta
           name="description"
           content={metaText(data.body) || (locale === 'ru' ? 'Юридическая информация, политика конфиденциальности и условия использования INK Architects.' : 'Legal information, privacy policy and terms of use for INK Architects.')}

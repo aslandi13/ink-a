@@ -19,6 +19,7 @@ class EditableContent
         'about.history' => ['intro', 'stats.*.number', 'stats.*.label', 'highlights.*.heading', 'highlights.*.text'],
         'about.founder' => ['bio', 'position', 'achievements.*', 'credential_highlights.*.text'],
         'contacts' => ['career_label', 'career_heading', 'career_text', 'career_cta_label'],
+        'legal' => ['title'],
     ];
 
     private const LOCALE_IMAGE_FIELDS = [

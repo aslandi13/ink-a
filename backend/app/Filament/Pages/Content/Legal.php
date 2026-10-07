@@ -6,6 +6,7 @@ use App\Filament\Pages\SingletonContentPage;
 use App\Filament\Support\TranslatableTabs;
 use BackedEnum;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
@@ -30,6 +31,10 @@ class Legal extends SingletonContentPage
             ->statePath('data')
             ->components([
                 TranslatableTabs::make(fn (string $locale) => [
+                    TextInput::make('title')
+                        ->label('Заголовок страницы')
+                        ->helperText('Если пусто — «Правовая информация и условия использования»'),
+
                     RichEditor::make('body')
                         ->label('Текст страницы')
                         ->required($locale === 'ru')
