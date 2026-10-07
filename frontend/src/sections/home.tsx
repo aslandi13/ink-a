@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { getPageContent, getProjects, type ProjectListItem } from '../api/content'
 import FadeIn from '../components/FadeIn'
@@ -94,12 +94,10 @@ const HERO_MIN_HEIGHT: Record<string, string> = { large: 'calc(80vh + 6rem)', me
 const KP_COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
 const KP_RATIO: Record<string, string> = { '4/3': '4/3', '16/9': '16/9', '1/1': '1/1', '3/4': '3/4' }
 
-export function HeroSection({ data, locale, settings = {} }: SectionProps) {
-  const { hero, projects } = data
-  const autoplay = settings.autoplay !== 'off'
-  const minHeight = HERO_MIN_HEIGHT[settings.height ?? '']
+type HeroSlide = { type: 'video' | 'photo'; src: string; title?: string; slug?: string; category?: string }
+
+function useHeroSlides(hero: HeroData | null | undefined, autoplay: boolean) {
   const [slideIndex, setSlideIndex] = useState(0)
-  const videoRef = useRef<HTMLVideoElement>(null)
 
   const slides = [
     ...(hero?.video ? [{ type: 'video' as const, src: hero.video, title: undefined as string | undefined, slug: undefined as string | undefined, category: undefined as string | undefined }] : []),
@@ -117,6 +115,63 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slideIndex, slidesLen, autoplay])
 
+  return { slides, slideIndex }
+}
+
+function HeroSlides({ slides, slideIndex, poster }: { slides: HeroSlide[]; slideIndex: number; poster?: string }) {
+  return (
+    <AnimatePresence mode="sync">
+      {slides.map((slide, i) =>
+        i !== slideIndex ? null : slide.type === 'video' ? (
+          <motion.video
+            key="video"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover"
+            src={slide.src}
+            poster={poster}
+            autoPlay
+            loop={slides.length === 1}
+            muted
+            playsInline
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+          />
+        ) : (
+          <motion.div
+            key={slide.src}
+            className="absolute inset-0 overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2 }}
+          >
+            <motion.img
+              src={slide.src}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover"
+              initial={{ scale: 1, x: 0, y: 0 }}
+              animate={{ scale: 1.08, x: '-1%', y: '-1%' }}
+              transition={{ duration: 8, ease: 'linear' }}
+            />
+          </motion.div>
+        )
+      )}
+    </AnimatePresence>
+  )
+}
+
+export function HeroBackground({ hero, autoplay = true }: { hero: HeroData | null | undefined; autoplay?: boolean }) {
+  const { slides, slideIndex } = useHeroSlides(hero, autoplay)
+  return <HeroSlides slides={slides} slideIndex={slideIndex} poster={hero?.poster} />
+}
+
+export function HeroSection({ data, locale, settings = {} }: SectionProps) {
+  const { hero, projects } = data
+  const autoplay = settings.autoplay !== 'off'
+  const minHeight = HERO_MIN_HEIGHT[settings.height ?? '']
+  const { slides, slideIndex } = useHeroSlides(hero, autoplay)
+
   const featuredProject = projects.find((p) => p.id === hero?.featured_project_id)
   const currentSlide = slides[slideIndex]
   const badgeFromSlide = currentSlide?.type === 'photo' && !!currentSlide.slug
@@ -129,44 +184,7 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
       className="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pb-20"
       style={minHeight ? { minHeight } : undefined}
     >
-      <AnimatePresence mode="sync">
-        {slides.map((slide, i) =>
-          i !== slideIndex ? null : slide.type === 'video' ? (
-            <motion.video
-              key="video"
-              ref={videoRef}
-              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
-              src={slide.src}
-              poster={hero?.poster}
-              autoPlay
-              muted
-              playsInline
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.2 }}
-            />
-          ) : (
-            <motion.div
-              key={slide.src}
-              className="absolute inset-0 overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 1.2 }}
-            >
-              <motion.img
-                src={slide.src}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-                initial={{ scale: 1, x: 0, y: 0 }}
-                animate={{ scale: 1.08, x: '-1%', y: '-1%' }}
-                transition={{ duration: 8, ease: 'linear' }}
-              />
-            </motion.div>
-          )
-        )}
-      </AnimatePresence>
+      <HeroSlides slides={slides} slideIndex={slideIndex} poster={hero?.poster} />
 
       <div className="absolute inset-0 bg-gradient-to-t from-ink-950/30 via-ink-950/0 to-ink-950/0" />
       <div className="absolute inset-x-0 bottom-0 h-15 bg-gradient-to-t from-ink-950 to-transparent" />

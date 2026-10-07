@@ -1,4 +1,5 @@
-import { useMemo, type ReactNode } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 import type { Locale } from '../lib/locale'
 import { sanitiseLayout } from '../lib/sanitise'
 
@@ -59,6 +60,43 @@ interface Props<T> {
   offsetClass?: string
   transformHtml?: (html: string) => string
   translations?: Record<string, string>
+  portals?: HtmlPortal[]
+}
+
+export interface HtmlPortal {
+  selector: string
+  render: () => ReactNode
+}
+
+function HtmlSegment({ html, portals }: { html: string; portals?: HtmlPortal[] }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [targets, setTargets] = useState<{ el: HTMLElement; render: () => ReactNode }[]>([])
+
+  useLayoutEffect(() => {
+    const root = ref.current
+    if (!root || !portals?.length) return
+    const found: { el: HTMLElement; render: () => ReactNode }[] = []
+    portals.forEach((portal, index) => {
+      root.querySelectorAll<HTMLElement>(`${portal.selector}, [data-portal="${index}"]`).forEach((target) => {
+        let container = target
+        if (target.dataset.portal !== String(index)) {
+          container = document.createElement('div')
+          container.className = 'absolute inset-0'
+          container.dataset.portal = String(index)
+          target.replaceWith(container)
+        }
+        found.push({ el: container, render: portal.render })
+      })
+    })
+    setTargets(found)
+  }, [html, portals])
+
+  return (
+    <>
+      <div ref={ref} dangerouslySetInnerHTML={{ __html: html }} />
+      {targets.map((target, i) => createPortal(target.render(), target.el, String(i)))}
+    </>
+  )
 }
 
 export function usesBlocks(html: string): boolean {
@@ -75,6 +113,7 @@ export default function PageRenderer<T>({
   offsetClass,
   transformHtml,
   translations,
+  portals,
 }: Props<T>) {
   const segments = useMemo(() => parseSegments(html, translations), [html, translations])
   const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
@@ -92,7 +131,7 @@ export default function PageRenderer<T>({
             </div>
           )
         }
-        return <div key={segment.key} dangerouslySetInnerHTML={{ __html: sanitiseLayout(transformHtml ? transformHtml(segment.html ?? '') : segment.html) }} />
+        return <HtmlSegment key={segment.key} html={sanitiseLayout(transformHtml ? transformHtml(segment.html ?? '') : segment.html)} portals={portals} />
       })}
     </div>
   )
