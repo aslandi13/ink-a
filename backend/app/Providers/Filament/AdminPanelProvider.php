@@ -68,26 +68,20 @@ class AdminPanelProvider extends PanelProvider
                         ...Dashboard::getNavigationItems(),
                         ...SitePageResource::getNavigationItems(),
                         ...VisualEditor::getNavigationItems(),
-                    ])
-                    ->groups([
-                        NavigationGroup::make()->items([
-                            NavigationItem::make('Главная')
-                                ->icon(Heroicon::OutlinedSquares2x2)
-                                ->url(fn () => Hero::getUrl())
-                                ->isActiveWhen(fn () => request()->routeIs(SectionTabs::routeNames(Hero::sectionTabs()))),
-                        ]),
-                        NavigationGroup::make()->items(ProjectResource::getNavigationItems()),
-                        NavigationGroup::make()->items(Approach::getNavigationItems()),
-                        NavigationGroup::make()->items([
-                            NavigationItem::make('О нас')
-                                ->icon(Heroicon::OutlinedInformationCircle)
-                                ->url(fn () => AboutHistory::getUrl())
-                                ->isActiveWhen(fn () => request()->routeIs(SectionTabs::routeNames(AboutHistory::sectionTabs()))),
-                        ]),
-                        NavigationGroup::make()->items(NewsItemResource::getNavigationItems()),
-                        NavigationGroup::make()->items(Contacts::getNavigationItems()),
-                        NavigationGroup::make()->items(SiteSettings::getNavigationItems()),
-                        NavigationGroup::make()->items(Legal::getNavigationItems()),
+                        NavigationItem::make('Главная')
+                            ->icon(Heroicon::OutlinedSquares2x2)
+                            ->url(fn () => Hero::getUrl())
+                            ->isActiveWhen(fn () => request()->routeIs(SectionTabs::routeNames(Hero::sectionTabs()))),
+                        ...ProjectResource::getNavigationItems(),
+                        ...Approach::getNavigationItems(),
+                        NavigationItem::make('О нас')
+                            ->icon(Heroicon::OutlinedInformationCircle)
+                            ->url(fn () => AboutHistory::getUrl())
+                            ->isActiveWhen(fn () => request()->routeIs(SectionTabs::routeNames(AboutHistory::sectionTabs()))),
+                        ...NewsItemResource::getNavigationItems(),
+                        ...Contacts::getNavigationItems(),
+                        ...SiteSettings::getNavigationItems(),
+                        ...Legal::getNavigationItems(),
                     ]);
             })
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
