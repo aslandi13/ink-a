@@ -237,7 +237,7 @@ export function AboutSection({ data, locale, settings = {} }: SectionProps) {
   const tr = t(locale)
 
   return (
-    <section className="mx-auto max-w-[84rem] px-6 pt-8 pb-4 sm:pt-24 sm:pb-24">
+    <section className="mx-auto max-w-[84rem] px-6 pt-8 pb-4 sm:pt-24 sm:pb-10">
       {settings.label !== 'hide' && (
         <Reveal>
           <p className="text-xs uppercase tracking-widest text-white/40">{tr.home.about}</p>
@@ -368,7 +368,7 @@ export function OfficesSection({ data, settings = {} }: SectionProps) {
   if (!offices?.heading && !offices?.map_video) return null
 
   return (
-    <section className="mx-auto max-w-[84rem] px-6 pt-2 pb-4 sm:pt-20 sm:pb-16">
+    <section className="mx-auto max-w-[84rem] px-6 pt-2 pb-4 sm:pt-10 sm:pb-16">
       <div className="grid gap-8 md:grid-cols-2 md:gap-16">
         <div>
           <Reveal>

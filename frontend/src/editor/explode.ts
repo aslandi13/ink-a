@@ -87,7 +87,7 @@ function explodeAbout(data: HomeData, locale: Locale): string {
     </div>`
     : ''
 
-  return `<section data-gjs-name="О нас" class="mx-auto max-w-[84rem] px-6 pt-8 pb-4 sm:pt-24 sm:pb-24">
+  return `<section data-gjs-name="О нас" class="mx-auto max-w-[84rem] px-6 pt-8 pb-4 sm:pt-24 sm:pb-10">
     <p class="text-xs uppercase tracking-widest text-white/40">${esc(label)}</p>
     ${main}
     ${principles}
@@ -102,7 +102,7 @@ function explodeOffices(data: HomeData): string {
       ? `<img class="h-full w-full object-cover" src="${esc(offices.map_poster)}" alt="">`
       : ''
 
-  return `<section data-gjs-name="География" class="mx-auto max-w-[84rem] px-6 pt-2 pb-4 sm:pt-20 sm:pb-16">
+  return `<section data-gjs-name="География" class="mx-auto max-w-[84rem] px-6 pt-2 pb-4 sm:pt-10 sm:pb-16">
     <div class="grid gap-8 md:grid-cols-2 md:gap-16">
       <div>
         <h2 class="font-serif text-[2.5rem] leading-[1.1] text-white">${esc(offices?.heading)}</h2>
