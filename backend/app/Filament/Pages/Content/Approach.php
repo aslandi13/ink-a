@@ -50,7 +50,6 @@ class Approach extends SingletonContentPage
             ->statePath('data')
             ->components([
                 Tabs::make('Категория')
-                    ->contained(false)
                     ->tabs(
                         collect(self::CATEGORIES)
                             ->map(fn (string $label, string $category) => Tab::make($label)
