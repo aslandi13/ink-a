@@ -118,9 +118,9 @@ class Contacts extends SingletonContentPage
                             ->helperText('Номер в международном формате, например +7 700 000 00 00'),
 
                         TextInput::make('map_embed_url')
-                            ->label('Ссылка на карту (embed)')
-                            ->url()
-                            ->helperText('URL для встраивания Google/Yandex карты в iframe'),
+                            ->label('Карта (Google / Яндекс)')
+                            ->dehydrateStateUsing(fn (?string $state) => filled($state) && preg_match('/src=["\']([^"\']+)["\']/', $state, $m) ? $m[1] : $state)
+                            ->helperText('Вставьте код «Встроить карту» (<iframe ...>) или ссылку из него. Карта показывается внизу страницы «Контакты».'),
                     ]),
 
                 Section::make('SEO')

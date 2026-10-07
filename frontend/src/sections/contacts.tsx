@@ -23,6 +23,7 @@ export interface ContactsData {
   address?: string
   phone?: string
   whatsapp?: string
+  map_embed_url?: string
   seo_title?: string
   seo_description?: string
   og_image?: string
@@ -35,6 +36,12 @@ interface SectionProps {
 }
 
 const OVERLAY: Record<string, string> = { light: 'rgb(5 10 18 / 0.2)', normal: 'rgb(5 10 18 / 0.5)', dark: 'rgb(5 10 18 / 0.8)' }
+function mapSrc(value?: string): string | null {
+  if (!value) return null
+  const fromIframe = value.match(/src=["']([^"']+)["']/)?.[1] ?? value.trim()
+  return /^https:\/\/(www\.)?(google\.[a-z.]+\/maps\/embed|yandex\.[a-z]+\/map-widget)/.test(fromIframe) ? fromIframe : null
+}
+
 const INFO_LABELS: Record<Locale, { address: string; phone: string }> = {
   ru: { address: 'Адрес', phone: 'Телефон' },
   kz: { address: 'Мекенжай', phone: 'Телефон' },
@@ -142,6 +149,19 @@ export function ContactsSection({ data, locale, settings = {} }: SectionProps) {
                 {INFO_LABELS[locale].address}: <span data-edit="contacts:address" className="text-white/80">{data.address}</span>
               </p>
             )}
+
+      {settings.map !== 'hide' && mapSrc(data?.map_embed_url) && (
+        <div className="relative h-[320px] w-full bg-ink-950 sm:h-[420px]">
+          <iframe
+            src={mapSrc(data?.map_embed_url)!}
+            title="Карта"
+            className="h-full w-full border-0 grayscale-[30%]"
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </div>
+      )}
             {data?.phone && (
               <p>
                 {INFO_LABELS[locale].phone}:{' '}
@@ -188,6 +208,7 @@ export const CONTACTS_BLOCKS: ContactsBlock[] = [
       { name: 'socials', label: 'Соцсети', options: CONTACTS_SHOW_HIDE },
       { name: 'career', label: 'Блок «Карьера»', options: CONTACTS_SHOW_HIDE },
       { name: 'info', label: 'Адрес и телефон', options: CONTACTS_SHOW_HIDE },
+      { name: 'map', label: 'Карта', options: CONTACTS_SHOW_HIDE },
     ],
     render: (p) => <ContactsSection {...p} />,
   },
