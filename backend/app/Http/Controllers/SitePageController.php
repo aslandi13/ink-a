@@ -58,7 +58,7 @@ class SitePageController extends Controller
             $segments[0] === 'projects' && count($segments) >= 2 => $this->project($segments, $locale),
             $segments[0] === 'news' && count($segments) === 2 => $this->news($segments[1], $locale),
             $segments[0] === 'about' => $this->section('about.history', 'about', $locale),
-            $segments[0] === 'approach' => $this->approach($locale),
+            $segments[0] === 'approach' => $this->approach($locale, $segments[1] ?? null),
             $segments[0] === 'contacts' => $this->section('contacts', 'contacts', $locale),
             $segments[0] === 'legal' => [
                 'title' => filled($this->content('legal', $locale)['title'] ?? null)
@@ -137,9 +137,10 @@ class SitePageController extends Controller
         ];
     }
 
-    private function approach(string $locale): array
+    private function approach(string $locale, ?string $slug): array
     {
-        $data = $this->content('approach', $locale)['architecture'] ?? [];
+        $category = ['engineering' => 'engineering', 'urban-planning' => 'urbanism', 'public-interior' => 'interior'][$slug] ?? 'architecture';
+        $data = $this->content('approach', $locale)[$category] ?? [];
 
         return [
             'title' => ($data['seo_title'] ?? null) ?: $this->pageTitle('approach', $locale),

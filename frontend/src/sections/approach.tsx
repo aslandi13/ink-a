@@ -1,9 +1,11 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState, type ReactNode } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { getPageContent } from '../api/content'
 import { t } from '../lib/i18n'
 import { useReportActiveTab } from '../lib/activeTab'
 import type { Locale } from '../lib/locale'
+import { APPROACH_SLUGS, categoryFromApproachSlug } from '../lib/projectCategories'
 
 export interface ApproachStep {
   title: string
@@ -44,7 +46,12 @@ export function ApproachSection({ data, locale, settings = {} }: SectionProps) {
     ['urbanism', tr.approach.categories.urbanism],
     ['interior', tr.approach.categories.interior],
   ]
-  const initialCategory = CATEGORIES.some(([value]) => value === settings.category) ? settings.category! : CATEGORIES[0][0]
+  const params = useParams()
+  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const routeCategory = categoryFromApproachSlug(params.category)
+  const onApproachRoute = pathname.startsWith(`/${locale}/approach`)
+  const initialCategory = routeCategory ?? (CATEGORIES.some(([value]) => value === settings.category) ? settings.category! : CATEGORIES[0][0])
   const [category, setCategory] = useState(initialCategory)
   useReportActiveTab(category)
   useEffect(() => setCategory(initialCategory), [initialCategory])
@@ -67,7 +74,11 @@ export function ApproachSection({ data, locale, settings = {} }: SectionProps) {
           <button
             key={value}
             data-interactive
-            onClick={() => { setCategory(value); setActiveStep(null) }}
+            onClick={() => {
+              setCategory(value)
+              setActiveStep(null)
+              if (onApproachRoute) navigate(`/${locale}/approach/${APPROACH_SLUGS[value]}`, { replace: true })
+            }}
             className="relative pb-2 text-left transition-colors duration-300"
             style={{ color: value === category ? '#fff' : 'rgba(255,255,255,0.4)' }}
           >

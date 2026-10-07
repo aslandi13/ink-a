@@ -45,6 +45,7 @@ Route::prefix('{locale}')->middleware(SetLocaleFromRoute::class)->group(function
     Route::get('settings', PageContentController::class)->defaults('key', 'site_settings');
     Route::get('legal', PageContentController::class)->defaults('key', 'legal');
 
+    Route::get('projects-intro', PageContentController::class)->defaults('key', 'projects_intro');
     Route::get('projects', [ProjectController::class, 'index']);
     Route::get('projects/{slug}', [ProjectController::class, 'show']);
     Route::get('projects/{category}/{slug}', [ProjectController::class, 'showInCategory']);

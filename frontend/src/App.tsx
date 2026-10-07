@@ -48,7 +48,7 @@ function LocaleGate() {
         <Route path="projects" element={<Navigate to={DEFAULT_PROJECT_CATEGORY} replace />} />
         <Route path="projects/:slug" element={<ProjectsOrDetail />} />
         <Route path="projects/:category/:slug" element={<ProjectDetail />} />
-        <Route path="approach" element={<Approach />} />
+        <Route path="approach/:category?" element={<Approach />} />
         <Route path="news" element={<NewsList />} />
         <Route path="news/:slug" element={<NewsDetail />} />
         <Route path="contacts" element={<Contacts />} />

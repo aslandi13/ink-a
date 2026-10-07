@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { getProjects, type ProjectListItem } from '../api/content'
+import { getPageContent, getProjects, type ProjectListItem } from '../api/content'
 import ErrorMessage from '../components/ErrorMessage'
 import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { prefetchProject } from '../lib/prefetch'
-import { DEFAULT_PROJECT_CATEGORY, isProjectCategory, PROJECTS_PER_PAGE } from '../lib/projectCategories'
+import { APPROACH_SLUGS, DEFAULT_PROJECT_CATEGORY, isProjectCategory, PROJECTS_PER_PAGE } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
 
 type Settings = Record<string, string>
+
+type ProjectsIntro = Record<string, { image?: string | null; enabled?: boolean }>
 
 const COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
 const RATIO: Record<string, string> = { wide: '16/9', cinema: '21/9', square: '1/1', tall: '3/4' }
@@ -58,6 +60,16 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState(false)
+  const [intro, setIntro] = useState<ProjectsIntro>({})
+
+  useEffect(() => {
+    getPageContent<ProjectsIntro>(locale, 'projects-intro')
+      .then((data) => setIntro(data ?? {}))
+      .catch(() => setIntro({}))
+  }, [locale])
+
+  const introCard = intro[category]?.enabled && intro[category]?.image ? intro[category]!.image! : null
+  const offset = introCard ? 1 : 0
 
   useEffect(() => {
     setProjects([])
@@ -113,12 +125,27 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
         <div className="min-h-[60vh]" />
       ) : error ? (
         <ErrorMessage>{tr.ui.error}</ErrorMessage>
-      ) : projects.length === 0 ? (
+      ) : projects.length === 0 && !introCard ? (
         <p className="mt-16 text-white/40">{tr.projects.empty}</p>
       ) : (
         <>
         <StaggerList className={`mt-2 sm:mt-6 grid grid-flow-dense grid-cols-2 ${cols}`} style={{ gap }}>
-            {projects.map((project, i) => {
+            {introCard && (
+              <StaggerItem className={featured ? 'col-span-2 md:row-span-2' : ''} style={{ aspectRatio: ratio }}>
+                <Link
+                  to={`/${locale}/approach/${APPROACH_SLUGS[category]}`}
+                  className="group relative block h-full w-full overflow-hidden bg-ink-800"
+                >
+                  <img
+                    src={introCard}
+                    alt={CATEGORIES.find((c) => c.value === category)?.label ?? ''}
+                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  />
+                </Link>
+              </StaggerItem>
+            )}
+            {projects.map((project, index) => {
+              const i = index + offset
               const isFeatured = featured && i % 13 === 0
               return (
                 <StaggerItem
