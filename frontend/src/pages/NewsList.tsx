@@ -5,6 +5,7 @@ import { getNews } from '../api/content'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_NEWS_LIST_LAYOUT, NEWS_LIST_BLOCKS } from '../sections/news'
 
@@ -16,15 +17,16 @@ export default function NewsList() {
   const [layout, setLayout] = useState<PageLayout | null>(null)
   const [ready, setReady] = useState(false)
 
+  const refresh = useRefresh()
   useEffect(() => {
     getNews(locale, { page: 1 }).catch(() => undefined)
-    setReady(false)
+    if (!refresh.silent()) setReady(false)
     const request = preview ? getDraftPage('news', locale).then((res) => res.draft) : getLocalizedPage(locale, 'news')
     request
       .catch(() => null)
       .then(setLayout)
       .finally(() => setReady(true))
-  }, [locale, preview])
+  }, [locale, preview, refresh.key])
 
   return (
     <>

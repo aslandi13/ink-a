@@ -7,6 +7,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_NEWS_LAYOUT, fillNewsFields, loadOtherNews, NEWS_BLOCKS, NEWS_TEMPLATE, type NewsPageData } from '../sections/news'
 
@@ -21,10 +22,11 @@ export default function NewsDetail() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
+  const refresh = useRefresh()
   useEffect(() => {
     if (!slug) return
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
-    setLoading(true)
+    if (!refresh.silent()) setLoading(true)
     setError(false)
     setData(null)
     const template = preview
@@ -37,7 +39,7 @@ export default function NewsDetail() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, slug, preview])
+  }, [locale, slug, preview, refresh.key])
 
   if (loading) {
     return <section className="min-h-[60vh]" />

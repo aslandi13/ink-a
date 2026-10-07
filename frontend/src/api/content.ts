@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { Locale } from '../lib/locale'
+import { onRefresh } from '../lib/refresh'
 import { api } from './client'
 
 // In-memory cache to avoid duplicate requests from StrictMode / re-renders
@@ -124,3 +125,5 @@ export function getNewsItem(locale: Locale, slug: string): Promise<NewsDetail> {
   newsItemCache.set(key, req)
   return req
 }
+
+onRefresh(() => [pageCache, projectsCache, projectCache, newsCache, newsItemCache].forEach((cache) => cache.clear()))

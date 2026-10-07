@@ -8,6 +8,7 @@ import type { Locale } from '../lib/locale'
 import { prefetchProject } from '../lib/prefetch'
 import { categoryFromSlug, categorySlug, DEFAULT_PROJECT_CATEGORY, PROJECTS_PER_PAGE } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
+import { useRefresh } from '../lib/refresh'
 
 type Settings = Record<string, string>
 
@@ -61,21 +62,24 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState(false)
   const [intro, setIntro] = useState<ProjectsIntro>({})
+  const refresh = useRefresh()
 
   useEffect(() => {
     getPageContent<ProjectsIntro>(locale, 'projects-intro')
       .then((data) => setIntro(data ?? {}))
       .catch(() => setIntro({}))
-  }, [locale])
+  }, [locale, refresh.key])
 
   const introCard = intro[category]?.enabled && intro[category]?.image ? intro[category]!.image! : null
   const offset = introCard ? 1 : 0
 
   useEffect(() => {
-    setProjects([])
-    setPage(1)
-    setLastPage(1)
-    setLoading(true)
+    if (!refresh.silent()) {
+      setProjects([])
+      setPage(1)
+      setLastPage(1)
+      setLoading(true)
+    }
     setError(false)
 
     getProjects(locale, { category, page: 1, per_page: PROJECTS_PER_PAGE })
@@ -85,7 +89,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, category])
+  }, [locale, category, refresh.key])
 
   function loadMore() {
     const nextPage = page + 1

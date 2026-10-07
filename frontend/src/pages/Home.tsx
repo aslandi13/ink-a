@@ -9,6 +9,7 @@ import { contentSources } from '../lib/contentSources'
 import { upgradeExploded, type Exploders } from '../lib/upgradeExploded'
 import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_HOME_LAYOUT, HeroBackground, HOME_BLOCKS, loadHomeData, type HomeData } from '../sections/home'
 
@@ -31,8 +32,9 @@ export default function Home() {
     [data],
   )
 
+  const refresh = useRefresh()
   useEffect(() => {
-    setLoading(true)
+    if (!refresh.silent()) setLoading(true)
     setError(false)
     const layoutRequest = preview
       ? getDraftPage('home', locale).then((res) => res.draft)
@@ -44,7 +46,7 @@ export default function Home() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, preview])
+  }, [locale, preview, refresh.key])
 
   if (loading) {
     return (

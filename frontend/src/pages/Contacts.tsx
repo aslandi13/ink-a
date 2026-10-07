@@ -8,6 +8,7 @@ import { CONTACTS_EXPLODERS } from '../editor/explode'
 import { contentSources } from '../lib/contentSources'
 import { upgradeExploded, type Exploders } from '../lib/upgradeExploded'
 import { t } from '../lib/i18n'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import { CONTACTS_BLOCKS, DEFAULT_CONTACTS_LAYOUT, loadContactsData, type ContactsData } from '../sections/contacts'
 
@@ -21,8 +22,9 @@ export default function Contacts() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
+  const refresh = useRefresh()
   useEffect(() => {
-    setLoading(true)
+    if (!refresh.silent()) setLoading(true)
     setError(false)
     const layoutRequest = preview
       ? getDraftPage('contacts', locale).then((res) => res.draft)
@@ -34,7 +36,7 @@ export default function Contacts() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, preview])
+  }, [locale, preview, refresh.key])
 
   if (loading) {
     return <section className="min-h-[60vh]" />

@@ -7,6 +7,7 @@ import Reveal from '../components/Reveal'
 import { StaggerItem, StaggerList } from '../components/StaggerReveal'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
+import { useRefresh } from '../lib/refresh'
 import { sanitise } from '../lib/sanitise'
 import { prefetchNews } from '../lib/prefetch'
 import { fillFields } from './fields'
@@ -44,11 +45,15 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
   const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState(false)
 
+  const refresh = useRefresh()
+
   useEffect(() => {
-    setNews([])
-    setPage(1)
-    setLastPage(1)
-    setLoading(true)
+    if (!refresh.silent()) {
+      setNews([])
+      setPage(1)
+      setLastPage(1)
+      setLoading(true)
+    }
     setError(false)
     getNews(locale, { page: 1 })
       .then((res) => {
@@ -57,7 +62,7 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale])
+  }, [locale, refresh.key])
 
   function loadMore() {
     const nextPage = page + 1

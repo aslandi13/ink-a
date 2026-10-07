@@ -11,6 +11,7 @@ import { categoryFromSlug } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
 import type { Locale } from '../lib/locale'
 import { metaText } from '../lib/metaText'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import {
   DEFAULT_PROJECT_LAYOUT,
@@ -48,9 +49,10 @@ export default function ProjectDetail() {
   const [error, setError] = useState(false)
   const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
 
+  const refresh = useRefresh()
   useEffect(() => {
     if (!slug) return
-    setLoading(true)
+    if (!refresh.silent()) setLoading(true)
     setError(false)
     setData(null)
     Promise.all([getProject(locale, slug, category), loadOtherProjects(locale, slug, category)])
@@ -63,7 +65,7 @@ export default function ProjectDetail() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, slug, category, preview, forcedTemplate])
+  }, [locale, slug, category, preview, forcedTemplate, refresh.key])
 
   if (loading) {
     return <section className="min-h-[60vh]" />

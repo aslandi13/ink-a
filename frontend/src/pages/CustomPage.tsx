@@ -5,6 +5,7 @@ import { getDraftPage, getEditorToken, getLocalizedPage, type LocalizedPage } fr
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer, { usesBlocks } from '../components/PageRenderer'
 import { t } from '../lib/i18n'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import { HOME_BLOCKS, loadHomeData, type HomeData } from '../sections/home'
 import NotFound from './NotFound'
@@ -23,12 +24,13 @@ export default function CustomPage() {
   const preview = searchParams.has('preview') && !!getEditorToken()
   const [state, setState] = useState<State>({ status: 'loading' })
 
+  const refresh = useRefresh()
   useEffect(() => {
     if (!/^[a-z0-9-]+$/.test(slug)) {
       setState({ status: 'missing' })
       return
     }
-    setState({ status: 'loading' })
+    if (!refresh.silent()) setState({ status: 'loading' })
 
     const pageRequest: Promise<LocalizedPage | null> = preview
       ? Promise.all([getDraftPage(slug, locale), getLocalizedPage(locale, slug)]).then(([res, published]) =>
@@ -51,7 +53,7 @@ export default function CustomPage() {
         setState({ status: 'ready', page, data })
       })
       .catch(() => setState({ status: 'error' }))
-  }, [locale, slug, preview])
+  }, [locale, slug, preview, refresh.key])
 
   if (state.status === 'missing') return <NotFound />
   if (state.status === 'error') return <ErrorMessage>{tr.ui.error}</ErrorMessage>

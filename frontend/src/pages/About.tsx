@@ -6,6 +6,7 @@ import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
 import { ActiveTabContext } from '../lib/activeTab'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import { ABOUT_BLOCKS, DEFAULT_ABOUT_LAYOUT, loadAboutData, type AboutPageData } from '../sections/about'
 
@@ -20,8 +21,9 @@ export default function About() {
   const [error, setError] = useState(false)
   const [activeTab, setActiveTab] = useState('history')
 
+  const refresh = useRefresh()
   useEffect(() => {
-    setLoading(true)
+    if (!refresh.silent()) setLoading(true)
     setError(false)
     const layoutRequest = preview
       ? getDraftPage('about', locale).then((res) => res.draft)
@@ -33,7 +35,7 @@ export default function About() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, preview])
+  }, [locale, preview, refresh.key])
 
   if (loading) {
     return <section className="min-h-[60vh]" />

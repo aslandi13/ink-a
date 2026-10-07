@@ -9,6 +9,7 @@ import { contentSources } from '../lib/contentSources'
 import { upgradeExploded, type Exploders } from '../lib/upgradeExploded'
 import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
+import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
 import { DEFAULT_LEGAL_LAYOUT, LEGAL_BLOCKS, loadLegalData, type LegalData } from '../sections/legal'
 
@@ -22,8 +23,9 @@ export default function Legal() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
 
+  const refresh = useRefresh()
   useEffect(() => {
-    setLoading(true)
+    if (!refresh.silent()) setLoading(true)
     setError(false)
     const layoutRequest = preview
       ? getDraftPage('legal', locale).then((res) => res.draft)
@@ -35,7 +37,7 @@ export default function Legal() {
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [locale, preview])
+  }, [locale, preview, refresh.key])
 
   if (loading) {
     return <section className="min-h-[60vh]" />

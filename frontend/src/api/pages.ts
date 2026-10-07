@@ -1,5 +1,6 @@
 import axios from 'axios'
 import type { ProjectData } from 'grapesjs'
+import { onRefresh } from '../lib/refresh'
 import { api } from './client'
 
 export interface PageLayout {
@@ -48,6 +49,7 @@ function authHeaders(): Record<string, string> {
 }
 
 const publicCache = new Map<string, Promise<unknown>>()
+onRefresh(() => publicCache.clear())
 
 function cached<T>(key: string, load: () => Promise<T>): Promise<T> {
   const hit = publicCache.get(key)
