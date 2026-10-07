@@ -135,7 +135,7 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
             <motion.video
               key="video"
               ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="pointer-events-none absolute inset-0 h-full w-full object-cover"
               src={slide.src}
               poster={hero?.poster}
               autoPlay
