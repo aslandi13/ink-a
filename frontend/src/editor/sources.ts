@@ -1,5 +1,7 @@
 import type { Component, Editor } from 'grapesjs'
 import { readSource, type ContentSources } from '../lib/contentSources'
+import type { Locale } from '../lib/locale'
+import { explodedMatches, type Exploders } from '../lib/upgradeExploded'
 
 function sourceComponents(editor: Editor): Component[] {
   return editor.getWrapper()?.find('[data-src]') ?? []
@@ -47,4 +49,14 @@ function setSource(sources: ContentSources, target: string, value: string) {
     node = node[part] as Record<string, unknown>
   }
   node[parts[parts.length - 1]] = value
+}
+
+export function upgradeEditorSources(editor: Editor, exploders: Exploders | undefined, data: unknown, locale: Locale) {
+  const wrapper = editor.getWrapper()
+  const root = wrapper?.getEl()
+  if (!wrapper || !root || !exploders) return
+  const byElement = new Map(wrapper.find('*').map((component) => [component.getEl(), component]))
+  for (const [el, target] of explodedMatches(root, exploders, data, locale)) {
+    byElement.get(el as HTMLElement)?.addAttributes({ 'data-src': target })
+  }
 }

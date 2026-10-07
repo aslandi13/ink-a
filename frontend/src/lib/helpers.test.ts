@@ -4,6 +4,7 @@ import { metaText } from './metaText'
 import { categoryFromSlug, categorySlug } from './projectCategories'
 import { projectPath } from './projectPath'
 import { sanitise } from './sanitise'
+import { upgradeExploded } from './upgradeExploded'
 
 describe('projectPath', () => {
   it('includes category', () => {
@@ -69,5 +70,16 @@ describe('content sources', () => {
     root.innerHTML = '<h1 data-src="home.hero:title">Смысл.</h1><p data-src="home.hero:stats.0.label">кеп</p><p>static</p>'
     fillSources(root, sources)
     expect(root.innerHTML).toBe('<h1 data-src="home.hero:title">Vision.</h1><p data-src="home.hero:stats.0.label">кеп</p><p>static</p>')
+  })
+})
+
+describe('upgradeExploded', () => {
+  it('marks texts of old exploded sections by matching fresh markup', () => {
+    const root = document.createElement('div')
+    root.innerHTML = '<section data-exploded="hero"><h1 class="big">Старый</h1><p class="sub">Подзаголовок</p></section>'
+    const exploders = { hero: () => '<section><h1 data-src="home.hero:title" class="big"></h1><p data-src="home.hero:subtitle" class="sub-new"></p></section>' }
+    upgradeExploded(root, exploders, {}, 'ru')
+    expect(root.querySelector('h1')?.getAttribute('data-src')).toBe('home.hero:title')
+    expect(root.querySelector('p')?.getAttribute('data-src')).toBe('home.hero:subtitle')
   })
 })

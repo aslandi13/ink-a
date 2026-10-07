@@ -4,7 +4,9 @@ import { useSearchParams } from 'react-router-dom'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
+import { EXPLODERS } from '../editor/explode'
 import { contentSources } from '../lib/contentSources'
+import { upgradeExploded, type Exploders } from '../lib/upgradeExploded'
 import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
 import { useLocale } from '../lib/useLocale'
@@ -76,6 +78,7 @@ export default function Home() {
         translations={layout?.translations}
         data={data}
         sources={contentSources('home', data)}
+        prepare={(body) => upgradeExploded(body, EXPLODERS as Exploders, data, locale)}
         locale={locale}
         blocks={HOME_BLOCKS}
         bleedBlock="hero"

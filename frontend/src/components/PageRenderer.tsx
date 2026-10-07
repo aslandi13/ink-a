@@ -13,7 +13,7 @@ interface Segment {
   settings?: Record<string, string>
 }
 
-function parseSegments(html: string, translations?: Record<string, string>, sources?: ContentSources): Segment[] {
+function parseSegments(html: string, translations?: Record<string, string>, sources?: ContentSources, prepare?: (body: HTMLElement) => void): Segment[] {
   const doc = new DOMParser().parseFromString(html, 'text/html')
   if (translations) {
     doc.body.querySelectorAll<HTMLElement>('[data-t]').forEach((el) => {
@@ -21,6 +21,7 @@ function parseSegments(html: string, translations?: Record<string, string>, sour
       if (typeof value === 'string' && value.trim() !== '') el.innerHTML = value
     })
   }
+  prepare?.(doc.body)
   if (sources) fillSources(doc.body, sources)
   const segments: Segment[] = []
   let buffer = ''
@@ -64,6 +65,7 @@ interface Props<T> {
   translations?: Record<string, string>
   portals?: HtmlPortal[]
   sources?: ContentSources
+  prepare?: (body: HTMLElement) => void
 }
 
 export interface HtmlPortal {
@@ -118,8 +120,9 @@ export default function PageRenderer<T>({
   translations,
   portals,
   sources,
+  prepare,
 }: Props<T>) {
-  const segments = useMemo(() => parseSegments(html, translations, sources), [html, translations, sources])
+  const segments = useMemo(() => parseSegments(html, translations, sources, prepare), [html, translations, sources, prepare])
   const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
 
   return (

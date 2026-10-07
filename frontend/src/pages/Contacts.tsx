@@ -4,7 +4,9 @@ import { useSearchParams } from 'react-router-dom'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
+import { CONTACTS_EXPLODERS } from '../editor/explode'
 import { contentSources } from '../lib/contentSources'
+import { upgradeExploded, type Exploders } from '../lib/upgradeExploded'
 import { t } from '../lib/i18n'
 import { useLocale } from '../lib/useLocale'
 import { CONTACTS_BLOCKS, DEFAULT_CONTACTS_LAYOUT, loadContactsData, type ContactsData } from '../sections/contacts'
@@ -64,6 +66,7 @@ export default function Contacts() {
         translations={layout?.translations}
         data={data}
         sources={contentSources('contacts', data)}
+        prepare={(body) => upgradeExploded(body, CONTACTS_EXPLODERS as Exploders, data, locale)}
         locale={locale}
         blocks={CONTACTS_BLOCKS}
       />

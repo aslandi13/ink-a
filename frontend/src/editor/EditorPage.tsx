@@ -48,7 +48,7 @@ import { applyProjectField, PROJECT_FIELD_BLOCKS, PROJECT_FIELDS } from '../sect
 import { inkPlugin, type InkBlock, type InkFields } from './inkPlugin'
 import LoginForm from './LoginForm'
 import { contentSources } from '../lib/contentSources'
-import { applySourceChanges, collectSourceChanges, fillEditorSources } from './sources'
+import { applySourceChanges, collectSourceChanges, fillEditorSources, upgradeEditorSources } from './sources'
 import { applyTranslations, ensureTextKeys, withBaseTexts } from './translations'
 import './editor.css'
 
@@ -434,6 +434,7 @@ export default function EditorPage() {
         editor.onReady(() => {
           ensureTextKeys(editor)
           if (locale !== 'ru') originals = applyTranslations(editor, draft?.translations ?? {})
+          upgradeEditorSources(editor, kind.exploders, data, locale)
           fillEditorSources(editor, sources)
           setTimeout(() => {
             editor.clearDirtyCount()

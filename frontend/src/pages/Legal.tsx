@@ -4,7 +4,9 @@ import { useSearchParams } from 'react-router-dom'
 import { getDraftPage, getEditorToken, getLocalizedPage, type PageLayout } from '../api/pages'
 import ErrorMessage from '../components/ErrorMessage'
 import PageRenderer from '../components/PageRenderer'
+import { LEGAL_EXPLODERS } from '../editor/explode'
 import { contentSources } from '../lib/contentSources'
+import { upgradeExploded, type Exploders } from '../lib/upgradeExploded'
 import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
 import { useLocale } from '../lib/useLocale'
@@ -65,6 +67,7 @@ export default function Legal() {
         translations={layout?.translations}
         data={data}
         sources={contentSources('legal', data)}
+        prepare={(body) => upgradeExploded(body, LEGAL_EXPLODERS as Exploders, data, locale)}
         locale={locale}
         blocks={LEGAL_BLOCKS}
       />
