@@ -7,6 +7,7 @@ import type { Locale } from '../lib/locale'
 
 export interface ContactsData {
   background_video?: string
+  background_poster?: string
   email?: string
   facebook_handle?: string
   facebook_url?: string
@@ -62,6 +63,7 @@ export function ContactsSection({ data, settings = {} }: SectionProps) {
         <video
           className="absolute inset-0 h-full w-full object-cover"
           src={data.background_video}
+          poster={data.background_poster}
           autoPlay
           muted
           loop

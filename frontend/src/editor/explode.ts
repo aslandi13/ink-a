@@ -188,7 +188,7 @@ function explodeContacts(data: ContactsData): string {
     .join('')
 
   return `<section data-gjs-name="Контакты" class="relative flex min-h-[90vh] flex-col justify-center overflow-hidden">
-    ${data.background_video ? `<video ${LOCKED} data-gjs-name="Фон: видео" class="absolute inset-0 h-full w-full object-cover" src="${esc(data.background_video)}" autoplay muted loop playsinline></video>` : ''}
+    ${data.background_video ? `<video ${LOCKED} data-gjs-name="Фон: видео" class="absolute inset-0 h-full w-full object-cover" src="${esc(data.background_video)}"${data.background_poster ? ` poster="${esc(data.background_poster)}"` : ''} autoplay muted loop playsinline></video>` : ''}
     <div ${DECOR} class="pointer-events-none absolute inset-0 bg-ink-950/50"></div>
     <div data-gjs-name="Содержимое" class="relative mx-auto flex w-full max-w-[84rem] flex-1 flex-col justify-center px-6 pt-42 pb-12">
       <p class="text-xs uppercase tracking-[0.2em] text-white/40">Социальные сети</p>

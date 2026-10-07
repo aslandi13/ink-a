@@ -38,6 +38,12 @@ class Contacts extends SingletonContentPage
                     ->maxSize(51200)
                     ->helperText('Можно загрузить видео (mp4) или обычную картинку. Максимум 50 МБ'),
 
+                FileUpload::make('background_poster')
+                    ->label('Постер (пока видео грузится)')
+                    ->image()
+                    ->directory('contacts')
+                    ->helperText('Картинка, которая видна до загрузки видео. Лучше взять кадр из самого видео.'),
+
                 Section::make('Социальные сети')
                     ->description('Показываются вверху страницы с иконкой, юзернеймом и подписью платформы')
                     ->columns(2)
