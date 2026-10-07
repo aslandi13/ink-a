@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsItems\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -15,7 +16,12 @@ class NewsItemsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('published_at', 'desc')
+            ->defaultSort('sort_order')
+            ->reorderable('sort_order')
+            ->reorderRecordsTriggerAction(fn (Action $action, bool $isReordering) => $action
+                ->button()
+                ->label($isReordering ? 'Готово' : 'Изменить порядок')
+                ->icon($isReordering ? 'heroicon-o-check' : 'heroicon-o-arrows-up-down'))
             ->columns([
                 ImageColumn::make('cover_image')
                     ->label('Обложка')
@@ -29,10 +35,6 @@ class NewsItemsTable
                 TextColumn::make('published_at')
                     ->label('Дата публикации')
                     ->dateTime('d.m.Y H:i')
-                    ->sortable(),
-
-                TextColumn::make('sort_order')
-                    ->label('Порядок')
                     ->sortable(),
 
                 IconColumn::make('is_published')

@@ -127,12 +127,6 @@ class ProjectForm
                             ]),
                     ]),
 
-                TextInput::make('sort_order')
-                    ->label('Порядок сортировки')
-                    ->numeric()
-                    ->default(0)
-                    ->helperText('Чем меньше число, тем выше проект в списке'),
-
                 Toggle::make('is_published')
                     ->label('Опубликован')
                     ->default(true),

@@ -57,12 +57,6 @@ class NewsItemForm
                     ->default(now())
                     ->helperText('Дата отображается на сайте'),
 
-                TextInput::make('sort_order')
-                    ->label('Порядок сортировки')
-                    ->numeric()
-                    ->default(0)
-                    ->helperText('Чем меньше число — тем выше в списке'),
-
                 Toggle::make('is_published')
                     ->label('Опубликована')
                     ->default(true),
