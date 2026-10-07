@@ -15,7 +15,7 @@ class EditableContent
         'home.about' => ['heading', 'intro', 'quote', 'quote_author', 'principles.*.heading', 'principles.*.text'],
         'home.offices' => ['heading', 'description', 'video_label'],
         'home.key_projects' => ['heading', 'statement', 'description'],
-        'approach' => ['expertise_intro', 'steps.*.title', 'steps.*.text', 'steps.*.image_caption'],
+        'approach' => ['default_image_caption', 'expertise_intro', 'steps.*.title', 'steps.*.text', 'steps.*.image_caption'],
         'about.history' => ['intro', 'stats.*.number', 'stats.*.label', 'highlights.*.heading', 'highlights.*.text'],
         'about.founder' => ['bio', 'position', 'achievements.*', 'credential_highlights.*.text'],
         'contacts' => ['career_label', 'career_heading', 'career_text', 'career_cta_label'],
@@ -31,7 +31,6 @@ class EditableContent
     ];
 
     private const ROOT_TEXT_FIELDS = [
-        'approach' => ['default_image_caption'],
         'about.history' => ['gallery.*.overlay_text'],
         'about.founder' => ['name'],
         'contacts' => ['email', 'facebook_handle', 'instagram_handle', 'linkedin_handle', 'address', 'phone', 'whatsapp'],

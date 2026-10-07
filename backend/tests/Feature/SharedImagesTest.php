@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Filament\Pages\Content\Approach;
 use App\Models\PageContent;
 use App\Support\EditableContent;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -53,5 +54,16 @@ class SharedImagesTest extends TestCase
         $this->getJson('/api/en/about/founder')
             ->assertJsonPath('data.credential_highlights.0.text', 'EN')
             ->assertJsonPath('data.credential_highlights.0.icon', url('storage/about/founder/logo.webp'));
+    }
+
+    public function test_default_caption_is_translated(): void
+    {
+        PageContent::updateOrCreate(['key' => 'approach'], ['data' => Approach::prepareData([
+            'architecture' => ['default_image_caption' => 'Концепт', 'ru' => [], 'en' => ['default_image_caption' => 'Concept']],
+        ])]);
+
+        $this->getJson('/api/ru/approach')->assertJsonPath('data.architecture.default_image_caption', 'Концепт');
+        $this->getJson('/api/en/approach')->assertJsonPath('data.architecture.default_image_caption', 'Concept');
+        $this->getJson('/api/kz/approach')->assertJsonPath('data.architecture.default_image_caption', 'Концепт');
     }
 }

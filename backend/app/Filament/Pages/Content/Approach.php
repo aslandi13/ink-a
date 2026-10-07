@@ -47,6 +47,17 @@ class Approach extends SingletonContentPage
 
     public static function prepareData(array $data): array
     {
+        foreach (array_keys(self::CATEGORIES) as $category) {
+            $caption = $data[$category]['default_image_caption'] ?? null;
+            if (! is_array($data[$category] ?? null) || ! array_key_exists('default_image_caption', $data[$category])) {
+                continue;
+            }
+            if (filled($caption) && blank($data[$category]['ru']['default_image_caption'] ?? null)) {
+                $data[$category]['ru']['default_image_caption'] = $caption;
+            }
+            unset($data[$category]['default_image_caption']);
+        }
+
         return SharedImages::apply('approach', $data);
     }
 
@@ -81,11 +92,11 @@ class Approach extends SingletonContentPage
                 ->directory('approach')
                 ->imageEditor(),
 
-            TextInput::make('default_image_caption')
-                ->label('Подпись к общему фото')
-                ->helperText('Например: «Концепт бизнес-центра»'),
-
             TranslatableTabs::make(fn (string $locale) => [
+                TextInput::make('default_image_caption')
+                    ->label('Подпись к общему фото')
+                    ->helperText('Например: «Концепт бизнес-центра»'),
+
                 Textarea::make('expertise_intro')
                     ->label('Текст блока «Экспертиза»')
                     ->rows(4)
