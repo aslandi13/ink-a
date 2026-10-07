@@ -108,7 +108,7 @@ export default function Footer() {
         <div className="space-y-4">
           {contacts.email && (
             <p>
-              Электронная почта:{' '}
+              {tr.footer.email}:{' '}
               <a href={`mailto:${contacts.email}`} className="transition-colors hover:text-white">
                 {contacts.email}
               </a>
@@ -116,7 +116,7 @@ export default function Footer() {
           )}
           {!!socials.length && (
             <div>
-              <p className="mb-3 text-sm text-white/60">Наши социальные сети</p>
+              <p className="mb-3 text-sm text-white/60">{tr.footer.socials}</p>
               <div className="flex gap-3">
                 {socials.map((s) => {
                   const Icon = SOCIAL_ICONS[s.label]
@@ -142,7 +142,7 @@ export default function Footer() {
       {/* Bottom bar — NO language switcher */}
       <div className="border-t border-line px-6 py-5">
         <div className="mx-auto flex max-w-[84rem] flex-wrap items-center gap-2 text-xs text-white/40">
-          <span>© {new Date().getFullYear()} INK Architects. Все права защищены</span>
+          <span>© {new Date().getFullYear()} INK Architects. {tr.footer.rights}</span>
           <span className="text-white/20">|</span>
           <Link to={`/${locale}/legal`} className="underline underline-offset-2 transition-colors hover:text-white/70">
             {tr.legal.title}

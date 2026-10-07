@@ -50,6 +50,11 @@ type Dict = {
   legal: {
     title: string
   }
+  footer: {
+    email: string
+    socials: string
+    rights: string
+  }
   home: {
     keyProjects: string
     about: string
@@ -106,6 +111,11 @@ const translations: Record<Locale, Dict> = {
       title: 'Новости',
       loadMore: 'Загрузить ещё',
       otherNews: 'Другие новости',
+    },
+    footer: {
+      email: 'Электронная почта',
+      socials: 'Наши социальные сети',
+      rights: 'Все права защищены',
     },
     legal: {
       title: 'Правовая информация и условия использования',
@@ -166,6 +176,11 @@ const translations: Record<Locale, Dict> = {
       loadMore: 'Тағы жүктеу',
       otherNews: 'Басқа жаңалықтар',
     },
+    footer: {
+      email: 'Электрондық пошта',
+      socials: 'Біздің әлеуметтік желілер',
+      rights: 'Барлық құқықтар қорғалған',
+    },
     legal: {
       title: 'Заңдық ақпарат және пайдалану шарттары',
     },
@@ -224,6 +239,11 @@ const translations: Record<Locale, Dict> = {
       title: 'News',
       loadMore: 'Load more',
       otherNews: 'Other news',
+    },
+    footer: {
+      email: 'Email',
+      socials: 'Contacts',
+      rights: 'All rights reserved',
     },
     legal: {
       title: 'Legal information & Terms of use',
