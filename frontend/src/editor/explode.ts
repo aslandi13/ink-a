@@ -35,8 +35,8 @@ function explodeHero(data: HomeData, locale: Locale): string {
 
   return `<section data-bleed="1" data-gjs-name="Герой" class="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pb-20">
   ${background}
-  <div ${DECOR} class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/75 via-ink-950/25 to-ink-950/5"></div>
-  <div ${DECOR} class="pointer-events-none absolute inset-x-0 bottom-0 h-50 bg-gradient-to-t from-ink-950 to-transparent"></div>
+  <div ${DECOR} class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/50 via-ink-950/5 to-ink-950/0"></div>
+  <div ${DECOR} class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-950 to-transparent"></div>
   <div data-gjs-name="Сетка" class="relative mx-auto grid w-full max-w-[84rem] gap-8 md:grid-cols-2 md:gap-12">
     <div data-gjs-name="Левая колонка">
       <h1 class="whitespace-pre-line text-5xl leading-[0.9] text-white sm:text-6xl md:text-7xl lg:text-8xl">${esc(hero?.title)}</h1>
