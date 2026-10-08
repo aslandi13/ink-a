@@ -17,7 +17,7 @@ class EditableContent
         'home.key_projects' => ['heading', 'statement', 'description'],
         'approach' => ['default_image_caption', 'expertise_intro', 'steps.*.title', 'steps.*.text', 'steps.*.image_caption'],
         'about.history' => ['intro', 'stats.*.number', 'stats.*.label', 'highlights.*.heading', 'highlights.*.text'],
-        'about.founder' => ['bio', 'position', 'achievements.*', 'credential_highlights.*.text'],
+        'about.founder' => ['name', 'bio', 'position', 'achievements.*', 'credential_highlights.*.text'],
         'contacts' => ['career_label', 'career_heading', 'career_text', 'career_cta_label'],
         'legal' => ['title'],
     ];
@@ -31,7 +31,6 @@ class EditableContent
     ];
 
     private const ROOT_TEXT_FIELDS = [
-        'about.founder' => ['name'],
         'contacts' => ['email', 'facebook_handle', 'instagram_handle', 'linkedin_handle', 'address', 'phone', 'whatsapp'],
     ];
 
@@ -101,7 +100,6 @@ class EditableContent
         }
 
         match ($match[2]) {
-            'name' => $member->name = (string) $value,
             'photo' => $member->photo = self::toStoragePath($value),
             default => $member->setTranslation($match[2], $locale, (string) $value),
         };

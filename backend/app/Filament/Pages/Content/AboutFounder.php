@@ -31,6 +31,13 @@ class AboutFounder extends SingletonContentPage
 
     public static function prepareData(array $data): array
     {
+        if (array_key_exists('name', $data)) {
+            if (filled($data['name']) && blank($data['ru']['name'] ?? null)) {
+                $data['ru']['name'] = $data['name'];
+            }
+            unset($data['name']);
+        }
+
         return SharedImages::apply('about.founder', $data);
     }
 
@@ -50,12 +57,12 @@ class AboutFounder extends SingletonContentPage
                     ->directory('about/founder')
                     ->imageEditor(),
 
-                TextInput::make('name')
-                    ->label('Имя')
-                    ->required()
-                    ->helperText('Например: Нурлан Камитов — имя не переводится, указывается один раз'),
-
                 TranslatableTabs::make(fn (string $locale) => [
+                    TextInput::make('name')
+                        ->label('Имя')
+                        ->required($locale === 'ru')
+                        ->helperText($locale === 'en' ? 'Латиницей, например: Nurlan Kamitov. Если пусто — покажется русское' : 'Например: Нурлан Камитов. Если пусто — покажется русское'),
+
                     TextInput::make('position')
                         ->label('Должность')
                         ->required($locale === 'ru')

@@ -9,7 +9,7 @@ class TeamMember extends Model
 {
     use HasTranslations;
 
-    public array $translatable = ['position', 'credentials'];
+    public array $translatable = ['name', 'position', 'credentials'];
 
     protected $fillable = ['name', 'photo', 'position', 'credentials', 'is_published', 'sort_order'];
 

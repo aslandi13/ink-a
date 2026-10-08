@@ -30,7 +30,7 @@ class PageContentController extends Controller
                 ->orderBy('sort_order')
                 ->get()
                 ->map(fn (TeamMember $member) => [
-                    'name' => $member->name,
+                    'name' => $member->getTranslation('name', $locale, false) ?: $member->getTranslation('name', 'ru', false),
                     'photo' => FileUrlResolver::resolve($member->photo),
                     'position' => $member->getTranslation('position', $locale, false) ?: $member->getTranslation('position', 'ru', false),
                     'credentials' => $member->getTranslation('credentials', $locale, false) ?: $member->getTranslation('credentials', 'ru', false),

@@ -20,12 +20,12 @@ class TeamMemberForm
                     ->image()
                     ->directory('about/team'),
 
-                TextInput::make('name')
-                    ->label('ФИО')
-                    ->required()
-                    ->helperText('Имя не переводится, указывается один раз'),
-
                 TranslatableTabs::make(fn (string $locale) => [
+                    TextInput::make('name')
+                        ->label('ФИО')
+                        ->required($locale === 'ru')
+                        ->helperText($locale === 'en' ? 'Латиницей, например: Nurlan Kamitov. Если пусто — покажется русское' : 'Если пусто — покажется русское'),
+
                     TextInput::make('position')
                         ->label('Должность')
                         ->required($locale === 'ru')

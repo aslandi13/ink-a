@@ -38,4 +38,19 @@ class PageContentApiTest extends TestCase
             ->assertJsonCount(1, 'data.members')
             ->assertJsonPath('data.members.0.name', 'Иван');
     }
+
+    public function test_team_and_founder_names_are_translated(): void
+    {
+        PageContent::updateOrCreate(['key' => 'about.team'], ['data' => []]);
+        TeamMember::create(['name' => ['ru' => 'Иван', 'en' => 'Ivan'], 'is_published' => true, 'sort_order' => 1]);
+        PageContent::updateOrCreate(['key' => 'about.founder'], ['data' => \App\Filament\Pages\Content\AboutFounder::prepareData([
+            'name' => 'Нурлан Камитов',
+            'en' => ['name' => 'Nurlan Kamitov'],
+        ])]);
+
+        $this->getJson('/api/en/about/team')->assertJsonPath('data.members.0.name', 'Ivan');
+        $this->getJson('/api/kz/about/team')->assertJsonPath('data.members.0.name', 'Иван');
+        $this->getJson('/api/en/about/founder')->assertJsonPath('data.name', 'Nurlan Kamitov');
+        $this->getJson('/api/ru/about/founder')->assertJsonPath('data.name', 'Нурлан Камитов');
+    }
 }
