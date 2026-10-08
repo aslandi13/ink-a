@@ -59,7 +59,16 @@ type Dict = {
     keyProjects: string
     about: string
   }
+  facts: {
+    location: string
+    year: string
+    siteArea: string
+    totalArea: string
+    apartments: string
+    status: string
+  }
   ui: {
+    reload: string
     loading: string
     error: string
     notFound: string
@@ -124,7 +133,16 @@ const translations: Record<Locale, Dict> = {
       keyProjects: 'Ключевые проекты',
       about: 'О нас',
     },
+    facts: {
+      location: 'Местоположение',
+      year: 'Год',
+      siteArea: 'Площадь участка',
+      totalArea: 'Общая площадь',
+      apartments: 'Количество квартир',
+      status: 'Статус',
+    },
     ui: {
+      reload: 'Обновить',
       loading: 'Загрузка…',
       error: 'Не удалось загрузить данные. Попробуйте обновить страницу.',
       notFound: 'Страница не найдена',
@@ -188,7 +206,16 @@ const translations: Record<Locale, Dict> = {
       keyProjects: 'Негізгі жобалар',
       about: 'Біз туралы',
     },
+    facts: {
+      location: 'Орналасқан жері',
+      year: 'Жыл',
+      siteArea: 'Учаске ауданы',
+      totalArea: 'Жалпы аудан',
+      apartments: 'Пәтерлер саны',
+      status: 'Мәртебесі',
+    },
     ui: {
+      reload: 'Жаңарту',
       loading: 'Жүктелуде…',
       error: 'Деректерді жүктеу мүмкін болмады. Бетті жаңартып көріңіз.',
       notFound: 'Бет табылмады',
@@ -252,7 +279,16 @@ const translations: Record<Locale, Dict> = {
       keyProjects: 'Key Projects',
       about: 'About us',
     },
+    facts: {
+      location: 'Location',
+      year: 'Year',
+      siteArea: 'Site area',
+      totalArea: 'Total area',
+      apartments: 'Total apartments',
+      status: 'Status',
+    },
     ui: {
+      reload: 'Reload',
       loading: 'Loading…',
       error: 'Failed to load data. Please refresh the page.',
       notFound: 'Page not found',

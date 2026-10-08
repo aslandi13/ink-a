@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { getProject, getProjects, type ProjectDetail, type ProjectListItem } from '../api/content'
 import Lightbox from '../components/Lightbox'
 import Reveal from '../components/Reveal'
+import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { projectPath } from '../lib/projectPath'
 import { prefetchProject } from '../lib/prefetch'
@@ -249,13 +250,14 @@ export function ProjectInfoSection({ data, locale, settings = {} }: SectionProps
   const showFacts = settings.facts !== 'hide'
   const stacked = settings.layout === 'stacked' || !showFacts
   const { project } = data
+  const facts = t(locale).facts
   const meta = [
-    ['Местоположение', project.location],
-    ['Год', project.year],
-    ['Площадь участка', project.site_area],
-    ['Общая площадь', project.total_area],
-    ['Количество квартир', project.total_apartments],
-    ['Статус', statusLabel(project.status, locale)],
+    [facts.location, project.location],
+    [facts.year, project.year],
+    [facts.siteArea, project.site_area],
+    [facts.totalArea, project.total_area],
+    [facts.apartments, project.total_apartments],
+    [facts.status, statusLabel(project.status, locale)],
   ].filter(([, value]) => value)
 
   return (

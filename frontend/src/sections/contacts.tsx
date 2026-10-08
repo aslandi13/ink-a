@@ -42,10 +42,10 @@ function mapSrc(value?: string): string | null {
   return /^https:\/\/(www\.)?(google\.[a-z.]+\/maps\/embed|yandex\.[a-z]+\/map-widget)/.test(fromIframe) ? fromIframe : null
 }
 
-const INFO_LABELS: Record<Locale, { address: string; phone: string }> = {
-  ru: { address: 'Адрес', phone: 'Телефон' },
-  kz: { address: 'Мекенжай', phone: 'Телефон' },
-  en: { address: 'Address', phone: 'Phone' },
+export const INFO_LABELS: Record<Locale, { address: string; phone: string; socials: string }> = {
+  ru: { address: 'Адрес', phone: 'Телефон', socials: 'Социальные сети' },
+  kz: { address: 'Мекенжай', phone: 'Телефон', socials: 'Әлеуметтік желілер' },
+  en: { address: 'Address', phone: 'Phone', socials: 'Social media' },
 }
 const CONTACTS_SHOW_HIDE = [['show', 'Показывать'], ['hide', 'Скрыть']]
 
@@ -88,7 +88,7 @@ export function ContactsSection({ data, locale, settings = {} }: SectionProps) {
         {settings.socials !== 'hide' && (
           <>
         <FadeIn>
-          <p className="text-xs uppercase tracking-[0.2em] text-white/40">Социальные сети</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-white/40">{INFO_LABELS[locale].socials}</p>
         </FadeIn>
         <div className="mt-6 flex flex-wrap gap-x-12 gap-y-6">
           {socials.map((s, i) => (

@@ -1,7 +1,7 @@
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { projectPath } from '../lib/projectPath'
-import type { ContactsData } from '../sections/contacts'
+import { INFO_LABELS, type ContactsData } from '../sections/contacts'
 import type { HomeData } from '../sections/home'
 
 function esc(value: string | null | undefined): string {
@@ -160,7 +160,7 @@ export const EXPLODERS: Record<string, (data: HomeData, locale: Locale) => strin
   projects: explodeProjects,
 }
 
-function explodeContacts(data: ContactsData): string {
+function explodeContacts(data: ContactsData, locale: Locale): string {
   const socials = [
     data.email && { label: 'Email', value: data.email, href: `mailto:${data.email}` },
     data.facebook_handle && { label: 'Facebook', value: data.facebook_handle, href: data.facebook_url },
@@ -196,7 +196,7 @@ function explodeContacts(data: ContactsData): string {
     ${data.background_video ? `<video ${LOCKED} data-gjs-name="Фон: видео" class="absolute inset-0 h-full w-full object-cover" src="${esc(data.background_video)}"${data.background_poster ? ` poster="${esc(data.background_poster)}"` : ''} autoplay muted loop playsinline></video>` : ''}
     <div ${DECOR} class="pointer-events-none absolute inset-0 bg-ink-950/50"></div>
     <div data-gjs-name="Содержимое" class="relative mx-auto flex w-full max-w-[84rem] flex-1 flex-col justify-center px-6 pt-42 pb-12">
-      <p class="text-xs uppercase tracking-[0.2em] text-white/40">Социальные сети</p>
+      <p class="text-xs uppercase tracking-[0.2em] text-white/40">${esc(INFO_LABELS[locale].socials)}</p>
       <div data-gjs-name="Соцсети" class="mt-6 flex flex-wrap gap-x-12 gap-y-6">${socialLinks}</div>
       ${career}
     </div>
