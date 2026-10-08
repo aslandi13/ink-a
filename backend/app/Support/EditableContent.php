@@ -31,12 +31,13 @@ class EditableContent
     ];
 
     private const ROOT_TEXT_FIELDS = [
-        'about.history' => ['gallery.*.overlay_text'],
         'about.founder' => ['name'],
         'contacts' => ['email', 'facebook_handle', 'instagram_handle', 'linkedin_handle', 'address', 'phone', 'whatsapp'],
     ];
 
-    private const NESTED_LOCALE_TEXT_FIELDS = [];
+    private const NESTED_LOCALE_TEXT_FIELDS = [
+        'about.history' => ['gallery.*.overlay_text'],
+    ];
 
     private const GROUPED_KEYS = [
         'approach' => ['architecture', 'engineering', 'urbanism', 'interior'],

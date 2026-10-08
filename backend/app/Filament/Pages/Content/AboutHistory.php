@@ -28,6 +28,21 @@ class AboutHistory extends SingletonContentPage
 
     protected static ?string $title = 'История компании';
 
+    public static function prepareData(array $data): array
+    {
+        foreach ($data['gallery'] ?? [] as $index => $cell) {
+            if (! is_array($cell) || ! array_key_exists('overlay_text', $cell)) {
+                continue;
+            }
+            if (filled($cell['overlay_text']) && blank($cell['ru']['overlay_text'] ?? null)) {
+                $data['gallery'][$index]['ru']['overlay_text'] = $cell['overlay_text'];
+            }
+            unset($data['gallery'][$index]['overlay_text']);
+        }
+
+        return $data;
+    }
+
     public static function contentKey(): string
     {
         return 'about.history';
@@ -53,10 +68,13 @@ class AboutHistory extends SingletonContentPage
                                     ->imageEditor()
                                     ->helperText('Оставьте пустым для текстовой ячейки без фото'),
 
-                                TextInput::make('overlay_text')
-                                    ->label('Текст')
-                                    ->helperText('Если есть фото — текст ляжет поверх него. Если фото нет — это самостоятельная текстовая плашка. Например: «Проект рождается в команде»'),
+                                TranslatableTabs::make(fn (string $locale) => [
+                                    TextInput::make('overlay_text')
+                                        ->label('Текст')
+                                        ->helperText('Если есть фото — текст ляжет поверх него. Если фото нет — это самостоятельная текстовая плашка. Например: «Проект рождается в команде»'),
+                                ])->columnSpan(1),
                             ])
+                            ->itemLabel(fn (array $state): ?string => $state['ru']['overlay_text'] ?? null)
                             ->columns(2),
                     ]),
 

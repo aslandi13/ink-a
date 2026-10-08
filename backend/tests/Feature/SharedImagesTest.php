@@ -66,4 +66,19 @@ class SharedImagesTest extends TestCase
         $this->getJson('/api/en/approach')->assertJsonPath('data.architecture.default_image_caption', 'Concept');
         $this->getJson('/api/kz/approach')->assertJsonPath('data.architecture.default_image_caption', 'Концепт');
     }
+
+    public function test_history_cell_text_is_translated(): void
+    {
+        PageContent::updateOrCreate(['key' => 'about.history'], ['data' => \App\Filament\Pages\Content\AboutHistory::prepareData([
+            'gallery' => [['image' => null, 'overlay_text' => 'Проект рождается в команде', 'en' => ['overlay_text' => 'Born in a team']]],
+        ])]);
+
+        $this->getJson('/api/ru/about/history')->assertJsonPath('data.gallery.0.overlay_text', 'Проект рождается в команде');
+        $this->getJson('/api/en/about/history')->assertJsonPath('data.gallery.0.overlay_text', 'Born in a team');
+        $this->getJson('/api/kz/about/history')->assertJsonPath('data.gallery.0.overlay_text', 'Проект рождается в команде');
+
+        EditableContent::apply('kz', [['key' => 'about.history', 'field' => 'gallery.0.overlay_text', 'value' => 'Жоба']]);
+        $this->getJson('/api/kz/about/history')->assertJsonPath('data.gallery.0.overlay_text', 'Жоба');
+        $this->getJson('/api/ru/about/history')->assertJsonPath('data.gallery.0.overlay_text', 'Проект рождается в команде');
+    }
 }
