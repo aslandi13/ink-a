@@ -15,6 +15,6 @@ class CreateTeamMember extends CreateRecord
     {
         $data['sort_order'] = (int) TeamMember::max('sort_order') + 1;
 
-        return TranslatableFormData::toStorageShape(['position', 'credentials'], $data);
+        return TranslatableFormData::toStorageShape(['name', 'position', 'credentials'], $data);
     }
 }
