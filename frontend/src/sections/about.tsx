@@ -154,8 +154,8 @@ export function AboutTabsSection({ data, locale, settings = {} }: SectionProps) 
                         )}
                         {i === 3 && cell.image && !cell.overlay_text && <img data-edit-image={`about.history:gallery.${i}.image`} src={cell.image} alt="" className="h-full w-full object-cover" />}
                         {i === 3 && cell.overlay_text ? (
-                          <div className="flex h-full flex-col justify-center lg:justify-end lg:p-5">
-                            <p data-edit={`about.history:gallery.${i}.overlay_text`} className="font-serif text-[min(2.2rem,12cqw)] leading-[1.05] text-white lg:text-[min(3rem,12cqw)]">{cell.overlay_text}</p>
+                          <div className="flex h-full flex-col justify-center lg:justify-end lg:pb-[2cqw]">
+                            <p data-edit={`about.history:gallery.${i}.overlay_text`} className="font-serif text-[min(4rem,16.5cqw)] leading-[1.05] text-white">{cell.overlay_text}</p>
                           </div>
                         ) : cell.overlay_text ? (
                           <p data-edit={`about.history:gallery.${i}.overlay_text`} className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4 font-sans text-[0.75rem] text-white/80">
