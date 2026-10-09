@@ -111,7 +111,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
     <section className="mx-auto max-w-[84rem] px-6 pt-24 pb-24">
 
 
-      <div className="flex flex-wrap gap-x-8 gap-y-3 pb-1 text-sm sm:pb-6">
+      <div className="flex flex-col items-start gap-y-2 pb-1 text-lg sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:pb-6 sm:text-sm">
         {CATEGORIES.map((c) => (
           <button
             key={c.value}

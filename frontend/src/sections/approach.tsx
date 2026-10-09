@@ -69,7 +69,7 @@ export function ApproachSection({ data, locale, settings = {} }: SectionProps) {
 
   return (
     <section className="pt-20 sm:pt-24">
-      <div className="mx-auto flex max-w-[84rem] flex-wrap gap-x-8 gap-y-3 px-6 py-5 text-sm">
+      <div className="mx-auto flex max-w-[84rem] flex-col items-start gap-y-2 px-6 py-5 text-lg sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:text-sm">
         {CATEGORIES.map(([value, label]) => (
           <button
             key={value}
