@@ -246,9 +246,9 @@ const translations: Record<Locale, Dict> = {
       categories: {
         all: 'All',
         architecture: 'Architecture',
-        engineering: 'Engineering Design',
-        urbanism: 'Urbanism & Masterplanning',
-        interior: 'Interior Design',
+        engineering: 'Engineering',
+        urbanism: 'Urban Planning & Design',
+        interior: 'Public Interior',
       },
       empty: 'No projects in this category yet.',
       loadMore: 'Load more',
@@ -257,9 +257,9 @@ const translations: Record<Locale, Dict> = {
       expertise: 'Expertise',
       categories: {
         architecture: 'Architecture',
-        engineering: 'Engineering Design',
-        urbanism: 'Urbanism & Masterplanning',
-        interior: 'Interior Design',
+        engineering: 'Engineering',
+        urbanism: 'Urban Planning & Design',
+        interior: 'Public Interior',
       },
     },
     news: {
