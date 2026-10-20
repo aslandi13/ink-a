@@ -49,7 +49,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => '<style>.ink-gallery .filepond--item{width:calc(50% - .5rem)!important}@media (min-width:768px){.ink-gallery .filepond--item{width:calc(25% - .5rem)!important}}@media (min-width:1280px){.ink-gallery .filepond--item{width:calc(16.666% - .5rem)!important}}</style>')
+            ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => '<style>.ink-gallery .filepond--item{width:calc(50% - .5rem)!important}@media (min-width:768px){.ink-gallery .filepond--item{width:calc(25% - .5rem)!important}}@media (min-width:1280px){.ink-gallery .filepond--item{width:calc(16.666% - .5rem)!important}}.fi-fo-rich-editor-toolbar{position:sticky;top:var(--topbar-height,4rem);z-index:20;background:var(--gray-900);border-top-left-radius:inherit;border-top-right-radius:inherit}html:not(.dark) .fi-fo-rich-editor-toolbar{background:#fff}</style>')
             ->path('admin')
             ->login()
             ->colors([
