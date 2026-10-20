@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Projects\Pages;
 
 use App\Filament\Resources\Projects\ProjectResource;
+use App\Filament\Support\TranslatableTabs;
 use App\Models\PageContent;
+use App\Support\Locales;
 use App\Models\Project;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -33,21 +35,26 @@ class ListProjects extends ListRecords
                 ->color('gray')
                 ->modalHeading(fn () => 'Карточка раздела: '.self::CATEGORIES[$this->currentCategory()])
                 ->modalDescription('Большая картинка в начале списка проектов. При нажатии ведёт в «Подход» этого раздела. Если выключена — большим будет первый проект.')
-                ->fillForm(fn () => $this->introData()[$this->currentCategory()] ?? ['enabled' => false])
+                ->fillForm(fn () => $this->introFormData($this->introData()[$this->currentCategory()] ?? []))
                 ->schema([
-                    FileUpload::make('image')
-                        ->label('Картинка')
-                        ->image()
-                        ->disk('public')
-                        ->directory('projects/intro'),
+                    TranslatableTabs::make(fn (string $locale) => [
+                        FileUpload::make('image')
+                            ->label('Картинка')
+                            ->image()
+                            ->disk('public')
+                            ->directory('projects/intro')
+                            ->helperText($locale === 'ru' ? 'Обязательна для показа карточки' : 'Если пусто — покажется русская картинка'),
+                    ]),
                     Toggle::make('enabled')
                         ->label('Показывать'),
                 ])
                 ->action(function (array $data) {
                     $intro = $this->introData();
                     $intro[$this->currentCategory()] = [
-                        'image' => $data['image'] ?? null,
                         'enabled' => (bool) ($data['enabled'] ?? false),
+                        ...collect(array_keys(Locales::SUPPORTED))
+                            ->mapWithKeys(fn (string $locale) => [$locale => ['image' => $data[$locale]['image'] ?? null]])
+                            ->all(),
                     ];
                     PageContent::updateOrCreate(['key' => 'projects_intro'], ['data' => $intro]);
                     Notification::make()->title('Сохранено')->success()->send();
@@ -77,6 +84,16 @@ class ListProjects extends ListRecords
     public function currentCategory(): string
     {
         return array_key_exists((string) $this->activeTab, self::CATEGORIES) ? (string) $this->activeTab : array_key_first(self::CATEGORIES);
+    }
+
+    private function introFormData(array $card): array
+    {
+        if (filled($card['image'] ?? null) && blank($card['ru']['image'] ?? null)) {
+            $card['ru']['image'] = $card['image'];
+        }
+        unset($card['image']);
+
+        return $card + ['enabled' => false];
     }
 
     private function introData(): array
