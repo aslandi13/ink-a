@@ -7,7 +7,7 @@ import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
 import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
-import { DEFAULT_NEWS_LIST_LAYOUT, NEWS_LIST_BLOCKS } from '../sections/news'
+import { DEFAULT_NEWS_LIST_LAYOUT, NEWS_LIST_BLOCKS, NEWS_ALL } from '../sections/news'
 
 export default function NewsList() {
   const locale = useLocale()
@@ -19,7 +19,7 @@ export default function NewsList() {
 
   const refresh = useRefresh()
   useEffect(() => {
-    getNews(locale, { page: 1 }).catch(() => undefined)
+    getNews(locale, NEWS_ALL).catch(() => undefined)
     refresh.silent()
     const request = preview ? getDraftPage('news', locale).then((res) => res.draft) : getLocalizedPage(locale, 'news')
     request

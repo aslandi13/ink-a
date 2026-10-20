@@ -19,7 +19,7 @@ class NewsController extends Controller
             ->where('published_at', '<=', now())
             ->orderBy('sort_order')
             ->orderByDesc('published_at')
-            ->paginate($request->integer('per_page', 9));
+            ->paginate(min($request->integer('per_page', 9), 100));
 
         return response()->json([
             'data' => NewsListResource::collection($news->items()),

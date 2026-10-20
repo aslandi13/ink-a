@@ -31,6 +31,8 @@ export const NEWS_LIST_SETTINGS = [
   { name: 'date', label: 'Дата', options: [['show', 'Показывать'], ['hide', 'Скрыть']] },
 ]
 
+
+export const NEWS_ALL = { page: 1, per_page: 100 }
 export function NewsListSection({ locale, settings = {} }: { data: unknown; locale: Locale; settings?: Settings }) {
   const tr = t(locale)
   const cols = NEWS_COLS[settings.cols ?? ''] ?? NEWS_COLS['3']
@@ -39,10 +41,7 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
   const gap = NEWS_GAP[settings.gap ?? ''] ?? NEWS_GAP.s
   const showDate = settings.date !== 'hide'
   const [news, setNews] = useState<NewsListItem[]>([])
-  const [page, setPage] = useState(1)
-  const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState(false)
 
   const refresh = useRefresh()
@@ -50,32 +49,14 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
   useEffect(() => {
     if (!refresh.silent() && !news.length) {
       setNews([])
-      setPage(1)
-      setLastPage(1)
       setLoading(true)
     }
     setError(false)
-    getNews(locale, { page: 1 })
-      .then((res) => {
-        setNews(res.data)
-        setLastPage(res.meta.last_page)
-      })
+    getNews(locale, NEWS_ALL)
+      .then((res) => setNews(res.data))
       .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [locale, refresh.key])
-
-  function loadMore() {
-    const nextPage = page + 1
-    setLoadingMore(true)
-    getNews(locale, { page: nextPage })
-      .then((res) => {
-        setNews((prev) => [...prev, ...res.data])
-        setPage(nextPage)
-        setLastPage(res.meta.last_page)
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoadingMore(false))
-  }
 
   return (
     <section className="flex flex-col items-center gap-[10px] pb-24 pt-[110px]">
@@ -160,17 +141,6 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
             ))}
           </StaggerList>
 
-          {page < lastPage && (
-            <div className="flex justify-center">
-              <button
-                onClick={loadMore}
-                disabled={loadingMore}
-                className="border border-white/20 px-8 py-3 text-sm text-white/70 transition-colors hover:border-white hover:text-white disabled:opacity-40"
-              >
-                {loadingMore ? tr.ui.loading : tr.news.loadMore}
-              </button>
-            </div>
-          )}
         </>
       )}
     </section>
