@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -43,23 +44,38 @@ class ProjectForm
                         ->resizableImages(),
                 ]),
 
-                TextInput::make('slug')
-                    ->label('URL-адрес (slug)')
-                    ->required()
-                    ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('category', $get('category')))
-                    ->validationMessages(['unique' => 'В этой категории уже есть проект с таким адресом.'])
-                    ->helperText('Используется в адресе страницы после категории, например: /projects/architecture/villa-on-the-hill. В разных категориях адрес может повторяться.'),
+                Group::make([
+                    TextInput::make('slug')
+                        ->label('URL-адрес (slug)')
+                        ->required()
+                        ->unique(ignoreRecord: true, modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('category', $get('category')))
+                        ->validationMessages(['unique' => 'В этой категории уже есть проект с таким адресом.'])
+                        ->helperText('Используется в адресе страницы после категории, например: /projects/architecture/villa-on-the-hill. В разных категориях адрес может повторяться.'),
 
-                Select::make('category')
-                    ->label('Категория')
-                    ->required()
-                    ->default(fn () => in_array(request()->query('category'), ['architecture', 'engineering', 'urbanism', 'interior'], true) ? request()->query('category') : null)
-                    ->options([
-                        'architecture' => 'Архитектура',
-                        'engineering' => 'Рабочее проектирование',
-                        'urbanism' => 'Урбанистика и мастерпланирование',
-                        'interior' => 'Дизайн интерьера',
-                    ]),
+                    Select::make('category')
+                        ->label('Категория')
+                        ->required()
+                        ->default(fn () => in_array(request()->query('category'), ['architecture', 'engineering', 'urbanism', 'interior'], true) ? request()->query('category') : null)
+                        ->options([
+                            'architecture' => 'Архитектура',
+                            'engineering' => 'Рабочее проектирование',
+                            'urbanism' => 'Урбанистика и мастерпланирование',
+                            'interior' => 'Дизайн интерьера',
+                        ]),
+
+                    Select::make('cover_focus')
+                        ->label('Фокус обложки на мобильном')
+                        ->helperText('Какую часть фото сохранять при обрезке на телефоне.')
+                        ->options([
+                            'center' => 'По центру',
+                            'left' => 'Левее',
+                            'right' => 'Правее',
+                            'top' => 'Верх',
+                            'bottom' => 'Низ',
+                        ])
+                        ->default('center')
+                        ->native(false),
+                ]),
 
                 FileUpload::make('cover_image')
                     ->label('Обложка')
@@ -67,19 +83,6 @@ class ProjectForm
                     ->directory('projects')
                     ->imageEditor()
                     ->helperText('Перетащите изображение или выберите файл. Рекомендуемое соотношение — 16:9.'),
-
-                Select::make('cover_focus')
-                    ->label('Фокус обложки на мобильном')
-                    ->helperText('Какую часть фото сохранять при обрезке на телефоне.')
-                    ->options([
-                        'center' => 'По центру',
-                        'left' => 'Левее',
-                        'right' => 'Правее',
-                        'top' => 'Верх',
-                        'bottom' => 'Низ',
-                    ])
-                    ->default('center')
-                    ->native(false),
 
                 FileUpload::make('gallery')
                     ->label('Фотогалерея')
