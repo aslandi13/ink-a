@@ -252,7 +252,7 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
 
   return (
     <section
-      className="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pt-36 pb-20"
+      className="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pt-52 pb-20"
       style={minHeight ? { minHeight } : undefined}
     >
       <HeroSlides slides={slides} slideIndex={slideIndex} poster={hero?.poster} />

@@ -35,7 +35,7 @@ function explodeHero(data: HomeData, locale: Locale): string {
     )
     .join('')
 
-  return `<section data-bleed="1" data-gjs-name="Герой" class="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pt-36 pb-20">
+  return `<section data-bleed="1" data-gjs-name="Герой" class="relative flex min-h-[calc(100vh_+_6rem)] flex-col justify-end overflow-hidden px-6 pt-52 pb-20">
   ${background}
   <div ${DECOR} class="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-950/50 via-ink-950/5 to-ink-950/0"></div>
   <div ${DECOR} class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink-950 to-transparent"></div>

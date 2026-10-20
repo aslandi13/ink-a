@@ -98,5 +98,5 @@ video:not([controls])::-webkit-media-controls-overlay-play-button {
 }
 
 [data-exploded='hero'] {
-  padding-top: 9rem;
+  padding-top: 13rem;
 }
