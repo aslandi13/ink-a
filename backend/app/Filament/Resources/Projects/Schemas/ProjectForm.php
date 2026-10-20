@@ -52,15 +52,6 @@ class ProjectForm
                         ->validationMessages(['unique' => 'В этой категории уже есть проект с таким адресом.'])
                         ->helperText('Используется в адресе страницы после категории, например: /projects/architecture/villa-on-the-hill. В разных категориях адрес может повторяться.'),
 
-                    FileUpload::make('cover_image')
-                        ->label('Обложка')
-                        ->image()
-                        ->directory('projects')
-                        ->imageEditor()
-                        ->helperText('Перетащите изображение или выберите файл. Рекомендуемое соотношение — 16:9.'),
-                ]),
-
-                Group::make([
                     Select::make('category')
                         ->label('Категория')
                         ->required()
@@ -85,6 +76,15 @@ class ProjectForm
                         ->default('center')
                         ->native(false),
 
+                    FileUpload::make('cover_image')
+                        ->label('Обложка')
+                        ->image()
+                        ->directory('projects')
+                        ->imageEditor()
+                        ->helperText('Перетащите изображение или выберите файл. Рекомендуемое соотношение — 16:9.'),
+                ]),
+
+                Group::make([
                     Section::make('Параметры проекта')
                         ->columns(2)
                         ->schema([
