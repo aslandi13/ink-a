@@ -19,7 +19,9 @@ class FontFamilyPlugin implements RichContentPlugin
 
     public function getTipTapJsExtensions(): array
     {
-        return [asset('js/ink/font-family.js').'?v='.filemtime(public_path('js/ink/font-family.js'))];
+        return collect(['font-family', 'heading-guard'])
+            ->map(fn (string $file) => asset("js/ink/{$file}.js").'?v='.filemtime(public_path("js/ink/{$file}.js")))
+            ->all();
     }
 
     public function getEditorTools(): array
