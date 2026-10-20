@@ -309,7 +309,7 @@ export function OtherNewsSection({ data, locale, settings = {} }: SectionProps) 
   const showDate = settings.date !== 'hide'
   if (!others.length) return null
   return (
-    <section className="mx-auto w-[90%] min-[1194px]:w-[85%] pb-24 pt-4">
+    <section className="mx-auto max-w-[84rem] px-6 pb-24 pt-4">
       {settings.heading !== 'hide' && (
       <h2
         className="mb-8 font-serif text-3xl text-white md:text-4xl"
