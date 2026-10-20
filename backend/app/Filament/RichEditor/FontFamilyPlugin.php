@@ -27,11 +27,13 @@ class FontFamilyPlugin implements RichContentPlugin
         return [
             RichEditorTool::make('fontSerif')
                 ->label('Playfair')
+                ->hiddenLabel(false)
                 ->jsHandler('$getEditor()?.chain().focus().setFontFamily(\'serif\').run()')
                 ->activeKey('fontFamily')
                 ->activeOptions(['font' => 'serif']),
             RichEditorTool::make('fontSans')
                 ->label('Manrope')
+                ->hiddenLabel(false)
                 ->jsHandler('$getEditor()?.chain().focus().setFontFamily(\'sans\').run()')
                 ->activeJsExpression('!$getEditor()?.isActive(\'fontFamily\')'),
         ];
