@@ -31,7 +31,6 @@ export default function Header() {
   const [open, setOpen] = useState(false)
   const [menuPages, setMenuPages] = useState<MenuPage[]>([])
 
-  const isNewsDetail = /\/news\/[^/]+/.test(location.pathname)
   const localePath = (code: string) => `${location.pathname.replace(/^\/[a-z]{2}(?=\/|$)/, `/${code}`)}${location.search}`
 
   const nav = {
@@ -79,13 +78,12 @@ export default function Header() {
 
   useEffect(() => {
     function onScroll() {
-      const threshold = isNewsDetail ? window.innerHeight * 0.5 : 20
-      setScrolled(window.scrollY > threshold)
+      setScrolled(window.scrollY > 20)
     }
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [isNewsDetail])
+  }, [])
 
   const Logo = () => settings.logo ? (
     <img src={settings.logo} alt="INK Architects" className="h-10 w-auto aspect-[2.8] object-contain sm:h-12 md:h-14" />
