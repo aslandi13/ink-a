@@ -74,4 +74,10 @@ class PageContentApiTest extends TestCase
             ->assertJsonMissingPath('data.slide_project_ids');
         $this->getJson('/api/kz/home/hero')->assertJsonPath('data.slides.0.title', 'Алматы');
     }
+
+    public function test_unpublished_built_in_page_is_empty_not_missing(): void
+    {
+        $this->getJson('/api/ru/pages/contacts')->assertOk()->assertJsonPath('data', null);
+        $this->getJson('/api/ru/pages/some-custom-page')->assertNotFound();
+    }
 }

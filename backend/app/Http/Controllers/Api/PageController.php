@@ -26,7 +26,9 @@ class PageController extends Controller
         $page = Page::isTemplate($slug) ? null : Page::where('slug', $slug)->first();
 
         if ($page === null || $page->published === null) {
-            return response()->json(['message' => 'Page not published.'], 404);
+            return Page::isBuiltIn($slug)
+                ? response()->json(['data' => null])
+                : response()->json(['message' => 'Page not published.'], 404);
         }
 
         $locale = app()->getLocale();
