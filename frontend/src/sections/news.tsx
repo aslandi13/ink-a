@@ -85,7 +85,7 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
         <ErrorMessage>{tr.ui.error}</ErrorMessage>
       ) : (
         <>
-          <StaggerList className={`w-[90%] grid grid-cols-1 min-[810px]:grid-cols-2 min-[1194px]:w-[85%] ${cols}`} style={{ gap }}>
+          <StaggerList className={`grid w-full max-w-[84rem] grid-cols-1 px-6 min-[810px]:grid-cols-2 ${cols}`} style={{ gap }}>
             {news.map((item) => (
               <StaggerItem key={item.id}>
                 <Link
