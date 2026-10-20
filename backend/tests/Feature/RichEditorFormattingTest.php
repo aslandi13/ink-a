@@ -26,7 +26,6 @@ class RichEditorFormattingTest extends TestCase
             ->assertHasNoFormErrors();
 
         $body = $item->fresh()->getTranslation('body', 'ru');
-        fwrite(STDERR, $body);
         $this->assertStringContainsString('data-font="serif"', $body);
         $this->assertStringContainsString('data-color="#ff0000"', $body);
         $this->assertStringContainsString('<mark', $body);

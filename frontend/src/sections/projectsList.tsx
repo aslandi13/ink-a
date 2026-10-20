@@ -7,6 +7,7 @@ import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { prefetchProject } from '../lib/prefetch'
 import { categoryFromSlug, categorySlug, DEFAULT_PROJECT_CATEGORY, PROJECTS_PER_PAGE } from '../lib/projectCategories'
+import { formatCoordinates } from '../lib/coordinates'
 import { projectPath } from '../lib/projectPath'
 import { useRefresh } from '../lib/refresh'
 
@@ -175,6 +176,12 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
                     )}
                     <div className="absolute inset-0 bg-ink-950/0 transition-colors duration-700 group-hover:bg-ink-950/25" />
                     <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/70 to-transparent" />
+                    {formatCoordinates(project.latitude, project.longitude) && (
+                      <div className="absolute right-0 top-0 p-4 text-right text-[0.8rem] leading-snug text-white/90 [text-shadow:0_1px_6px_rgb(0_0_0/0.5)]">
+                        {project.location && <p>— {project.location}</p>}
+                        <p>{formatCoordinates(project.latitude, project.longitude)}</p>
+                      </div>
+                    )}
                     <div className="absolute inset-x-0 bottom-0 p-4">
                       <p className="font-serif leading-[1.1] text-white" style={{ fontSize: titleSize }}>
                         {project.title}

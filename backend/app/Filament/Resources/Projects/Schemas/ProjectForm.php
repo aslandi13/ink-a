@@ -92,6 +92,18 @@ class ProjectForm
                                 ->label('Местоположение')
                                 ->helperText('Например: Astana, Kazakhstan'),
 
+                            TextInput::make('latitude')
+                                ->label('Широта')
+                                ->helperText('Например: 25.093443. Если пусто — координаты не показываются')
+                                ->regex('/^-?\d{1,2}(\.\d+)?$/')
+                                ->validationMessages(['regex' => 'Число от -90 до 90, например 25.093443']),
+
+                            TextInput::make('longitude')
+                                ->label('Долгота')
+                                ->helperText('Например: 55.328204')
+                                ->regex('/^-?\d{1,3}(\.\d+)?$/')
+                                ->validationMessages(['regex' => 'Число от -180 до 180, например 55.328204']),
+
                             TextInput::make('year')
                                 ->label('Год')
                                 ->numeric()

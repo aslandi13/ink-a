@@ -19,6 +19,8 @@ class ProjectDetailResource extends JsonResource
             'excerpt' => $this->excerpt,
             'body' => FileUrlResolver::html($this->body),
             'location' => $this->location,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'site_area' => $this->site_area,
             'total_area' => $this->total_area,
             'total_apartments' => $this->total_apartments,

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { fillSources, readSource } from './contentSources'
+import { formatCoordinates } from './coordinates'
 import { metaText } from './metaText'
 import { categoryFromSlug, categorySlug } from './projectCategories'
 import { projectPath } from './projectPath'
@@ -101,5 +102,18 @@ describe('addHeroMobileTexts', () => {
     expect(original.className).toBe('font-serif md:text-3xl hidden sm:block')
     addHeroMobileTexts(body, { subtitle: 'Long', subtitle_mobile: 'Short' })
     expect(body.querySelectorAll('p')).toHaveLength(2)
+  })
+})
+
+describe('formatCoordinates', () => {
+  it('formats latitude and longitude with hemispheres', () => {
+    expect(formatCoordinates('25.093443', '55.328204')).toBe('25.093443° N, 55.328204° E')
+    expect(formatCoordinates('-33.8688', '-70.6693')).toBe('33.8688° S, 70.6693° W')
+  })
+
+  it('returns nothing when a value is missing or invalid', () => {
+    expect(formatCoordinates('', '55.3')).toBeNull()
+    expect(formatCoordinates('25.1', null)).toBeNull()
+    expect(formatCoordinates('125', '55')).toBeNull()
   })
 })

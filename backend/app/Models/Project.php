@@ -24,6 +24,8 @@ class Project extends Model
         'excerpt',
         'body',
         'location',
+        'latitude',
+        'longitude',
         'site_area',
         'total_area',
         'total_apartments',

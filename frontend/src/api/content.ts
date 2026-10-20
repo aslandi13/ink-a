@@ -40,6 +40,8 @@ export interface ProjectListItem {
   category: string
   excerpt: string | null
   location: string | null
+  latitude?: string | null
+  longitude?: string | null
   year: number | null
   cover_image: string | null
 }

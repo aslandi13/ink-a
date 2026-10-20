@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { getProject, getProjects, type ProjectDetail, type ProjectListItem } from '../api/content'
 import Lightbox from '../components/Lightbox'
 import Reveal from '../components/Reveal'
+import { formatCoordinates } from '../lib/coordinates'
 import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { projectPath } from '../lib/projectPath'
@@ -109,12 +110,16 @@ function HeroSlider({
   gallery,
   title,
   settings,
+  place,
+  coordinates,
 }: {
   cover: string
   focus?: keyof typeof FOCUS_CLASS
   gallery: string[]
   title: string
   settings: Settings
+  place?: string | null
+  coordinates?: string | null
 }) {
   const autoplay = settings.autoplay !== 'off'
   const height = HERO_HEIGHT[settings.height ?? '']
@@ -184,6 +189,18 @@ function HeroSlider({
       <div className="absolute inset-0 bg-gradient-to-t from-ink-950/30 via-ink-950/0 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-ink-950 to-transparent" />
 
+      {coordinates && (
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="absolute inset-x-0 top-32 mx-auto max-w-[84rem] px-6 font-serif text-lg leading-snug text-white/85 md:text-2xl"
+        >
+          {place && <p>— {place}</p>}
+          <p>{coordinates}</p>
+        </motion.div>
+      )}
+
       <div className="absolute inset-x-0 bottom-20 mx-auto max-w-[84rem] px-6 pb-4">
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
@@ -242,7 +259,7 @@ export function ProjectHeroSection({ data, settings = {} }: SectionProps) {
     )
   }
   return (
-    <HeroSlider cover={project.cover_image} focus={project.cover_focus} gallery={project.gallery ?? []} title={project.title} settings={settings} />
+    <HeroSlider cover={project.cover_image} focus={project.cover_focus} gallery={project.gallery ?? []} title={project.title} settings={settings} place={project.location} coordinates={formatCoordinates(project.latitude, project.longitude)} />
   )
 }
 

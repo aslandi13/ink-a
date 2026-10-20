@@ -17,6 +17,8 @@ class ProjectListResource extends JsonResource
             'category' => $this->category,
             'excerpt' => $this->excerpt,
             'location' => $this->location,
+            'latitude' => $this->latitude,
+            'longitude' => $this->longitude,
             'year' => $this->year,
             'cover_image' => FileUrlResolver::resolve($this->cover_image),
         ];
