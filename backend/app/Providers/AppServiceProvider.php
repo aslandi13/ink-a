@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use App\Filament\RichEditor\FontFamilyPlugin;
+use Filament\Forms\Components\RichEditor;
+
 use App\Support\ImageOptimizer;
 use Filament\Forms\Components\BaseFileUpload;
 use Filament\Forms\Components\FileUpload;
@@ -31,6 +34,19 @@ class AppServiceProvider extends ServiceProvider
         // and converted to modern WebP format on the server to keep site fast.
         // Videos, SVGs and other non-raster files are stored as-is without modification.
         Table::configureUsing(fn (Table $table) => $table->paginated(false));
+
+        RichEditor::configureUsing(fn (RichEditor $editor) => $editor
+            ->plugins([FontFamilyPlugin::make()])
+            ->toolbarButtons([
+                ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
+                ['h1', 'h2', 'h3', 'h4', 'lead', 'small'],
+                ['fontSerif', 'fontSans'],
+                ['textColor', 'highlight', 'clearFormatting'],
+                ['alignStart', 'alignCenter', 'alignEnd'],
+                ['blockquote', 'bulletList', 'orderedList'],
+                ['table', 'attachFiles'],
+                ['undo', 'redo'],
+            ]));
 
         Repeater::configureUsing(fn (Repeater $repeater) => $repeater
             ->collapsible()

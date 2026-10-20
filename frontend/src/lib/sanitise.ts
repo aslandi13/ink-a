@@ -13,7 +13,7 @@ export function sanitise(html: string | null | undefined): string {
   return DOMPurify.sanitize(html, {
     // Allow safe formatting tags for rich-text content
     ALLOWED_TAGS: [
-      'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's',
+      'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's', 'sub', 'sup', 'small', 'mark', 'span', 'div',
       'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
       'ul', 'ol', 'li',
       'blockquote', 'pre', 'code',

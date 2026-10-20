@@ -35,6 +35,11 @@ describe('metaText', () => {
 })
 
 describe('sanitise', () => {
+  it('keeps editor formatting', () => {
+    const html = '<p><span data-font="serif">A</span><span class="color" data-color="#f00" style="--color: #f00">B</span><mark>C</mark><small>D</small></p><div class="lead"><p>E</p></div>'
+    expect(sanitise(html)).toBe(html)
+  })
+
   it('removes scripts and event handlers', () => {
     const html = sanitise('<p onclick="alert(1)">Hi</p><script>alert(1)</script>')
     expect(html).toBe('<p>Hi</p>')

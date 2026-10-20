@@ -100,3 +100,26 @@ video:not([controls])::-webkit-media-controls-overlay-play-button {
 [data-exploded='hero'] {
   padding-top: 13rem;
 }
+
+.prose [data-font='serif'] {
+  font-family: var(--font-serif);
+}
+
+.prose .color {
+  color: var(--color);
+}
+
+.prose .lead {
+  font-size: 1.25em;
+  line-height: 1.5;
+}
+
+.prose small {
+  font-size: 0.85em;
+}
+
+.prose mark {
+  background-color: rgb(250 204 21 / 0.35);
+  color: inherit;
+  padding: 0 0.15em;
+}
