@@ -98,7 +98,7 @@ export default function Header() {
           aria-hidden="true"
           className={`pointer-events-none absolute inset-x-0 top-0 h-[150%] bg-gradient-to-b from-ink-950/60 via-ink-950/25 to-transparent transition-opacity duration-500 ${scrolled || open ? 'opacity-0' : 'opacity-100'}`}
         />
-        <div className="mx-auto flex max-w-[84rem] items-center justify-between px-6 py-5">
+        <div className="relative mx-auto flex max-w-[84rem] items-center justify-between px-6 py-5">
           <NavLink to={`/${locale}`} className="flex items-center">
             <Logo />
           </NavLink>
