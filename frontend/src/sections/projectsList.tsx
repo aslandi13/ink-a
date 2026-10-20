@@ -143,10 +143,11 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
                   to={`/${locale}/approach/${categorySlug(category)}`}
                   className="group relative block h-full w-full overflow-hidden bg-ink-800"
                 >
+                  <img src={introCard} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl" />
                   <img
                     src={introCard}
                     alt={CATEGORIES.find((c) => c.value === category)?.label ?? ''}
-                    className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="relative h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-105"
                   />
                 </Link>
               </StaggerItem>
