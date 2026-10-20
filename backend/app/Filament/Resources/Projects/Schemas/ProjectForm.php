@@ -52,6 +52,27 @@ class ProjectForm
                         ->validationMessages(['unique' => 'В этой категории уже есть проект с таким адресом.'])
                         ->helperText('Используется в адресе страницы после категории, например: /projects/architecture/villa-on-the-hill. В разных категориях адрес может повторяться.'),
 
+                    FileUpload::make('cover_image')
+                        ->label('Обложка')
+                        ->image()
+                        ->directory('projects')
+                        ->imageEditor()
+                        ->helperText('Перетащите изображение или выберите файл. Рекомендуемое соотношение — 16:9.'),
+
+                    FileUpload::make('gallery')
+                        ->label('Фотогалерея')
+                        ->image()
+                        ->multiple()
+                        ->reorderable()
+                        ->imageEditor()
+                        ->appendFiles()
+                        ->panelLayout('grid')
+                        ->imagePreviewHeight('140')
+                        ->directory('projects/gallery')
+                        ->helperText('Порядок фото меняется перетаскиванием: наведите на фото и потяните за стрелки ↕ вверху. Эти же фото используются в слайдере наверху страницы проекта и в сетке ниже описания.'),
+                ]),
+
+                Group::make([
                     Select::make('category')
                         ->label('Категория')
                         ->required()
@@ -75,60 +96,41 @@ class ProjectForm
                         ])
                         ->default('center')
                         ->native(false),
+
+                    Section::make('Параметры проекта')
+                        ->columns(2)
+                        ->schema([
+                            TextInput::make('location')
+                                ->label('Местоположение')
+                                ->helperText('Например: Astana, Kazakhstan'),
+
+                            TextInput::make('year')
+                                ->label('Год')
+                                ->numeric()
+                                ->minValue(1900)
+                                ->maxValue(2100),
+
+                            TextInput::make('site_area')
+                                ->label('Площадь участка')
+                                ->helperText('Например: 0,30 ha'),
+
+                            TextInput::make('total_area')
+                                ->label('Общая площадь')
+                                ->helperText('Например: 17 102 m²'),
+
+                            TextInput::make('total_apartments')
+                                ->label('Количество квартир')
+                                ->helperText('Например: 240'),
+
+                            Select::make('status')
+                                ->label('Статус')
+                                ->options([
+                                    'completed' => 'Completed',
+                                    'in_progress' => 'Construction',
+                                    'concept' => 'Concept',
+                                ]),
+                        ]),
                 ]),
-
-                FileUpload::make('cover_image')
-                    ->label('Обложка')
-                    ->image()
-                    ->directory('projects')
-                    ->imageEditor()
-                    ->helperText('Перетащите изображение или выберите файл. Рекомендуемое соотношение — 16:9.'),
-
-                FileUpload::make('gallery')
-                    ->label('Фотогалерея')
-                    ->image()
-                    ->multiple()
-                    ->reorderable()
-                    ->imageEditor()
-                    ->appendFiles()
-                    ->panelLayout('grid')
-                    ->imagePreviewHeight('140')
-                    ->directory('projects/gallery')
-                    ->helperText('Порядок фото меняется перетаскиванием: наведите на фото и потяните за стрелки ↕ вверху. Эти же фото используются в слайдере наверху страницы проекта и в сетке ниже описания.'),
-
-                Section::make('Параметры проекта')
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('location')
-                            ->label('Местоположение')
-                            ->helperText('Например: Astana, Kazakhstan'),
-
-                        TextInput::make('year')
-                            ->label('Год')
-                            ->numeric()
-                            ->minValue(1900)
-                            ->maxValue(2100),
-
-                        TextInput::make('site_area')
-                            ->label('Площадь участка')
-                            ->helperText('Например: 0,30 ha'),
-
-                        TextInput::make('total_area')
-                            ->label('Общая площадь')
-                            ->helperText('Например: 17 102 m²'),
-
-                        TextInput::make('total_apartments')
-                            ->label('Количество квартир')
-                            ->helperText('Например: 240'),
-
-                        Select::make('status')
-                            ->label('Статус')
-                            ->options([
-                                'completed' => 'Completed',
-                                'in_progress' => 'Construction',
-                                'concept' => 'Concept',
-                            ]),
-                    ]),
 
                 Toggle::make('is_published')
                     ->label('Опубликован')
