@@ -194,7 +194,7 @@ function HeroSlider({
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="absolute inset-x-0 top-32 mx-auto max-w-[84rem] px-6 font-serif text-lg leading-snug text-white/85 md:text-2xl"
+          className="absolute inset-x-0 top-60 mx-auto max-w-[84rem] px-6 font-serif text-lg leading-snug text-white/85 md:text-2xl"
         >
           {place && <p>— {place}</p>}
           <p>{coordinates}</p>
