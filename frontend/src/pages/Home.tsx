@@ -11,7 +11,7 @@ import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
 import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
-import { DEFAULT_HOME_LAYOUT, HeroBackground, HeroExplodedBadge, HOME_BLOCKS, loadHomeData, type HomeData } from '../sections/home'
+import { addHeroMobileTexts, DEFAULT_HOME_LAYOUT, HeroBackground, HeroExplodedBadge, HOME_BLOCKS, loadHomeData, type HomeData } from '../sections/home'
 
 export default function Home() {
   const locale = useLocale()
@@ -85,7 +85,10 @@ export default function Home() {
         translations={layout?.translations}
         data={data}
         sources={contentSources('home', data)}
-        prepare={(body) => upgradeExploded(body, EXPLODERS as Exploders, data, locale)}
+        prepare={(body) => {
+          upgradeExploded(body, EXPLODERS as Exploders, data, locale)
+          addHeroMobileTexts(body, data.hero)
+        }}
         locale={locale}
         blocks={HOME_BLOCKS}
         bleedBlock="hero"

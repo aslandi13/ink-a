@@ -11,7 +11,7 @@ use InvalidArgumentException;
 class EditableContent
 {
     private const TEXT_FIELDS = [
-        'home.hero' => ['title', 'subtitle', 'description', 'stats.*.number', 'stats.*.label'],
+        'home.hero' => ['title', 'subtitle', 'subtitle_mobile', 'description', 'description_mobile', 'stats.*.number', 'stats.*.label'],
         'home.about' => ['heading', 'intro', 'quote', 'quote_author', 'principles.*.heading', 'principles.*.text'],
         'home.offices' => ['heading', 'description', 'video_label'],
         'home.key_projects' => ['heading', 'statement', 'description'],

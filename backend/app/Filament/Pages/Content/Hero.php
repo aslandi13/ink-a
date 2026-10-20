@@ -98,10 +98,20 @@ class Hero extends SingletonContentPage
                         ->rows(3)
                         ->helperText('Например: «45,9 миллионов квадратных метров. В зданиях. В кварталах. В городах.»'),
 
+                    Textarea::make('subtitle_mobile')
+                        ->label('Второй крупный текст — для телефона')
+                        ->rows(2)
+                        ->helperText('Короткая версия для телефона. Если пусто — на телефоне будет обычный текст'),
+
                     Textarea::make('description')
                         ->label('Описание (абзац)')
                         ->rows(4)
                         ->helperText('Поясняющий текст под крупными заголовками'),
+
+                    Textarea::make('description_mobile')
+                        ->label('Описание — для телефона')
+                        ->rows(2)
+                        ->helperText('Короткая версия для телефона. Если пусто — на телефоне описание не показывается'),
 
                     Repeater::make('stats')
                         ->label('Цифры / статистика')

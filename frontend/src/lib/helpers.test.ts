@@ -5,6 +5,7 @@ import { categoryFromSlug, categorySlug } from './projectCategories'
 import { projectPath } from './projectPath'
 import { sanitise } from './sanitise'
 import { upgradeExploded } from './upgradeExploded'
+import { addHeroMobileTexts } from '../sections/home'
 
 describe('projectPath', () => {
   it('includes category', () => {
@@ -81,5 +82,19 @@ describe('upgradeExploded', () => {
     upgradeExploded(root, exploders, {}, 'ru')
     expect(root.querySelector('h1')?.getAttribute('data-src')).toBe('home.hero:title')
     expect(root.querySelector('p')?.getAttribute('data-src')).toBe('home.hero:subtitle')
+  })
+})
+
+describe('addHeroMobileTexts', () => {
+  it('adds a phone-only copy of the subtitle and hides the original on phones', () => {
+    const body = document.createElement('div')
+    body.innerHTML = '<section data-exploded="hero"><p data-src="home.hero:subtitle" class="font-serif md:text-3xl">Long</p></section>'
+    addHeroMobileTexts(body, { subtitle: 'Long', subtitle_mobile: 'Short' })
+    const [mobile, original] = Array.from(body.querySelectorAll('p'))
+    expect(mobile.textContent).toBe('Short')
+    expect(mobile.className).toBe('font-serif sm:hidden')
+    expect(original.className).toBe('font-serif md:text-3xl hidden sm:block')
+    addHeroMobileTexts(body, { subtitle: 'Long', subtitle_mobile: 'Short' })
+    expect(body.querySelectorAll('p')).toHaveLength(2)
   })
 })

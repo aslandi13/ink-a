@@ -17,7 +17,9 @@ export interface HeroData {
   og_image?: string
   title?: string
   subtitle?: string
+  subtitle_mobile?: string
   description?: string
+  description_mobile?: string
   video?: string
   poster?: string
   slides?: { image: string; title?: string }[]
@@ -219,6 +221,24 @@ function HeroBadge({ hero, projects, locale, slides, slideIndex, className = '' 
   )
 }
 
+export function addHeroMobileTexts(body: HTMLElement, hero: HeroData | null | undefined) {
+  for (const field of ['subtitle', 'description'] as const) {
+    const mobileField = `${field}_mobile` as const
+    const value = hero?.[mobileField]
+    const original = body.querySelector<HTMLElement>(`[data-exploded="hero"] [data-src="home.hero:${field}"]`)
+    if (!value || !original || original.parentElement?.querySelector(`[data-src="home.hero:${mobileField}"]`)) continue
+    const mobile = original.cloneNode(false) as HTMLElement
+    mobile.setAttribute('data-src', `home.hero:${mobileField}`)
+    mobile.removeAttribute('data-t')
+    mobile.removeAttribute('id')
+    mobile.classList.remove('hidden', 'sm:block', 'md:text-3xl', 'lg:text-4xl')
+    mobile.classList.add('sm:hidden')
+    mobile.textContent = value
+    original.before(mobile)
+    original.classList.add('hidden', 'sm:block')
+  }
+}
+
 export function HeroExplodedBadge({ hero, projects, locale }: { hero: HeroData | null | undefined; projects: ProjectListItem[]; locale: Locale }) {
   const slideIndex = useSharedHeroIndex()
   return <HeroBadge hero={hero} projects={projects} locale={locale} slides={buildSlides(hero)} slideIndex={slideIndex} />
@@ -267,14 +287,22 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
         <div className="flex flex-col justify-end gap-5">
           {hero?.subtitle && (
             <FadeIn delay={0.15}>
-              <p data-edit="home.hero:subtitle" className="whitespace-pre-line font-serif text-2xl leading-tight text-white md:text-3xl lg:text-4xl">
+              {hero.subtitle_mobile && (
+                <p data-edit="home.hero:subtitle_mobile" className="whitespace-pre-line font-serif text-2xl leading-tight text-white sm:hidden">
+                  {hero.subtitle_mobile}
+                </p>
+              )}
+              <p data-edit="home.hero:subtitle" className={`whitespace-pre-line font-serif text-2xl leading-tight text-white md:text-3xl lg:text-4xl ${hero.subtitle_mobile ? 'hidden sm:block' : ''}`}>
                 {hero.subtitle}
               </p>
             </FadeIn>
           )}
-          {settings.description !== 'hide' && hero?.description && (
+          {settings.description !== 'hide' && (hero?.description || hero?.description_mobile) && (
             <FadeIn delay={0.25}>
-              <p data-edit="home.hero:description" className="hidden max-w-lg text-white/70 sm:block">{hero.description}</p>
+              {hero.description_mobile && (
+                <p data-edit="home.hero:description_mobile" className="max-w-lg text-white/70 sm:hidden">{hero.description_mobile}</p>
+              )}
+              {hero.description && <p data-edit="home.hero:description" className="hidden max-w-lg text-white/70 sm:block">{hero.description}</p>}
             </FadeIn>
           )}
         </div>
