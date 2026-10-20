@@ -20,7 +20,7 @@ class ListProjects extends ListRecords
 {
     protected static string $resource = ProjectResource::class;
 
-    private const CATEGORIES = [
+    public const CATEGORIES = [
         'architecture' => 'Архитектура',
         'engineering' => 'Рабочее проектирование',
         'urbanism' => 'Урбанистика и мастерпланирование',

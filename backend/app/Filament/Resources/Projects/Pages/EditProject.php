@@ -14,8 +14,29 @@ class EditProject extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()->successRedirectUrl(fn () => $this->listUrl()),
         ];
+    }
+
+    public function getTitle(): string
+    {
+        return $this->getRecord()->getTranslation('title', 'ru', false) ?: 'Проект';
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        $category = $this->getRecord()->category;
+
+        return [
+            $this->listUrl() => 'Проекты',
+            $this->listUrl().'#' => ListProjects::CATEGORIES[$category] ?? $category,
+            $this->getTitle(),
+        ];
+    }
+
+    private function listUrl(): string
+    {
+        return ProjectResource::getUrl('index', ['tab' => $this->getRecord()->category]);
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
