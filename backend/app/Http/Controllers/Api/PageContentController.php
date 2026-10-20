@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PageContent;
 use App\Models\TeamMember;
 use App\Support\FileUrlResolver;
+use App\Support\ImageEdgeColor;
 use App\Support\LocaleResolver;
 use App\Support\SharedImages;
 use Illuminate\Http\JsonResponse;
@@ -35,6 +36,15 @@ class PageContentController extends Controller
                     'credentials' => $member->getTranslation('credentials', $locale, false) ?: $member->getTranslation('credentials', 'ru', false),
                 ])
                 ->all();
+        }
+
+        if ($key === 'projects_intro') {
+            $raw = LocaleResolver::resolve($record->data ?? [], app()->getLocale());
+            foreach ($data as $category => $card) {
+                if (is_array($card)) {
+                    $data[$category]['color'] = ImageEdgeColor::for($raw[$category]['image'] ?? null);
+                }
+            }
         }
 
         if ($key === 'home.hero') {

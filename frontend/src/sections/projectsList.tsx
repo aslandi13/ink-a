@@ -12,7 +12,7 @@ import { useRefresh } from '../lib/refresh'
 
 type Settings = Record<string, string>
 
-type ProjectsIntro = Record<string, { image?: string | null; enabled?: boolean }>
+type ProjectsIntro = Record<string, { image?: string | null; enabled?: boolean; color?: string | null }>
 
 const COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
 const RATIO: Record<string, string> = { classic: '1.95/1', wide: '16/9', cinema: '21/9', square: '1/1', tall: '3/4' }
@@ -142,8 +142,8 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
                 <Link
                   to={`/${locale}/approach/${categorySlug(category)}`}
                   className="group relative block h-full w-full overflow-hidden bg-ink-800"
+                  style={{ backgroundColor: intro[category]?.color ?? undefined }}
                 >
-                  <img src={introCard} alt="" aria-hidden="true" className="absolute inset-0 h-full w-full scale-110 object-cover blur-2xl" />
                   <img
                     src={introCard}
                     alt={CATEGORIES.find((c) => c.value === category)?.label ?? ''}
