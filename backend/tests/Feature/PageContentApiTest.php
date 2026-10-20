@@ -53,4 +53,25 @@ class PageContentApiTest extends TestCase
         $this->getJson('/api/en/about/founder')->assertJsonPath('data.name', 'Nurlan Kamitov');
         $this->getJson('/api/ru/about/founder')->assertJsonPath('data.name', 'Нурлан Камитов');
     }
+
+    public function test_hero_slides_are_uploaded_photos_with_translated_captions(): void
+    {
+        PageContent::updateOrCreate(['key' => 'home.hero'], ['data' => [
+            'slide_project_ids' => [1, 2],
+            'hero_slides' => [
+                ['image' => 'home/hero/one.webp', 'ru' => ['caption' => 'Алматы'], 'en' => ['caption' => 'Almaty']],
+                ['image' => 'home/hero/two.webp'],
+                ['image' => null, 'ru' => ['caption' => 'Пусто']],
+            ],
+        ]]);
+
+        $this->getJson('/api/en/home/hero')
+            ->assertOk()
+            ->assertJsonCount(2, 'data.slides')
+            ->assertJsonPath('data.slides.0.image', url('storage/home/hero/one.webp'))
+            ->assertJsonPath('data.slides.0.title', 'Almaty')
+            ->assertJsonPath('data.slides.1.title', null)
+            ->assertJsonMissingPath('data.slide_project_ids');
+        $this->getJson('/api/kz/home/hero')->assertJsonPath('data.slides.0.title', 'Алматы');
+    }
 }

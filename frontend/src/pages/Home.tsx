@@ -11,7 +11,7 @@ import { t } from '../lib/i18n'
 import { metaText } from '../lib/metaText'
 import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
-import { DEFAULT_HOME_LAYOUT, HeroBackground, HOME_BLOCKS, loadHomeData, type HomeData } from '../sections/home'
+import { DEFAULT_HOME_LAYOUT, HeroBackground, HeroExplodedBadge, HOME_BLOCKS, loadHomeData, type HomeData } from '../sections/home'
 
 export default function Home() {
   const locale = useLocale()
@@ -28,8 +28,13 @@ export default function Home() {
         selector: '[data-exploded="hero"] > video:first-child, [data-exploded="hero"] > img:first-child',
         render: () => <HeroBackground hero={data?.hero} />,
       },
+      {
+        selector: '[data-exploded="hero"] a[href*="/projects/"]',
+        className: '',
+        render: () => (data ? <HeroExplodedBadge hero={data.hero} projects={data.projects} locale={locale} /> : null),
+      },
     ],
-    [data],
+    [data, locale],
   )
 
   const refresh = useRefresh()

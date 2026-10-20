@@ -65,13 +65,25 @@ class Hero extends SingletonContentPage
                     ->directory('home/hero')
                     ->imageEditor(),
 
-                // 4. Проекты для слайдера
-                Select::make('slide_project_ids')
-                    ->label('Проекты для слайдера (фон Hero)')
-                    ->multiple()
-                    ->options(fn () => Project::query()->get()->pluck('title', 'id')->sort())
-                    ->searchable()
-                    ->helperText('Выберите проекты — их обложки будут циклически показываться в герое после видео'),
+                Repeater::make('hero_slides')
+                    ->label('Слайды после видео')
+                    ->helperText('Фото по очереди показываются в герое после видео. Подпись видна на слайде вместо названия проекта')
+                    ->reorderable()
+                    ->addActionLabel('Добавить слайд')
+                    ->itemLabel(fn (array $state): ?string => $state['ru']['caption'] ?? null)
+                    ->schema([
+                        FileUpload::make('image')
+                            ->label('Фото')
+                            ->image()
+                            ->required()
+                            ->directory('home/hero')
+                            ->imageEditor(),
+                        TranslatableTabs::make(fn (string $locale) => [
+                            TextInput::make('caption')
+                                ->label('Подпись')
+                                ->helperText('Необязательно. Например: «Dostyk 300, Алматы»'),
+                        ]),
+                    ]),
 
                 // 5. Заголовок / Текст / Описание / Цифры
                 TranslatableTabs::make(fn (string $locale) => [

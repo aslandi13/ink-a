@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PageContent;
-use App\Models\Project;
 use App\Models\TeamMember;
 use App\Support\FileUrlResolver;
 use App\Support\LocaleResolver;
@@ -38,23 +37,14 @@ class PageContentController extends Controller
                 ->all();
         }
 
-        // Обогащение: slide_project_ids → slides с cover_image (для любого блока)
-        if (!empty($data['slide_project_ids'])) {
-            $ids = array_values(array_map('intval', (array) $data['slide_project_ids']));
-            $projects = Project::whereIn('id', $ids)
-                ->get(['id', 'cover_image', 'title', 'slug', 'category'])
-                ->keyBy('id');
-
-            $data['slides'] = collect($ids)
-                ->filter(fn ($id) => isset($projects[$id]) && $projects[$id]->cover_image)
-                ->map(fn ($id) => [
-                    'image' => FileUrlResolver::resolve($projects[$id]->cover_image),
-                    'title' => $projects[$id]->getTranslation('title', $locale, false) ?: $projects[$id]->getTranslation('title', 'ru', false),
-                    'slug'  => $projects[$id]->slug,
-                    'category' => $projects[$id]->category,
-                ])
+        if ($key === 'home.hero') {
+            unset($data['slide_project_ids']);
+            $data['slides'] = collect($data['hero_slides'] ?? [])
+                ->filter(fn ($slide) => is_array($slide) && filled($slide['image'] ?? null))
+                ->map(fn (array $slide) => ['image' => $slide['image'], 'title' => $slide['caption'] ?? null])
                 ->values()
-                ->toArray();
+                ->all();
+            unset($data['hero_slides']);
         }
 
         return response()->json(['data' => $data]);

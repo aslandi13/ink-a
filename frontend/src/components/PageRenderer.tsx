@@ -73,6 +73,7 @@ const REVEAL_SELECTOR = ['h1', 'h2', 'h3', 'p', 'dl', 'blockquote'].map((tag) =>
 export interface HtmlPortal {
   selector: string
   render: () => ReactNode
+  className?: string
 }
 
 function HtmlSegment({ html, portals }: { html: string; portals?: HtmlPortal[] }) {
@@ -88,7 +89,7 @@ function HtmlSegment({ html, portals }: { html: string; portals?: HtmlPortal[] }
         let container = target
         if (target.dataset.portal !== String(index)) {
           container = document.createElement('div')
-          container.className = 'absolute inset-0'
+          container.className = portal.className ?? 'absolute inset-0'
           container.dataset.portal = String(index)
           target.replaceWith(container)
         }

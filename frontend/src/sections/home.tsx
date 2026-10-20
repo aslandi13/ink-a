@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { getPageContent, getProjects, type ProjectListItem } from '../api/content'
 import FadeIn from '../components/FadeIn'
@@ -20,7 +20,7 @@ export interface HeroData {
   description?: string
   video?: string
   poster?: string
-  slides?: { image: string; title?: string; slug?: string; category?: string }[]
+  slides?: { image: string; title?: string }[]
   stats?: { number: string; label: string }[]
   featured_project_id?: number
 }
@@ -94,16 +94,40 @@ const HERO_MIN_HEIGHT: Record<string, string> = { large: 'calc(80vh + 6rem)', me
 const KP_COLS: Record<string, string> = { '2': 'md:grid-cols-2', '3': 'md:grid-cols-3', '4': 'md:grid-cols-4' }
 const KP_RATIO: Record<string, string> = { '4/3': '4/3', '16/9': '16/9', '1/1': '1/1', '3/4': '3/4' }
 
-type HeroSlide = { type: 'video' | 'photo'; src: string; title?: string; slug?: string; category?: string }
+type HeroSlide = { type: 'video' | 'photo'; src: string; title?: string }
+
+let sharedIndex = 0
+const indexListeners = new Set<() => void>()
+
+function publishIndex(index: number) {
+  sharedIndex = index
+  indexListeners.forEach((listener) => listener())
+}
+
+function useSharedHeroIndex() {
+  return useSyncExternalStore(
+    (listener) => {
+      indexListeners.add(listener)
+      return () => indexListeners.delete(listener)
+    },
+    () => sharedIndex,
+  )
+}
+
+function buildSlides(hero: HeroData | null | undefined): HeroSlide[] {
+  return [
+    ...(hero?.video ? [{ type: 'video' as const, src: hero.video }] : []),
+    ...(hero?.slides ?? []).map((s) => ({ type: 'photo' as const, src: s.image, title: s.title })),
+  ]
+}
 
 function useHeroSlides(hero: HeroData | null | undefined, autoplay: boolean) {
   const [slideIndex, setSlideIndex] = useState(0)
 
-  const slides = [
-    ...(hero?.video ? [{ type: 'video' as const, src: hero.video, title: undefined as string | undefined, slug: undefined as string | undefined, category: undefined as string | undefined }] : []),
-    ...(hero?.slides ?? []).map((s) => ({ type: 'photo' as const, src: s.image, title: s.title, slug: s.slug, category: s.category })),
-  ]
+  const slides = buildSlides(hero)
   const slidesLen = slides.length
+
+  useEffect(() => publishIndex(slideIndex), [slideIndex])
 
   useEffect(() => {
     if (slidesLen <= 1 || !autoplay) return
@@ -166,18 +190,45 @@ export function HeroBackground({ hero, autoplay = true }: { hero: HeroData | nul
   return <HeroSlides slides={slides} slideIndex={slideIndex} poster={hero?.poster} />
 }
 
+function HeroBadge({ hero, projects, locale, slides, slideIndex, className = '' }: { hero: HeroData | null | undefined; projects: ProjectListItem[]; locale: Locale; slides: HeroSlide[]; slideIndex: number; className?: string }) {
+  const current = slides[slideIndex]
+  const featured = projects.find((p) => p.id === hero?.featured_project_id)
+  const caption = current?.type === 'photo' ? current.title : null
+  if (current?.type === 'photo' && !caption) return null
+  if (!caption && !featured) return null
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={caption ? `slide-${slideIndex}` : `project-${featured?.slug}`}
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{ duration: 0.4 }}
+        className={className}
+      >
+        {caption ? (
+          <p className="text-sm text-white/50">{caption}</p>
+        ) : (
+          <Link to={projectPath(locale, featured!)} className="text-sm text-white/50 transition-colors hover:text-white/80">
+            {featured!.title}
+          </Link>
+        )}
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+export function HeroExplodedBadge({ hero, projects, locale }: { hero: HeroData | null | undefined; projects: ProjectListItem[]; locale: Locale }) {
+  const slideIndex = useSharedHeroIndex()
+  return <HeroBadge hero={hero} projects={projects} locale={locale} slides={buildSlides(hero)} slideIndex={slideIndex} />
+}
+
 export function HeroSection({ data, locale, settings = {} }: SectionProps) {
   const { hero, projects } = data
   const autoplay = settings.autoplay !== 'off'
   const minHeight = HERO_MIN_HEIGHT[settings.height ?? '']
   const { slides, slideIndex } = useHeroSlides(hero, autoplay)
-
-  const featuredProject = projects.find((p) => p.id === hero?.featured_project_id)
-  const currentSlide = slides[slideIndex]
-  const badgeFromSlide = currentSlide?.type === 'photo' && !!currentSlide.slug
-  const badgeSlug = badgeFromSlide ? currentSlide.slug : featuredProject?.slug
-  const badgeCategory = badgeFromSlide ? currentSlide.category : featuredProject?.category
-  const badgeTitle = currentSlide?.type === 'photo' && currentSlide.title ? currentSlide.title : featuredProject?.title
 
   return (
     <section
@@ -210,25 +261,7 @@ export function HeroSection({ data, locale, settings = {} }: SectionProps) {
             </FadeIn>
           )}
 
-          {settings.badge !== 'hide' && badgeSlug && badgeTitle && (
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={badgeSlug}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.4 }}
-                className="mt-8"
-              >
-                <Link
-                  to={projectPath(locale, { slug: badgeSlug, category: badgeCategory })}
-                  className="text-sm text-white/50 transition-colors hover:text-white/80"
-                >
-                  {badgeTitle}
-                </Link>
-              </motion.div>
-            </AnimatePresence>
-          )}
+          {settings.badge !== 'hide' && <HeroBadge hero={hero} projects={projects} locale={locale} slides={slides} slideIndex={slideIndex} className="mt-8" />}
         </div>
 
         <div className="flex flex-col justify-end gap-5">
