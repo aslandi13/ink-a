@@ -31,6 +31,7 @@ use App\Filament\Support\SectionTabs;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Filament\Support\Colors\Color;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
@@ -48,6 +49,7 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
+            ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => '<style>.ink-gallery .filepond--item{width:calc(50% - .5rem)!important}@media (min-width:768px){.ink-gallery .filepond--item{width:calc(25% - .5rem)!important}}@media (min-width:1280px){.ink-gallery .filepond--item{width:calc(16.666% - .5rem)!important}}</style>')
             ->path('admin')
             ->login()
             ->colors([

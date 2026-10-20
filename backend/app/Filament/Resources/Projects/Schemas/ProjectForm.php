@@ -58,18 +58,6 @@ class ProjectForm
                         ->directory('projects')
                         ->imageEditor()
                         ->helperText('Перетащите изображение или выберите файл. Рекомендуемое соотношение — 16:9.'),
-
-                    FileUpload::make('gallery')
-                        ->label('Фотогалерея')
-                        ->image()
-                        ->multiple()
-                        ->reorderable()
-                        ->imageEditor()
-                        ->appendFiles()
-                        ->panelLayout('grid')
-                        ->imagePreviewHeight('140')
-                        ->directory('projects/gallery')
-                        ->helperText('Порядок фото меняется перетаскиванием: наведите на фото и потяните за стрелки ↕ вверху. Эти же фото используются в слайдере наверху страницы проекта и в сетке ниже описания.'),
                 ]),
 
                 Group::make([
@@ -131,6 +119,20 @@ class ProjectForm
                                 ]),
                         ]),
                 ]),
+
+                FileUpload::make('gallery')
+                    ->label('Фотогалерея')
+                    ->image()
+                    ->multiple()
+                    ->reorderable()
+                    ->imageEditor()
+                    ->appendFiles()
+                    ->panelLayout('grid')
+                    ->imagePreviewHeight('140')
+                    ->directory('projects/gallery')
+                    ->helperText('Порядок фото меняется перетаскиванием: наведите на фото и потяните за стрелки ↕ вверху. Эти же фото используются в слайдере наверху страницы проекта и в сетке ниже описания.')
+                    ->extraAttributes(['class' => 'ink-gallery'])
+                    ->columnSpanFull(),
 
                 Toggle::make('is_published')
                     ->label('Опубликован')
