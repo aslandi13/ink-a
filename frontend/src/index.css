@@ -96,3 +96,7 @@ video:not([controls])::-webkit-media-controls-overlay-play-button {
     transition: none;
   }
 }
+
+[data-exploded='hero'] {
+  padding-top: 9rem;
+}
