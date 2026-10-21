@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type CSSProperties } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { getPageContent, getProjects, type ProjectListItem } from '../api/content'
 import ErrorMessage from '../components/ErrorMessage'
@@ -139,7 +139,10 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
         <>
         <StaggerList className={`mt-2 sm:mt-6 grid grid-flow-dense grid-cols-2 ${cols}`} style={{ gap }}>
             {introCard && (
-              <StaggerItem className={featured ? 'col-span-2 md:row-span-2' : ''} style={{ aspectRatio: ratio }}>
+              <StaggerItem
+                className={featured ? 'col-span-2 aspect-[1.36] md:row-span-2 md:aspect-[var(--tile)]' : 'aspect-[2/3] md:aspect-[var(--tile)]'}
+                style={{ '--tile': ratio } as CSSProperties}
+              >
                 <Link
                   to={`/${locale}/approach/${categorySlug(category)}`}
                   className="group relative block h-full w-full overflow-hidden bg-ink-800"
@@ -159,8 +162,8 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
               return (
                 <StaggerItem
                   key={project.id}
-                  className={`${featured && i === 0 ? 'col-span-2' : ''} ${isFeatured ? 'md:col-span-2 md:row-span-2' : ''}`}
-                  style={{ aspectRatio: ratio }}
+                  className={isFeatured ? 'col-span-2 aspect-[1.36] md:row-span-2 md:aspect-[var(--tile)]' : 'aspect-[2/3] md:aspect-[var(--tile)]'}
+                  style={{ '--tile': ratio } as CSSProperties}
                 >
                   <Link
                     to={projectPath(locale, project)}
