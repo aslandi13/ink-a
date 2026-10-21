@@ -26,7 +26,6 @@ export const PROJECTS_LIST_SETTINGS = [
   { name: 'featured', label: 'Большие карточки', options: [['on', 'Показывать'], ['off', 'Все одинаковые']] },
   { name: 'gap', label: 'Отступ между', options: [['s', 'Обычный'], ['none', 'Без отступа'], ['l', 'Большой']] },
   { name: 'title', label: 'Размер названия', options: [['m', 'Средний'], ['s', 'Маленький'], ['l', 'Большой'], ['xl', 'Очень большой']] },
-  { name: 'location', label: 'Город', options: [['show', 'Показывать'], ['hide', 'Скрыть']] },
 ]
 
 export function ProjectsListSection({ locale, settings = {} }: { data: unknown; locale: Locale; settings?: Settings }) {
@@ -36,7 +35,6 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
   const featured = settings.featured !== 'off'
   const titleSize = TITLE[settings.title ?? ''] ?? TITLE.m
   const gap = GAP[settings.gap ?? ''] ?? GAP.s
-  const showLocation = settings.location !== 'hide'
 
   const CATEGORIES = [
     { value: 'architecture', label: tr.projects.categories.architecture },
@@ -120,8 +118,8 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
             onClick={() => selectCategory(c.value)}
             className={
               c.value === category
-                ? 'border-b border-white pb-1 text-white'
-                : 'pb-1 text-white/50 transition-colors hover:text-white'
+                ? 'border-b border-white pb-1 text-left text-white'
+                : 'pb-1 text-left text-white/50 transition-colors hover:text-white'
             }
           >
             {c.label}
@@ -189,9 +187,6 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
                       <p className="font-serif leading-[1.1] text-white" style={{ fontSize: titleSize }}>
                         {project.title}
                       </p>
-                      {showLocation && project.location && (
-                        <p className="mt-1 text-[0.9rem] text-white/60">{project.location}</p>
-                      )}
                     </div>
                   </Link>
                 </StaggerItem>
