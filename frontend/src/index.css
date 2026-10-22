@@ -123,3 +123,15 @@ video:not([controls])::-webkit-media-controls-overlay-play-button {
   color: inherit;
   padding: 0 0.15em;
 }
+
+.prose [data-youtube-video] {
+  margin: 2em 0;
+}
+
+.prose [data-youtube-video] iframe {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}

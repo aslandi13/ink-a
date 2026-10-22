@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
                 ['textColor', 'highlight', 'clearFormatting'],
                 ['alignStart', 'alignCenter', 'alignEnd'],
                 ['blockquote', 'bulletList', 'orderedList'],
-                ['table', 'attachFiles'],
+                ['table', 'attachFiles', 'youtube'],
                 ['undo', 'redo'],
             ]));
 

@@ -9,6 +9,7 @@
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",
         "@tiptap/core": "^3.32.0",
+        "@tiptap/extension-youtube": "^3.32.0",
         "@tiptap/pm": "^3.32.0",
         "autoprefixer": "^10.6.1",
         "concurrently": "^10.0.3",

@@ -4,7 +4,7 @@ import { formatCoordinates } from './coordinates'
 import { metaText } from './metaText'
 import { categoryFromSlug, categorySlug } from './projectCategories'
 import { projectPath } from './projectPath'
-import { sanitise } from './sanitise'
+import { sanitise, sanitiseLayout } from './sanitise'
 import { upgradeExploded } from './upgradeExploded'
 import { addHeroMobileTexts } from '../sections/home'
 
@@ -36,6 +36,14 @@ describe('metaText', () => {
 })
 
 describe('sanitise', () => {
+  it('keeps YouTube embeds and drops other iframes', () => {
+    const video = '<div data-youtube-video="true"><iframe src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" allowfullscreen="true"></iframe></div>'
+    expect(sanitise(video)).toBe(video)
+    expect(sanitise('<iframe src="https://evil.example/x"></iframe><p>ok</p>')).toBe('<p>ok</p>')
+    expect(sanitiseLayout(video)).toBe(video)
+    expect(sanitiseLayout('<iframe src="https://evil.example/x"></iframe>')).toBe('')
+  })
+
   it('keeps editor formatting', () => {
     const html = '<p><span data-font="serif">A</span><span class="color" data-color="#f00" style="--color: #f00">B</span><mark>C</mark><small>D</small></p><div class="lead"><p>E</p></div>'
     expect(sanitise(html)).toBe(html)
