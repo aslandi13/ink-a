@@ -274,12 +274,12 @@ export function NewsBodySection({ data, settings = {} }: SectionProps) {
 export function OtherNewsSection({ data, locale, settings = {} }: SectionProps) {
   const tr = t(locale)
   const others = data.others.slice(0, settings.count === '3' ? 3 : settings.count === '4' ? 4 : 6)
-  const cols = NEWS_COLS[settings.cols ?? ''] ?? NEWS_COLS['3']
+  const cols = NEWS_COLS[settings.cols ?? ''] ?? NEWS_COLS['2']
   const ratio = NEWS_RATIO[settings.ratio ?? ''] ?? NEWS_RATIO.wide
   const showDate = settings.date !== 'hide'
   if (!others.length) return null
   return (
-    <section className="mx-auto max-w-[84rem] px-6 pb-24 pt-4">
+    <section className={`mx-auto px-6 pb-24 pt-4 ${N_WIDTH[settings.width ?? ''] ?? N_WIDTH.medium}`}>
       {settings.heading !== 'hide' && (
       <h2
         className="mb-8 font-serif text-3xl text-white md:text-4xl"
@@ -392,7 +392,8 @@ export const NEWS_BLOCKS = [
     id: 'news-others',
     label: 'Другие новости',
     settings: [
-      { name: 'cols', label: 'Колонок', options: [['3', '3'], ['4', '4'], ['2', '2']] },
+      { name: 'cols', label: 'Колонок', options: [['2', '2'], ['3', '3'], ['4', '4']] },
+      { name: 'width', label: 'Ширина', options: [['medium', 'Как у текста'], ['wide', 'Во всю ширину']] },
       { name: 'count', label: 'Сколько показать', options: [['6', '6'], ['4', '4'], ['3', '3']] },
       { name: 'ratio', label: 'Форма картинок', options: [['wide', 'Широкие'], ['cinema', 'Очень широкие 21:9'], ['square', 'Квадрат'], ['tall', 'Вертикальные 3:4']] },
       { name: 'date', label: 'Дата', options: N_SHOW_HIDE },
