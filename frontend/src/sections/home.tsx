@@ -10,6 +10,7 @@ import { t } from '../lib/i18n'
 import type { Locale } from '../lib/locale'
 import { prefetchProject } from '../lib/prefetch'
 import { projectPath } from '../lib/projectPath'
+import { rememberProjects } from '../lib/projectPreview'
 
 export interface HeroData {
   seo_title?: string
@@ -74,7 +75,10 @@ export function loadHomeData(locale: Locale): Promise<HomeData> {
     getPageContent<OfficesData>(locale, 'home/offices'),
     getPageContent<VideoBannerData>(locale, 'home/video-banner'),
     getPageContent<KeyProjectsData>(locale, 'home/key-projects'),
-    getProjects(locale, { page: 1, per_page: 30 }),
+    getProjects(locale, { page: 1, per_page: 30 }).then((res) => {
+      rememberProjects(res.data)
+      return res
+    }),
   ]).then(([hero, about, offices, videoBanner, keyProjects, projects]) => ({
     hero,
     about,

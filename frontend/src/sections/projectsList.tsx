@@ -9,6 +9,7 @@ import { prefetchProject } from '../lib/prefetch'
 import { categoryFromSlug, categorySlug, DEFAULT_PROJECT_CATEGORY, PROJECTS_PER_PAGE } from '../lib/projectCategories'
 import { formatCoordinates } from '../lib/coordinates'
 import { projectPath } from '../lib/projectPath'
+import { preloadImage, rememberProjects } from '../lib/projectPreview'
 import { useRefresh } from '../lib/refresh'
 
 type Settings = Record<string, string>
@@ -81,6 +82,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
 
     getProjects(locale, { category, page: 1, per_page: PROJECTS_PER_PAGE })
       .then((res) => {
+        rememberProjects(res.data)
         setProjects(res.data)
       })
       .catch(() => setError(true))
@@ -147,7 +149,11 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
                 >
                   <Link
                     to={projectPath(locale, project)}
-                    onMouseEnter={() => prefetchProject(locale, project)}
+                    onMouseEnter={() => {
+                      prefetchProject(locale, project)
+                      preloadImage(project.cover_image)
+                    }}
+                    onTouchStart={() => prefetchProject(locale, project)}
                     className="group relative block h-full w-full overflow-hidden bg-ink-800"
                   >
                     {project.cover_image && (

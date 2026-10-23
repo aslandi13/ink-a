@@ -9,6 +9,7 @@ import PageRenderer from '../components/PageRenderer'
 import { t } from '../lib/i18n'
 import { categoryFromSlug } from '../lib/projectCategories'
 import { projectPath } from '../lib/projectPath'
+import { projectPreview } from '../lib/projectPreview'
 import type { Locale } from '../lib/locale'
 import { metaText } from '../lib/metaText'
 import { useRefresh } from '../lib/refresh'
@@ -51,6 +52,7 @@ export default function ProjectDetail() {
 
   const refresh = useRefresh()
   const loadedSlug = useRef<string | undefined>(undefined)
+  const shownPreview = useRef(false)
   useEffect(() => {
     if (!slug) return
     const sameSlug = loadedSlug.current === slug
@@ -71,7 +73,19 @@ export default function ProjectDetail() {
   }, [locale, slug, category, preview, forcedTemplate, refresh.key])
 
   if (loading) {
-    return <section className="min-h-screen" />
+    const preview = projectPreview(category, slug)
+    if (!preview?.cover_image) return <section className="min-h-screen" />
+    shownPreview.current = true
+    return (
+      <section className="relative -mt-24 h-[calc(65vh_+_6rem)] overflow-hidden sm:h-[calc(100vh_+_6rem)]">
+        <img src={preview.cover_image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-950/30 via-ink-950/0 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-ink-950 to-transparent" />
+        <div className="absolute inset-x-0 bottom-20 mx-auto max-w-[84rem] px-6 pb-4">
+          <h1 className="font-serif text-4xl text-white md:text-5xl lg:text-6xl">{preview.title}</h1>
+        </div>
+      </section>
+    )
   }
 
   if (error) {
@@ -111,6 +125,7 @@ export default function ProjectDetail() {
       )}
 
       <PageRenderer
+        fade={!shownPreview.current}
         html={layout?.html || DEFAULT_PROJECT_LAYOUT}
         css={layout?.css ?? ''}
         translations={layout?.translations}

@@ -66,6 +66,7 @@ interface Props<T> {
   portals?: HtmlPortal[]
   sources?: ContentSources
   prepare?: (body: HTMLElement) => void
+  fade?: boolean
 }
 
 const REVEAL_SELECTOR = ['h1', 'h2', 'h3', 'p', 'dl', 'blockquote'].map((tag) => `[data-exploded] ${tag}`).join(', ')
@@ -144,12 +145,13 @@ export default function PageRenderer<T>({
   portals,
   sources,
   prepare,
+  fade = true,
 }: Props<T>) {
   const segments = useMemo(() => parseSegments(html, translations, sources, prepare), [html, translations, sources, prepare])
   const bleeds = (!!bleedBlock && segments[0]?.block === bleedBlock) || !!segments[0]?.bleed
 
   return (
-    <div className={`page-fade ${bleeds ? '-mt-24' : offsetClass ?? ''}`}>
+    <div className={`${fade ? 'page-fade' : ''} ${bleeds ? '-mt-24' : offsetClass ?? ''}`}>
       {css && <style>{css}</style>}
       {segments.map((segment) => {
         if (segment.block) {
