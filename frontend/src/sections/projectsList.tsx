@@ -55,10 +55,7 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
     if (routeCategory) navigate(`/${locale}/projects/${categorySlug(value)}`)
   }
   const [projects, setProjects] = useState<ProjectListItem[]>([])
-  const [page, setPage] = useState(1)
-  const [lastPage, setLastPage] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [loadingMore, setLoadingMore] = useState(false)
   const [error, setError] = useState(false)
   const [intro, setIntro] = useState<ProjectsIntro>({})
   const refresh = useRefresh()
@@ -78,8 +75,6 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
     loadedCategory.current = category
     if (!refresh.silent() && !(sameCategory && projects.length)) {
       setProjects([])
-      setPage(1)
-      setLastPage(1)
       setLoading(true)
     }
     setError(false)
@@ -87,24 +82,11 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
     getProjects(locale, { category, page: 1, per_page: PROJECTS_PER_PAGE })
       .then((res) => {
         setProjects(res.data)
-        setLastPage(res.meta.last_page)
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false))
   }, [locale, category, refresh.key])
 
-  function loadMore() {
-    const nextPage = page + 1
-    setLoadingMore(true)
-    getProjects(locale, { category, page: nextPage, per_page: PROJECTS_PER_PAGE })
-      .then((res) => {
-        setProjects((prev) => [...prev, ...res.data])
-        setPage(nextPage)
-        setLastPage(res.meta.last_page)
-      })
-      .catch(() => setError(true))
-      .finally(() => setLoadingMore(false))
-  }
 
   return (
     <section className="mx-auto max-w-[84rem] px-6 pt-24 pb-24">
@@ -194,18 +176,6 @@ export function ProjectsListSection({ locale, settings = {} }: { data: unknown; 
             })}
           </StaggerList>
 
-          {page < lastPage && (
-            <div className="mt-12 flex justify-center">
-              <button
-                data-interactive
-                onClick={loadMore}
-                disabled={loadingMore}
-                className="border border-white/20 px-8 py-3 text-sm text-white/70 transition-colors hover:border-white hover:text-white disabled:opacity-40"
-              >
-                {loadingMore ? tr.ui.loading : tr.projects.loadMore}
-              </button>
-            </div>
-          )}
         </>
       )}
     </section>

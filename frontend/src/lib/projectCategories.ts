@@ -2,7 +2,7 @@ export const PROJECT_CATEGORY_IDS = ['architecture', 'engineering', 'urbanism', 
 
 export const DEFAULT_PROJECT_CATEGORY = PROJECT_CATEGORY_IDS[0]
 
-export const PROJECTS_PER_PAGE = 100
+export const PROJECTS_PER_PAGE = 1000
 
 const CATEGORY_SLUGS: Record<string, string> = {
   architecture: 'architecture',
