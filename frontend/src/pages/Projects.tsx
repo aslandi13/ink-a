@@ -8,7 +8,7 @@ import { t } from '../lib/i18n'
 import { categoryFromSlug, DEFAULT_PROJECT_CATEGORY, PROJECTS_PER_PAGE } from '../lib/projectCategories'
 import { useRefresh } from '../lib/refresh'
 import { useLocale } from '../lib/useLocale'
-import { DEFAULT_PROJECTS_LIST_LAYOUT, PROJECTS_LIST_BLOCKS } from '../sections/projectsList'
+import { DEFAULT_PROJECTS_LIST_LAYOUT, PROJECTS_LIST_BLOCKS, ProjectsGridSkeleton } from '../sections/projectsList'
 
 export default function Projects() {
   const { slug } = useParams()
@@ -53,8 +53,17 @@ export default function Projects() {
           blocks={PROJECTS_LIST_BLOCKS}
         />
       ) : (
-        <section className="min-h-screen" />
+        <section className="mx-auto max-w-[84rem] px-6 pt-24 pb-24">
+          <div className="flex flex-col items-start gap-y-2 pb-1 sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-3 sm:pb-6">
+            <div className="h-6 w-32 bg-white/10 rounded animate-pulse" />
+            <div className="h-6 w-28 bg-white/5 rounded animate-pulse" />
+            <div className="h-6 w-28 bg-white/5 rounded animate-pulse" />
+            <div className="h-6 w-36 bg-white/5 rounded animate-pulse" />
+          </div>
+          <ProjectsGridSkeleton />
+        </section>
       )}
     </>
   )
 }
+

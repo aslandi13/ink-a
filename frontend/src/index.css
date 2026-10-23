@@ -74,6 +74,16 @@ video:not([controls])::-webkit-media-controls-overlay-play-button {
   }
 }
 
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 1.8s infinite;
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(16px);
