@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\CoverThumb;
 use App\Support\FileUrlResolver;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,6 +22,7 @@ class ProjectListResource extends JsonResource
             'longitude' => $this->longitude,
             'year' => $this->year,
             'cover_image' => FileUrlResolver::resolve($this->cover_image),
+            'cover_thumb' => CoverThumb::url($this->cover_image),
         ];
     }
 }

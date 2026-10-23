@@ -557,8 +557,10 @@ export function KeyProjectsSection({ data, locale, settings = {} }: SectionProps
                 >
                   {project.cover_image && (
                     <img
-                      src={project.cover_image}
+                      src={project.cover_thumb ?? project.cover_image}
                       alt={project.title}
+                      loading={i < 8 ? 'eager' : 'lazy'}
+                      decoding="async"
                       className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                     />
                   )}

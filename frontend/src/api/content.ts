@@ -44,6 +44,7 @@ export interface ProjectListItem {
   longitude?: string | null
   year: number | null
   cover_image: string | null
+  cover_thumb?: string | null
 }
 
 export interface ProjectDetail extends ProjectListItem {
