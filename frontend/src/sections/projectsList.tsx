@@ -66,6 +66,20 @@ export function ProjectsGridSkeleton({
   )
 }
 
+function CardLocation({ project }: { project: ProjectListItem }) {
+  const mode = project.card_location ?? 'both'
+  const coords = formatCoordinates(project.latitude, project.longitude)
+  const city = mode === 'city' || (mode === 'both' && coords) ? project.location : null
+  const coordinates = mode === 'both' || mode === 'coords' ? coords : null
+  if (!city && !coordinates) return null
+  return (
+    <div className="absolute right-0 top-0 p-4 text-right text-[0.8rem] leading-snug text-white/90 [text-shadow:0_1px_6px_rgb(0_0_0/0.5)]">
+      {city && <p>— {city}</p>}
+      {coordinates && <p>{coordinates}</p>}
+    </div>
+  )
+}
+
 function ProjectCard({
   project,
   index,
@@ -141,12 +155,7 @@ function ProjectCard({
         <div className="absolute inset-0 bg-ink-950/0 transition-colors duration-700 group-hover:bg-ink-950/25" />
         <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-black/70 to-transparent" />
 
-        {formatCoordinates(project.latitude, project.longitude) && (
-          <div className="absolute right-0 top-0 p-4 text-right text-[0.8rem] leading-snug text-white/90 [text-shadow:0_1px_6px_rgb(0_0_0/0.5)]">
-            {project.location && <p>— {project.location}</p>}
-            <p>{formatCoordinates(project.latitude, project.longitude)}</p>
-          </div>
-        )}
+        <CardLocation project={project} />
 
         <div className="absolute inset-x-0 bottom-0 p-4">
           <p className="font-serif leading-[1.1] text-white" style={{ fontSize: titleSize }}>

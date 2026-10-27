@@ -42,6 +42,7 @@ export interface ProjectListItem {
   location: string | null
   latitude?: string | null
   longitude?: string | null
+  card_location?: 'both' | 'city' | 'coords' | 'none'
   year: number | null
   cover_image: string | null
   cover_thumb?: string | null

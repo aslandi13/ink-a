@@ -104,6 +104,18 @@ class ProjectForm
                                 ->regex('/^-?\d{1,3}(\.\d+)?$/')
                                 ->validationMessages(['regex' => 'Число от -180 до 180, например 55.328204']),
 
+                            Select::make('card_location')
+                                ->label('На карточке в списке')
+                                ->options([
+                                    'both' => 'Город и координаты',
+                                    'city' => 'Только город',
+                                    'coords' => 'Только координаты',
+                                    'none' => 'Ничего не показывать',
+                                ])
+                                ->default('both')
+                                ->selectablePlaceholder(false)
+                                ->columnSpanFull(),
+
                             TextInput::make('year')
                                 ->label('Год')
                                 ->numeric()

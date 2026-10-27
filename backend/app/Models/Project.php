@@ -26,6 +26,7 @@ class Project extends Model
         'location',
         'latitude',
         'longitude',
+        'card_location',
         'site_area',
         'total_area',
         'total_apartments',
