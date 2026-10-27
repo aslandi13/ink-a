@@ -145,3 +145,11 @@ video:not([controls])::-webkit-media-controls-overlay-play-button {
   aspect-ratio: 16 / 9;
   border: 0;
 }
+
+main img {
+  transition: opacity 0.6s ease;
+}
+
+main img:not([data-loaded]) {
+  opacity: 0;
+}
