@@ -363,7 +363,6 @@ export function AboutSection({ data, locale, settings = {} }: SectionProps) {
           <div className="@container relative mt-3 hidden aspect-[3.06] w-full overflow-hidden bg-ink-800 lg:block">
             <img data-edit-image="home.about:image" src={about.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
             <div className="absolute inset-x-0 top-0 h-2/5 bg-gradient-to-b from-ink-950/80 to-transparent" />
-            <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-ink-950 to-transparent" />
 
             <div className="absolute inset-x-0 top-0 px-[3cqw] pt-[3cqw]">
               <Reveal delay={0.05}>
