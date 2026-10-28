@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Projects\Tables;
 
+use App\Support\CoverThumb;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -26,6 +27,8 @@ class ProjectsTable
             ->columns([
                 ImageColumn::make('cover_image')
                     ->label('Обложка')
+                    ->state(fn ($record) => CoverThumb::url($record->cover_image))
+                    ->extraImgAttributes(['loading' => 'lazy'])
                     ->square(),
 
                 TextColumn::make('title')
