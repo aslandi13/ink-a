@@ -104,6 +104,14 @@ class ProjectForm
                                 ->regex('/^-?\d{1,3}(\.\d+)?$/')
                                 ->validationMessages(['regex' => 'Число от -180 до 180, например 55.328204']),
 
+                            Select::make('status')
+                                ->label('Статус')
+                                ->options([
+                                    'completed' => 'Completed',
+                                    'in_progress' => 'Construction',
+                                    'concept' => 'Concept',
+                                ]),
+
                             Select::make('card_location')
                                 ->label('На карточке в списке')
                                 ->options([
@@ -133,14 +141,6 @@ class ProjectForm
                             TextInput::make('total_apartments')
                                 ->label('Количество квартир')
                                 ->helperText('Например: 240'),
-
-                            Select::make('status')
-                                ->label('Статус')
-                                ->options([
-                                    'completed' => 'Completed',
-                                    'in_progress' => 'Construction',
-                                    'concept' => 'Concept',
-                                ]),
                         ]),
                 ]),
 
