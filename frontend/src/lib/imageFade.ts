@@ -19,11 +19,6 @@ export function startImageFade() {
 
   new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      if (mutation.type === 'attributes' && mutation.target instanceof HTMLImageElement) {
-        mutation.target.removeAttribute(LOADED)
-        if (mutation.target.complete) mark(mutation.target)
-        continue
-      }
       mutation.addedNodes.forEach((node) => {
         if (node instanceof HTMLImageElement) {
           if (node.complete) mark(node)
@@ -32,7 +27,7 @@ export function startImageFade() {
         }
       })
     }
-  }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] })
+  }).observe(document.body, { childList: true, subtree: true })
 
   check(document)
 }
