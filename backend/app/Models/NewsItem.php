@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\CoverThumb;
 use App\Support\WebImage;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
@@ -31,6 +32,9 @@ class NewsItem extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn (self $model) => WebImage::makeAll($model->cover_image));
+        static::saved(function (self $model) {
+            WebImage::makeAll($model->cover_image);
+            CoverThumb::make($model->cover_image);
+        });
     }
 }

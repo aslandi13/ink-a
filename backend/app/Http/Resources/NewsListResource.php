@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Support\CoverThumb;
 use App\Support\FileUrlResolver;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -16,6 +17,7 @@ class NewsListResource extends JsonResource
             'slug' => $this->slug,
             'excerpt' => $this->excerpt,
             'cover_image' => FileUrlResolver::resolve($this->cover_image),
+            'cover_thumb' => CoverThumb::url($this->cover_image),
             'published_at' => $this->published_at?->toIso8601String(),
         ];
     }

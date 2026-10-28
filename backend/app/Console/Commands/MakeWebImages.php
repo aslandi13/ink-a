@@ -6,6 +6,7 @@ use App\Models\NewsItem;
 use App\Models\PageContent;
 use App\Models\Project;
 use App\Models\TeamMember;
+use App\Support\CoverThumb;
 use App\Support\WebImage;
 use Illuminate\Console\Command;
 
@@ -27,6 +28,7 @@ class MakeWebImages extends Command
         });
         NewsItem::query()->each(function (NewsItem $item) use (&$made) {
             $made += WebImage::makeAll($item->cover_image);
+            $made += CoverThumb::make($item->cover_image) ? 1 : 0;
         });
         TeamMember::query()->each(function (TeamMember $member) use (&$made) {
             $made += WebImage::makeAll($member->photo);

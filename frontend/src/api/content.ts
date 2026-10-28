@@ -95,6 +95,7 @@ export interface NewsListItem {
   slug: string
   excerpt: string | null
   cover_image: string | null
+  cover_thumb?: string | null
   published_at: string | null
 }
 
