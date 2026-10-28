@@ -48,4 +48,17 @@ class CoverThumbTest extends TestCase
         Storage::disk('public')->assertMissing('approach/step-web.webp');
         $this->assertSame('approach/step.jpg', WebImage::prefer('approach/step.jpg'));
     }
+
+    public function test_web_video_copy_is_preferred_when_present(): void
+    {
+        Storage::fake('public');
+        Storage::disk('public')->put('home/hero.mp4', 'a');
+
+        $this->assertSame('home/hero.mp4', WebImage::prefer('home/hero.mp4'));
+
+        Storage::disk('public')->put('home/hero-web.mp4', 'b');
+
+        $this->assertSame('home/hero-web.mp4', WebImage::prefer('home/hero.mp4'));
+        $this->assertSame('home/hero-web.mp4', WebImage::prefer('home/hero-web.mp4'));
+    }
 }

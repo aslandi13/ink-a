@@ -15,7 +15,7 @@ class WebImage
 
     private const SUFFIXES = ['-web', '-card', '-thumb'];
 
-    private const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+    private const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'avif'];
 
     public static function path(string $source): string
     {
@@ -42,8 +42,26 @@ class WebImage
         return true;
     }
 
+    public static function videoPath(string $source): string
+    {
+        $dir = pathinfo($source, PATHINFO_DIRNAME);
+        $name = pathinfo($source, PATHINFO_FILENAME).'-web.mp4';
+
+        return $dir && $dir !== '.' ? "{$dir}/{$name}" : $name;
+    }
+
     public static function prefer(string $source): string
     {
+        if (strtolower(pathinfo($source, PATHINFO_EXTENSION)) === 'mp4') {
+            if (str_ends_with(pathinfo($source, PATHINFO_FILENAME), '-web')) {
+                return $source;
+            }
+
+            $video = self::videoPath($source);
+
+            return Storage::disk('public')->exists($video) ? $video : $source;
+        }
+
         if (! self::supports($source)) {
             return $source;
         }
