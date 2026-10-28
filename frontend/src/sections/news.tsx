@@ -81,7 +81,8 @@ export function NewsListSection({ locale, settings = {} }: { data: unknown; loca
                   >
                     {item.cover_image && (
                       <img
-                        src={item.cover_image}
+                        src={item.cover_thumb ?? item.cover_image}
+                        loading="lazy"
                         alt={item.title}
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                       />
@@ -304,7 +305,8 @@ export function OtherNewsSection({ data, locale, settings = {} }: SectionProps) 
             >
               {other.cover_image && (
                 <img
-                  src={other.cover_image}
+                  src={other.cover_thumb ?? other.cover_image}
+                  loading="lazy"
                   alt={other.title}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
                 />
