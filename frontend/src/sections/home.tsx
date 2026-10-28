@@ -158,6 +158,7 @@ function HeroSlides({ slides, slideIndex, poster }: { slides: HeroSlide[]; slide
             className="pointer-events-none absolute inset-0 h-full w-full object-cover"
             src={slide.src}
             poster={poster}
+            preload="auto"
             autoPlay
             loop={slides.length === 1}
             muted

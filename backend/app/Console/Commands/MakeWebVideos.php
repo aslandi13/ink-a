@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Storage;
 
 class MakeWebVideos extends Command
 {
-    protected $signature = 'videos:web {--force : Recreate existing copies}';
+    protected $signature = 'videos:web {--force : Recreate existing copies} {--width=1280 : Max width in pixels} {--crf=29 : Quality, higher is smaller}';
 
-    protected $description = 'Create compressed 1080p web copies of uploaded mp4 videos';
+    protected $description = 'Create compressed web copies of uploaded mp4 videos';
 
     public function handle(): int
     {
@@ -30,10 +30,11 @@ class MakeWebVideos extends Command
             }
 
             $temp = $disk->path($target).'.tmp.mp4';
+            $width = (int) $this->option('width');
             $result = Process::timeout(1800)->run([
                 'ffmpeg', '-y', '-i', $disk->path($file),
-                '-vf', "scale='min(1920,iw)':-2",
-                '-c:v', 'libx264', '-crf', '27', '-preset', 'slow', '-pix_fmt', 'yuv420p',
+                '-vf', "scale='min({$width},iw)':-2",
+                '-c:v', 'libx264', '-crf', (string) $this->option('crf'), '-preset', 'slow', '-pix_fmt', 'yuv420p',
                 '-c:a', 'aac', '-b:a', '96k', '-movflags', '+faststart',
                 $temp,
             ]);
@@ -46,6 +47,7 @@ class MakeWebVideos extends Command
             }
 
             rename($temp, $disk->path($target));
+            clearstatcache();
             $made++;
             $this->line(sprintf('%s: %.1f MB -> %.1f MB', $file, $disk->size($file) / 1048576, $disk->size($target) / 1048576));
         }
