@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\WebImage;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
@@ -27,4 +28,9 @@ class NewsItem extends Model
         'is_published' => 'boolean',
         'sort_order'   => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::saved(fn (self $model) => WebImage::makeAll($model->cover_image));
+    }
 }

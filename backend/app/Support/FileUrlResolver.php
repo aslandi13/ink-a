@@ -26,7 +26,7 @@ class FileUrlResolver
             return $data;
         }
 
-        return Storage::disk('public')->url($data);
+        return Storage::disk('public')->url(WebImage::prefer($data));
     }
 
     public static function html(?string $html): ?string

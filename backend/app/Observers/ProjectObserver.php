@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Project;
 use App\Support\CoverThumb;
 use App\Support\GalleryWatermark;
+use App\Support\WebImage;
 
 class ProjectObserver
 {
@@ -19,5 +20,8 @@ class ProjectObserver
             $project->gallery = $processed;
             $project->saveQuietly();
         }
+
+        WebImage::make($project->cover_image);
+        WebImage::makeAll($processed);
     }
 }
