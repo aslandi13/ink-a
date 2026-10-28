@@ -5,6 +5,7 @@ import { getPageContent } from '../api/content'
 import { t } from '../lib/i18n'
 import { useReportActiveTab } from '../lib/activeTab'
 import type { Locale } from '../lib/locale'
+import { preloadImage } from '../lib/projectPreview'
 import { categoryFromSlug, categorySlug } from '../lib/projectCategories'
 
 export interface ApproachStep {
@@ -60,6 +61,15 @@ export function ApproachSection({ data, locale, settings = {} }: SectionProps) {
 
   const current = data?.[category]
   const step = activeStep !== null ? current?.steps?.[activeStep] : null
+  useEffect(() => {
+    if (!current) return
+    const timer = window.setTimeout(() => {
+      preloadImage(current.default_image)
+      current.steps?.forEach((item) => preloadImage(item.image))
+    }, 300)
+    return () => window.clearTimeout(timer)
+  }, [current])
+
   const image = step?.image ?? current?.default_image
   const caption = step?.image_caption ?? current?.default_image_caption
   const imageTarget = step?.image ? `approach:${category}.steps.${activeStep}.image` : `approach:${category}.default_image`
